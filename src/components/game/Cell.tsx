@@ -1,14 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { cn } from '@/lib/utils'; // A utility function to combine class names
-
-export type CellState = 'empty' | 'ship' | 'hit' | 'miss' | 'sunk';
-
-export interface Position {
-    row: number;
-    col: number;
-}
+import { cn } from '@/lib/utils/utils'; // A utility function to combine class names
+import type { CellState, Position } from '@/lib/utils/types';
 
 interface CellProps {
     state: CellState;           // Current state of the cell (determines style & content)
