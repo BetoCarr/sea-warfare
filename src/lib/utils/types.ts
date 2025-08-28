@@ -1,4 +1,6 @@
 export type CellState = 'empty' | 'ship' | 'hit' | 'miss' | 'sunk';
+export type ShipType = 'carrier' | 'battleship' | 'cruiser' | 'submarine' | 'destroyer';
+export type Orientation = 'horizontal' | 'vertical';
 
 export interface Position {
     row: number;
@@ -7,8 +9,10 @@ export interface Position {
 
 export interface Ship {
     id: string;
-    position: Position;               // celda inicial
-    orientation: 'horizontal' | 'vertical';
-    size: number;                     // longitud
-    isSunk?: boolean;                 // opcional, true si el barco fue hundido
+    type: ShipType;
+    size: number;
+    position?: Position;
+    orientation: Orientation;
+    hits: boolean[];
+    isSunk: boolean;                // opcional, true si el barco fue hundido
 }
