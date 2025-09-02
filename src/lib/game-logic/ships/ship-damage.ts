@@ -2,15 +2,24 @@ import { getShipCoordinates } from '@/lib/game-logic/ships/ship-placement';
 import type { Ship, Position } from '@/lib/utils/types';
 
 /**
- * RESPONSABILIDAD 3: 💥 MANEJO DE DAÑO Y ESTADO
+ * RESPONSIBILITY 3: DAMAGE AND STATUS MANAGEMENT
+ * 
+ * This module handles the following responsibilities:
+ * 1. Register hits on ships
+ * 2. Calculate damage percentage and health status
+ * 3. Provide coordinates of hit and intact ship segments
+ * 4. Repair ships (reset damage)
  */
 
 /**
- * Registra un hit en una posición específica del barco
+ * Registers a hit on a specific position of a ship.
+ * - Throws an error if the ship is not placed on the board
+ * - Marks the hit in the ship's `hits` array
+ * - Updates the `isSunk` flag if all segments are hit
  */
 export function hitShipAt(ship: Ship, position: Position): Ship {
     if (!ship.position) {
-        throw new Error('El barco debe estar colocado en el tablero para recibir hits');
+        throw new Error('Ship must be placed on the board to receive hits');
     }
     
     const coordinates = getShipCoordinates(ship);
@@ -19,7 +28,7 @@ export function hitShipAt(ship: Ship, position: Position): Ship {
     );
     
     if (hitIndex === -1) {
-        throw new Error('La posición no corresponde a este barco');
+        throw new Error('The specified position does not belong to this ship');
     }
     
     const newHits = [...ship.hits];
@@ -33,8 +42,9 @@ export function hitShipAt(ship: Ship, position: Position): Ship {
     
     return newShip;
 }
+
 /**
- * Verifica si una coordenada específica del barco ya fue impactada
+ * Checks if a specific position of a ship has already been hit
  */
 export function isShipHitAt(ship: Ship, position: Position): boolean {
     if (!ship.position) return false;
@@ -46,8 +56,9 @@ export function isShipHitAt(ship: Ship, position: Position): boolean {
     
     return hitIndex !== -1 && ship.hits[hitIndex];
 }
+
 /**
- * Calcula el porcentaje de daño del barco
+ * Calculates the percentage of damage a ship has taken
  */
 export function getShipDamagePercentage(ship: Ship): number {
     const hitsCount = ship.hits.filter(hit => hit).length;
@@ -55,7 +66,7 @@ export function getShipDamagePercentage(ship: Ship): number {
 }
 
 /**
- * Obtiene el estado de salud del barco
+ * Returns a health status label for the ship based on damage
  */
 export function getShipHealthStatus(ship: Ship): 'healthy' | 'damaged' | 'critical' | 'sunk' {
     if (ship.isSunk) return 'sunk';
@@ -66,8 +77,11 @@ export function getShipHealthStatus(ship: Ship): 'healthy' | 'damaged' | 'critic
     if (damagePercent < 75) return 'damaged';
     return 'critical';
 }
+
 /**
- * Resetea el estado de daño de un barco
+ * Resets the damage state of a ship
+ * - All hits are cleared
+ * - `isSunk` is set to false
  */
 export function repairShip(ship: Ship): Ship {
     return {
@@ -76,8 +90,9 @@ export function repairShip(ship: Ship): Ship {
         isSunk: false
     };
 }
+
 /**
- * Obtiene las coordenadas que aún no han sido impactadas
+ * Returns an array of coordinates that have not been hit yet
  */
 export function getIntactCoordinates(ship: Ship): Position[] {
     if (!ship.position) return [];
@@ -87,7 +102,7 @@ export function getIntactCoordinates(ship: Ship): Position[] {
 }
 
 /**
- * Obtiene las coordenadas que han sido impactadas
+ * Returns an array of coordinates that have been hit
  */
 export function getHitCoordinates(ship: Ship): Position[] {
     if (!ship.position) return [];

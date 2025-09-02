@@ -1,34 +1,33 @@
-// src/components/game/Board.tsx
 'use client';
 
 import { useState, useCallback, useMemo } from 'react';
 import Cell from './Cell';
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils/utils'; // Utility to combine class names dynamically
 import { BOARD_SIZE } from '@/lib/utils/constants';
 import type {CellState, Position, Ship } from '@/lib/utils/types';
 
 interface BoardProps {
-    /** Tamaño del tablero (por defecto 10x10) */
-    size?: number;
-    /** Estado de cada celda del tablero */
-    cells: CellState[][];
-    /** Si es el tablero del jugador (muestra barcos) o del oponente (oculta barcos) */
-    isPlayerBoard: boolean;
-    /** Callback cuando se hace click en una celda */
-    onCellClick: (row: number, col: number) => void;
-    /** Lista de barcos colocados en el tablero */
-    ships?: Ship[];
-    /** Forzar mostrar todos los barcos (útil para debug o fin de juego) */
-    forceShowShips?: boolean;
-    /** Deshabilitar interacciones */
-    disabled?: boolean;
-    /** Título del tablero */
-    title?: string;
-    /** Estilo adicional */
-    className?: string;
-    /** Celda que está siendo hover (para efectos visuales) */
-    hoveredCell?: Position | null;
+    size?: number;                  // Board size (default 10x10)
+    cells: CellState[][];           // Current state of all cells
+    isPlayerBoard: boolean;         // Determines if ships should be visible
+    onCellClick: (row: number, col: number) => void; // Callback for cell clicks
+    ships?: Ship[];                 // List of placed ships
+    forceShowShips?: boolean;       // Forces ships to be visible (debug or game over)
+    disabled?: boolean;             // Prevents interaction
+    title?: string;                 // Optional board title
+    className?: string;             // Custom style overrides
+    hoveredCell?: Position | null;  // Externally controlled hovered cell
 }
+
+/**
+ * Board component represents the full game grid with coordinates,
+ * cells, ships, and hover interactions.
+ * 
+ * - Responsible for rendering Cell components with correct state.
+ * - Handles hover effects across rows/columns.
+ * - Displays ships depending on `isPlayerBoard` and `forceShowShips`.
+ * - Includes coordinate labels for usability and testing.
+ */
 
 export default function Board({
     size = BOARD_SIZE,
@@ -42,17 +41,19 @@ export default function Board({
     className,
     hoveredCell
 }: BoardProps) {
-    // Estado local para manejar hover en celdas
+    // Local hover state (used when no external hoveredCell is provided)
     const [localHoveredCell, setLocalHoveredCell] = useState<Position | null>(null);
 
-    // Determinar si mostrar barcos
+    // Decide if ships should be displayed
     const showShips = isPlayerBoard || forceShowShips;
     
-    // Combinar hover externo con hover local
+    // Merge external and local hover sources
     const effectiveHoveredCell = hoveredCell || localHoveredCell;
 
     /**
-     * Manejar click en celda individual
+     * Handle user clicking a cell.
+     * - Ignores interaction if board is disabled.
+     * - Passes position to parent callback.
      */
     const handleCellClick = useCallback((row: number, col: number) => {
         if (disabled) return;
@@ -60,7 +61,8 @@ export default function Board({
     }, [disabled, onCellClick]);
 
     /**
-     * Manejar hover sobre celda
+     * Handle hover entering a cell.
+     * - Updates local hovered state if not disabled.
      */
     const handleCellHover = useCallback((row: number, col: number) => {
         if (!disabled) {
@@ -69,38 +71,41 @@ export default function Board({
     }, [disabled]);
 
     /**
-     * Manejar cuando se sale el hover
+     * Reset hover when leaving a cell.
      */
     const handleCellLeave = useCallback(() => {
         setLocalHoveredCell(null);
     }, []);
 
     /**
-     * Generar las etiquetas de coordenadas (A, B, C... para columnas)
+     * Generate column coordinate labels (A, B, C...).
      */
     const columnLabels = useMemo(() => {
         return Array.from({ length: size }, (_, i) => String.fromCharCode(65 + i));
     }, [size]);
 
     /**
-     * Generar las etiquetas de coordenadas (1, 2, 3... para filas)
+     * Generate row coordinate labels (1, 2, 3...).
      */
     const rowLabels = useMemo(() => {
         return Array.from({ length: size }, (_, i) => i + 1);
     }, [size]);
 
     /**
-     * Verificar si una celda está siendo hover
+     * Check if a given cell is currently hovered.
      */
     const isCellHovered = useCallback((row: number, col: number) => {
         return effectiveHoveredCell?.row === row && effectiveHoveredCell?.col === col;
     }, [effectiveHoveredCell]);
 
     /**
-     * Obtener información adicional de la celda (ej: si tiene barco)
+     * Look up additional info for a cell:
+     * - Whether it belongs to a ship.
+     * - Which ship it belongs to.
+     * - Whether it's the starting position of the ship.
      */
+
     const getCellInfo = useCallback((row: number, col: number) => {
-        // Buscar si hay un barco en esta posición
         const shipInCell = ships.find(ship => {
         if (!ship.position) return false;
         
@@ -113,7 +118,6 @@ export default function Board({
             return col === shipCol && row >= shipRow && row < shipRow + shipSize;
         }
             });
-
         return {
             hasShip: !!shipInCell,
             ship: shipInCell,
@@ -122,7 +126,10 @@ export default function Board({
     }, [ships]);
 
     /**
-     * Determinar el estado visual de una celda
+     * Decide what visual state a cell should display:
+     * - Priority to explicit states (hit, miss, sunk).
+     * - Otherwise, show ship if present and visible.
+     * - Defaults to empty.
      */
     const getCellDisplayState = useCallback((row: number, col: number): CellState => {
         const currentState = cells[row]?.[col] || 'empty';
@@ -143,18 +150,18 @@ export default function Board({
 
     return (
         <div className={cn("inline-block", className)}>
-            {/* Título del tablero */}
+            {/* Optional board title */}
             {title && (
                 <h3 className="text-lg font-semibold mb-3 text-center text-slate-800">
                     {title}
                 </h3>
             )}
         
-            {/* Contenedor principal del tablero */}
+            {/* Board container with border and shadow */}
             <div className="bg-white rounded-lg shadow-lg p-4 border-2 border-slate-200">
-                {/* Etiquetas de columnas (A, B, C...) */}
+                {/* Column labels (A, B, C...) */}
                 <div className="grid mb-2" style={{ gridTemplateColumns: `2rem repeat(${size}, 2rem)` }}>
-                    <div></div> {/* Celda vacía para esquina */}
+                    <div></div> {/* Empty top-left corner */}
                     {columnLabels.map((label) => (
                         <div
                             key={label}
@@ -165,12 +172,11 @@ export default function Board({
                     ))}
                 </div>
 
-                {/* Tablero principal */}
+                {/* Main grid: row labels + cells */}
                 <div className="grid gap-1" style={{ gridTemplateColumns: `2rem repeat(${size}, 2rem)` }}>
                     {Array.from({ length: size }, (_, rowIndex) => (
-                        // Cada fila
                         <>
-                            {/* Etiqueta de fila (1, 2, 3...) */}
+                            {/* Row label (1, 2, 3...) */}
                             <div
                                 key={`row-label-${rowIndex}`}
                                 className="text-center text-sm font-semibold text-slate-600 w-8 h-8 flex items-center justify-center"
@@ -178,7 +184,7 @@ export default function Board({
                                 {rowLabels[rowIndex]}
                             </div>
                             
-                            {/* Celdas de la fila */}
+                            {/* Row cells */}
                             {Array.from({ length: size }, (_, colIndex) => (
                                 <div
                                     key={`cell-${rowIndex}-${colIndex}`}
@@ -194,16 +200,15 @@ export default function Board({
                                         showShip={showShips}
                                         isHovered={isCellHovered(rowIndex, colIndex)}
                                         className={cn(
-                                        // Estilos base del tablero
                                         "transition-all duration-200",
                                         
-                                        // Efectos de hover para filas/columnas
+                                        // Highlight row/column when hovered
                                         effectiveHoveredCell && (
                                             effectiveHoveredCell.row === rowIndex || 
                                             effectiveHoveredCell.col === colIndex
                                         ) && "ring-1 ring-blue-300 ring-opacity-50",
                                         
-                                        // Estilo especial para tablero del jugador vs oponente
+                                        // Different border color for player vs enemy
                                         isPlayerBoard 
                                             ? "border-blue-400" 
                                             : "border-red-400",
@@ -214,7 +219,7 @@ export default function Board({
                         </>
                     ))}
                 </div>
-                {/* Información del tablero (debug/stats) */}
+                {/* Board info / stats (debug-friendly) */}
                 <div className="mt-3 text-xs text-slate-500 text-center">
                     {isPlayerBoard ? "Tu tablero" : "Tablero enemigo"} • 
                     {ships.length} barco{ships.length !== 1 ? 's' : ''} • 
@@ -226,8 +231,14 @@ export default function Board({
     );
 }
 
-// Componente auxiliar para mostrar estadísticas del tablero
-    interface BoardStatsProps {
+/**
+ * BoardStats component shows a compact summary of the board:
+ * - Remaining vs total ships.
+ * - Total hits and misses.
+ * 
+ * Useful for side panels, scoreboards, or debugging.
+ */
+interface BoardStatsProps {
     ships: Ship[];
     totalHits: number;
     totalMisses: number;

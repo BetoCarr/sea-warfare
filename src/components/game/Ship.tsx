@@ -3,22 +3,25 @@
 import React from 'react';
 import type { Ship, Position } from '@/lib/utils/types';
 
-// Props que el componente Ship va a recibir
+/**
+ * Props for the Ship component
+ */
 interface ShipComponentProps {
-    ship: Ship;                                    // El objeto Ship completo con toda su data
-    boardCellSize: number;                         // Tamaño de cada celda del board (ej: 40px)
-    isGamePhase: 'placement' | 'battle';          // Fase actual del juego
-    isVisible: boolean;                           // Si el barco debe ser visible (false para enemigos)
-    isValidPosition?: boolean;                    // Durante placement, si la posición es válida
-    className?: string;                           // Clases CSS adicionales
+    ship: Ship;                                    // Full ship object with its data
+    boardCellSize: number;                         // Size of a single board cell in px (e.g., 40px)
+    isGamePhase: 'placement' | 'battle';           // Current game phase
+    isVisible: boolean;                            // Whether the ship should be visible (false for enemy ships)
+    isValidPosition?: boolean;                     // During placement, indicates if the position is valid
+    className?: string;                            // Extra CSS classes
 
-    // Event handlers para las interacciones
-    onShipClick?: (ship: Ship) => void;           // Click en el barco
-    onShipDragStart?: (ship: Ship) => void;       // Inicio de drag
-    onShipDrag?: (ship: Ship, newPosition: Position) => void;  // Durante el drag
-    onShipDragEnd?: (ship: Ship) => void;         // Fin de drag
-    onShipRotate?: (ship: Ship) => void;          // Rotar barco (click derecho o doble click)
+    // Event handlers for interactions
+    onShipClick?: (ship: Ship) => void;            // Left-click on the ship
+    onShipDragStart?: (ship: Ship) => void;        // Drag start
+    onShipDrag?: (ship: Ship, newPosition: Position) => void;  // While dragging
+    onShipDragEnd?: (ship: Ship) => void;          // Drag end
+    onShipRotate?: (ship: Ship) => void;           // Rotate (double click or right-click)
 }
+
 
 const Ship: React.FC<ShipComponentProps> = ({
     ship,
@@ -34,7 +37,10 @@ const Ship: React.FC<ShipComponentProps> = ({
     onShipRotate
 }) => {
 
-    // Calcular posición CSS basada en la posición del barco en el board
+    /**
+     * Compute ship CSS position and size based on its
+     * board position (row/col) and orientation.
+     */
     const calculateShipPosition = () => {
         if (!ship.position) {
             return { left: 0, top: 0, width: 0, height: 0 };
@@ -44,7 +50,6 @@ const Ship: React.FC<ShipComponentProps> = ({
         const left = col * boardCellSize;
         const top = row * boardCellSize;
         
-        // Calcular dimensiones basadas en orientación y tamaño
         const width = ship.orientation === 'horizontal' 
             ? ship.size * boardCellSize 
             : boardCellSize;
@@ -56,26 +61,32 @@ const Ship: React.FC<ShipComponentProps> = ({
 
     const position = calculateShipPosition();
 
-    // Event handlers para interacciones del usuario
+    /**
+     * Handle left-click on ship
+     */
     const handleClick = (e: React.MouseEvent) => {
         e.preventDefault();
-        e.stopPropagation(); // Evitar que el click llegue al Board
-        
+        e.stopPropagation(); // Prevent bubbling up to Board
         if (onShipClick) {
             onShipClick(ship);
         }
     };
 
+    /**
+     * Handle double click → rotate ship during placement
+     */
     const handleDoubleClick = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        
-        // Solo permitir rotación durante placement
+    
         if (isGamePhase === 'placement' && onShipRotate) {
             onShipRotate(ship);
         }
     };
 
+    /**
+     * Handle right-click → rotate ship during placement
+     */
     const handleContextMenu = (e: React.MouseEvent) => {
         e.preventDefault(); // Evitar menu contextual del browser
         
@@ -85,8 +96,9 @@ const Ship: React.FC<ShipComponentProps> = ({
         }
     };
 
-
-    // Drag & Drop handlers para fase de placement
+    /**
+     * Drag handlers (only enabled during placement)
+     */    
     const handleDragStart = (e: React.DragEvent) => {
         if (isGamePhase !== 'placement') return;
         
@@ -95,8 +107,6 @@ const Ship: React.FC<ShipComponentProps> = ({
             shipId: ship.id,
             type: 'ship'
         }));
-        
-        // Hacer el elemento semi-transparente durante drag
         e.dataTransfer.effectAllowed = 'move';
         
         if (onShipDragStart) {
@@ -113,29 +123,30 @@ const Ship: React.FC<ShipComponentProps> = ({
         }
     };
 
-    // Determinar si el barco debe ser draggable
+    // Draggable only in placement phase
     const isDraggable = isGamePhase === 'placement';
 
-    // Si el barco no tiene posición o no es visible, no renderizar
+    // If hidden (enemy board) or unplaced, don’t render
     if (!ship.position || !isVisible) {
         return null;
     }
 
-    // Generar clases CSS dinámicas basadas en el estado del barco
+    /**
+     * Generate CSS classes dynamically based on ship type,
+     * orientation, size, phase and state.
+     */
     const generateShipClasses = () => {
         const classes = [
         'ship',
-        `ship--${ship.type}`,              // carrier, destroyer, etc.
-        `ship--${ship.orientation}`,       // horizontal, vertical
-        `ship--size-${ship.size}`,         // size-2, size-3, etc.
+        `ship--${ship.type}`,           // e.g. carrier, destroyer
+        `ship--${ship.orientation}`,    // horizontal / vertical
+        `ship--size-${ship.size}`,      // size modifier
         ];
 
-        // Estados del juego
         if (ship.isSunk) {
             classes.push('ship--sunk');
         }
 
-        // Estados de la fase
         if (isGamePhase === 'placement') {
             classes.push('ship--placement');
         
@@ -155,7 +166,9 @@ const Ship: React.FC<ShipComponentProps> = ({
     };
 
 
-    // Renderizar cada segmento del barco
+    /**
+     * Render each ship segment (for hit markers).
+     */    
     const renderShipSegments = () => {
         return Array.from({ length: ship.size }, (_, segmentIndex) => {
             const isHit = ship.hits[segmentIndex];
@@ -173,8 +186,10 @@ const Ship: React.FC<ShipComponentProps> = ({
             );
         });
     };
-
-    // Por ahora, componente básico sin implementación
+    
+    /**
+     * Main render: absolute-positioned ship with segments
+     */
     return (
         <div 
             className={generateShipClasses()}

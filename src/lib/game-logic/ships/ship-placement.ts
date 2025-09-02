@@ -1,11 +1,18 @@
 import type { Ship, Position, Orientation } from '@/lib/utils/types';
 import { BOARD_SIZE } from '@/lib/utils/constants';
 /**
- * RESPONSABILIDAD 2: 📍 GESTIÓN DE POSICIÓN Y COLOCACIÓN
+ * RESPONSIBILITY 2: POSITIONING AND PLACEMENT MANAGEMENT
+ * 
+ * This module handles:
+ * 1. Calculating all coordinates occupied by a ship
+ * 2. Validating if a ship can be placed at a given position
+ * 3. Placing a ship on the board
+ * 4. Rotating a ship while respecting board bounds and overlaps
+ * 5. Removing a ship from the board
  */
 
 /**
- * Obtiene todas las coordenadas que ocupa un barco
+ * Returns all coordinates occupied by a ship based on its position and orientation
  */
 export function getShipCoordinates(ship: Ship): Position[] {
     if (!ship.position) return [];
@@ -23,8 +30,11 @@ export function getShipCoordinates(ship: Ship): Position[] {
 
     return coordinates;
 }
+
 /**
- * Verifica si un barco puede colocarse en una posición específica
+ * Checks whether a ship can be placed at a specific position with a given orientation
+ * - Validates board boundaries
+ * - Ensures no overlap with existing ships
  */
 export function canPlaceShipAt(
     ship: Ship,
@@ -33,7 +43,7 @@ export function canPlaceShipAt(
     boardSize: number = BOARD_SIZE,
     existingShips: Ship[] = []
 ): boolean {
-    // Crear barco temporal para validación
+    // Temporary ship object for validation
     const tempShip: Ship = {
         ...ship,
         position,
@@ -42,7 +52,7 @@ export function canPlaceShipAt(
 
     const coordinates = getShipCoordinates(tempShip);
 
-    // Verificar límites del tablero
+    // Check board boundaries
     for (const coord of coordinates) {
         if (coord.row < 0 || coord.row >= boardSize ||
             coord.col < 0 || coord.col >= boardSize) {
@@ -50,9 +60,9 @@ export function canPlaceShipAt(
         }
     }
 
-    // Verificar overlaps con otros barcos
+    // Check for overlap with existing ships
     for (const existingShip of existingShips) {
-        if (existingShip.id === ship.id) continue; // Skip mismo barco
+        if (existingShip.id === ship.id) continue; // Skip the same ship
         
         const existingCoords = getShipCoordinates(existingShip);
         for (const coord of coordinates) {
@@ -66,8 +76,10 @@ export function canPlaceShipAt(
     
     return true;
 }
+
 /**
- * Coloca un barco en una posición específica
+ * Places a ship at a specific position and orientation on the board
+ * - Throws an error if placement is invalid
  */
 export function placeShip(
     ship: Ship,
@@ -77,7 +89,7 @@ export function placeShip(
     existingShips: Ship[] = []
 ): Ship {
     if (!canPlaceShipAt(ship, position, orientation, boardSize, existingShips)) {
-        throw new Error(`No se puede colocar ${ship.type} en la posición especificada`);
+        throw new Error(`Cannot place ${ship.type} at the specified position`);
     }
 
     return {
@@ -86,8 +98,12 @@ export function placeShip(
         orientation
     };
 }
+
 /**
- * Cambia la orientación de un barco
+ * Rotates a ship
+ * - Toggles between horizontal and vertical
+ * - Ensures rotation does not violate board boundaries or overlap existing ships
+ * - If the ship has no position, simply toggles orientation
  */
 export function rotateShip(
     ship: Ship,
@@ -95,7 +111,7 @@ export function rotateShip(
     existingShips: Ship[] = []
 ): Ship {
     if (!ship.position) {
-        // Si no tiene posición, solo cambiar orientación
+        // No position yet, just toggle orientation
         return {
             ...ship,
             orientation: ship.orientation === 'horizontal' ? 'vertical' : 'horizontal'
@@ -112,12 +128,12 @@ export function rotateShip(
         };
     }
     
-    // Si no se puede rotar en la posición actual, mantener orientación
+    // Cannot rotate in current position, keep orientation unchanged
     return ship;
 }
 
 /**
- * Remueve un barco del tablero (quita su posición)
+ * Removes a ship from the board by clearing its position
  */
 export function removeShipFromBoard(ship: Ship): Ship {
     return {

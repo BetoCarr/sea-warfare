@@ -5,11 +5,20 @@ import { getShipHealthStatus, getShipDamagePercentage } from './ship-damage';
 import { validateShipConfig } from './ship-factory';
 
 /**
- * RESPONSABILIDAD 4: 🔍 CONSULTAS Y UTILIDADES
+ * RESPONSIBILITY 4: QUERIES AND UTILITIES
+ * 
+ * This module handles:
+ * 1. Checking if a coordinate belongs to a ship
+ * 2. Finding ships at specific positions
+ * 3. Calculating distances between ships
+ * 4. Filtering and grouping ships by type or status
+ * 5. Gathering fleet statistics
+ * 6. Serializing and deserializing ships for persistence
+ * 7. Generating ship summaries with metadata and health info
  */
 
 /**
- * Verifica si una coordenada pertenece a un barco
+ * Checks whether a coordinate belongs to a specific ship
  */
 export function isCoordinateInShip(ship: Ship, position: Position): boolean {
     if (!ship.position) return false;
@@ -21,14 +30,14 @@ export function isCoordinateInShip(ship: Ship, position: Position): boolean {
 }
 
 /**
- * Encuentra un barco en una posición específica dentro de una flota
+ * Finds a ship located at a specific position within a fleet
  */
 export function findShipAtPosition(ships: Ship[], position: Position): Ship | undefined {
     return ships.find(ship => isCoordinateInShip(ship, position));
 }
 
 /**
- * Calcula la distancia mínima entre dos barcos
+ * Calculates the minimum Euclidean distance between two ships
  */
 export function getDistanceBetweenShips(ship1: Ship, ship2: Ship): number {
     if (!ship1.position || !ship2.position) return Infinity;
@@ -50,15 +59,16 @@ export function getDistanceBetweenShips(ship1: Ship, ship2: Ship): number {
 
     return minDistance;
 }
+
 /**
- * Obtiene todos los barcos de un tipo específico
+ * Returns all ships of a specific type
  */
 export function getShipsByType(ships: Ship[], type: ShipType): Ship[] {
     return ships.filter(ship => ship.type === type);
 }
 
 /**
- * Cuenta barcos por estado
+ * Collects fleet statistics by ship state and placement
  */
 export function getFleetStats(ships: Ship[]) {
     return {
@@ -71,29 +81,31 @@ export function getFleetStats(ships: Ship[]) {
         active: ships.filter(ship => !ship.isSunk).length
     };
 }
+
 /**
- * Serializa un barco para persistencia (JSON)
+ * Serializes a ship into a JSON string for persistence
  */
 export function serializeShip(ship: Ship): string {
     return JSON.stringify(ship);
 }
 
 /**
- * Deserializa un barco desde JSON
+ * Deserializes a ship from JSON
+ * - Validates configuration integrity
  */
 export function deserializeShip(shipData: string): Ship {
     const parsed = JSON.parse(shipData);
     
-    // Validar estructura
     if (!validateShipConfig(parsed)) {
-        throw new Error('Datos de barco inválidos');
+        throw new Error('Invalid ship data');
     }
 
     return parsed;
 }
 
 /**
- * Obtiene información resumida de un barco
+ * Generates a summarized view of a ship
+ * - Includes metadata, placement info, and health state
  */
 export function getShipSummary(ship: Ship) {
     const config = SHIPS_CONFIG[ship.type];

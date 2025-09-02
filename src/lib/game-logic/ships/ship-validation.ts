@@ -6,11 +6,17 @@ import { getShipsByType } from './ship-queries';
 import { validateShipConfig } from './ship-factory';
 import { canPlaceShipAt } from './ship-placement';
 /**
- * RESPONSABILIDAD 5: ✅ VALIDACIONES AVANZADAS
+ * RESPONSIBILITY 5: ADVANCED VALIDATIONS
+ * 
+ * This module handles:
+ * 1. Validating an entire fleet against game rules
+ * 2. Checking overlaps and enforcing separation rules
+ * 3. Ensuring ship data consistency and integrity
+ * 4. Providing valid placement options for ships
  */
 
 /**
- * Valida que una flota esté completa según las reglas del juego
+ * Validates that a fleet is complete according to game rules
  */
 export function validateFleet(ships: Ship[]): {
     isValid: boolean;
@@ -18,27 +24,27 @@ export function validateFleet(ships: Ship[]): {
 } {
     const errors: string[] = [];
 
-    // Verificar cantidad correcta de cada tipo de barco
+    // Verify correct number of each ship type
     Object.entries(SHIPS_CONFIG).forEach(([shipType, config]) => {
         const shipsOfType = getShipsByType(ships, shipType as ShipType);
         if (shipsOfType.length !== config.count) {
             errors.push(
-                `Se esperaban ${config.count} ${config.name}(s), se encontraron ${shipsOfType.length}`
+                `Expected ${config.count} ${config.name}(s), found ${shipsOfType.length}`
             );
         }
     });
 
-    // Verificar que todos los barcos estén colocados
+    // Verify all ships are placed
     const unplacedShips = ships.filter(ship => !ship.position);
     if (unplacedShips.length > 0) {
-        errors.push(`${unplacedShips.length} barco(s) sin colocar`);
+        errors.push(`${unplacedShips.length} ship(s) not placed`);
     }
     
-    // Verificar overlaps
+    // Verify overlaps
     for (let i = 0; i < ships.length; i++) {
         for (let j = i + 1; j < ships.length; j++) {
             if (shipsOverlap(ships[i], ships[j])) {
-                errors.push(`Los barcos ${ships[i].id} y ${ships[j].id} se superponen`);
+                errors.push(`Ships ${ships[i].id} and ${ships[j].id} overlap`);
             }
         }
     }
@@ -50,7 +56,7 @@ export function validateFleet(ships: Ship[]): {
 }
 
 /**
- * Verifica si two barcos se superponen
+ * Checks if two ships overlap on the board
  */
 export function shipsOverlap(ship1: Ship, ship2: Ship): boolean {
     if (!ship1.position || !ship2.position) return false;
@@ -64,8 +70,9 @@ export function shipsOverlap(ship1: Ship, ship2: Ship): boolean {
         )
     );
 }
+
 /**
- * Valida que se respete la regla de separación entre barcos (opcional)
+ * Validates that ships respect the minimum separation rule (optional)
  */
 export function validateShipSeparation(
     ships: Ship[], 
@@ -96,7 +103,7 @@ export function validateShipSeparation(
 }
 
 /**
- * Verifica la integridad de los datos de un barco
+ * Validates the internal consistency of a ship
  */
 export function validateShipIntegrity(ship: Ship): {
     isValid: boolean;
@@ -104,25 +111,25 @@ export function validateShipIntegrity(ship: Ship): {
 } {
     const errors: string[] = [];
     
-    // Verificar configuración básica
+    // Validate basic configuration
     if (!validateShipConfig(ship)) {
-        errors.push('Configuración básica inválida');
+        errors.push('Invalid basic configuration');
     }
 
-    // Verificar coherencia de hits vs isSunk
+    // Validate consistency of hits vs. isSunk
     const allHitsTrue = ship.hits.every(hit => hit);
     if (ship.isSunk && !allHitsTrue) {
-        errors.push('Barco marcado como hundido pero no todos los hits son verdaderos');
+        errors.push('Ship marked as sunk but not all hits are true');
     }
     if (!ship.isSunk && allHitsTrue) {
-        errors.push('Todos los hits son verdaderos pero el barco no está marcado como hundido');
+        errors.push('All hits are true but the ship is not marked as sunk');
     }
 
-     // Verificar posición si existe
+    // Validate position if present
     if (ship.position) {
         const coordinates = getShipCoordinates(ship);
         if (coordinates.length !== ship.size) {
-            errors.push('El número de coordenadas no coincide con el tamaño del barco');
+            errors.push('Number of coordinates does not match ship size');
         }
     }
 
@@ -133,7 +140,7 @@ export function validateShipIntegrity(ship: Ship): {
 }
 
 /**
- * Obtiene posiciones válidas para colocar un barco en el tablero
+ * Gets all valid placements for a ship on the board
  */
 export function getValidPlacements(
     ship: Ship,
@@ -146,7 +153,7 @@ export function getValidPlacements(
         for (let col = 0; col < boardSize; col++) {
             const position: Position = { row, col };
         
-            // Probar ambas orientaciones
+            // Test both orientations
             for (const orientation of ['horizontal', 'vertical'] as Orientation[]) {
                 if (canPlaceShipAt(ship, position, orientation, boardSize, existingShips)) {
                     validPlacements.push({ position, orientation });
