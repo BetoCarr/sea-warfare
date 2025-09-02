@@ -1,361 +1,239 @@
-// // src/app/page.tsx - Demo completo del componente Board
-// 'use client';
 
-// import { useState, useCallback } from 'react';
-// import Board, { BoardStats } from '@/components/game/Board';
-// import { type CellState, type Position, type Ship} from '@/lib/utils/types';
-// import { createEmptyBoard, positionToCoordinate } from '@/lib/utils/helpers';
-// import { BOARD_SIZE } from '@/lib/utils/constants';
+'use client';
 
-// export default function BoardDemo() {
-//   // Estado de los tableros
-//   const [playerBoard, setPlayerBoard] = useState<CellState[][]>(createEmptyBoard());
-//   const [aiBoard, setAiBoard] = useState<CellState[][]>(createEmptyBoard());
-  
-//   // Barcos de ejemplo
-//   const [playerShips] = useState<Ship[]>([
-//     {
-//       id: 'player-carrier',
-//       type: 'carrier',
-//       size: 5,
-//       position: { row: 1, col: 1 },
-//       orientation: 'horizontal',
-//       hits: [false, false, false, false, false],
-//       isSunk: false
-//     },
-//     {
-//       id: 'player-battleship',
-//       type: 'battleship',
-//       size: 4,
-//       position: { row: 3, col: 2 },
-//       orientation: 'vertical',
-//       hits: [true, false, true, false],
-//       isSunk: false
-//     },
-//     {
-//       id: 'player-destroyer',
-//       type: 'destroyer',
-//       size: 2,
-//       position: { row: 6, col: 7 },
-//       orientation: 'horizontal',
-//       hits: [true, true],
-//       isSunk: true
-//     }
-//   ]);
+import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
+// import Ship from '@/components/Ship'; // tu componente Ship
+import Ship from '@/components/game/Ship'; // tu componente Ship
+import Cell from '@/components/game/Cell'; // tu componente Cell
+// import { createFleet, placeShip, canPlaceShipAt, rotateShip, getShipCoordinates } from '@/lib/game-logic/ship';
+import { createFleet } from '@/lib/game-logic/ships/ship-factory';
+import { placeShip, canPlaceShipAt, rotateShip, getShipCoordinates } from '@/lib/game-logic/ships/ship-placement';
+import type { Ship as ShipType, CellState, Position } from '@/lib/utils/types';
+import { BOARD_SIZE } from '@/lib/utils/constants';
+import { createEmptyBoard } from '@/lib/utils/helpers';
 
-//   const [aiShips] = useState<Ship[]>([
-//     {
-//       id: 'ai-carrier',
-//       type: 'carrier',
-//       size: 5,
-//       position: { row: 0, col: 3 },
-//       orientation: 'horizontal',
-//       hits: [false, false, false, false, false],
-//       isSunk: false
-//     },
-//     {
-//       id: 'ai-cruiser',
-//       type: 'cruiser',
-//       size: 3,
-//       position: { row: 4, col: 1 },
-//       orientation: 'vertical',
-//       hits: [true, true, false],
-//       isSunk: false
-//     }
-//   ]);
+const CELL_SIZE = 40; // px
 
-//   const [gamePhase, setGamePhase] = useState<'setup' | 'playing' | 'finished'>('playing');
-//   const [showAiShips, setShowAiShips] = useState(false);
-//   const [totalHits, setTotalHits] = useState(0);
-//   const [totalMisses, setTotalMisses] = useState(0);
+export default function ShipOverlayDemoPage() {
+  // Estado de las celdas (solo para visualizar el grid y clicks)
+  const [cells, setCells] = useState<CellState[][]>(createEmptyBoard());
+  // Estado de la flota
+  const [ships, setShips] = useState<ShipType[]>([]);
+  // Fase del juego (en el demo usaremos 'placement' para mover/rotar)
+  const [phase, setPhase] = useState<'placement' | 'battle'>('placement');
 
-//   // Inicializar tableros con estados de ejemplo
-//   useState(() => {
-//     // Configurar tablero del jugador con algunos hits
-//     const newPlayerBoard = createEmptyBoard();
-    
-//     // Marcar hits en el battleship
-//     newPlayerBoard[3][2] = 'hit'; // Primera hit
-//     newPlayerBoard[5][2] = 'hit'; // Segunda hit
-    
-//     // Marcar destroyer como hundido
-//     newPlayerBoard[6][7] = 'sunk';
-//     newPlayerBoard[6][8] = 'sunk';
-    
-//     // Algunos misses
-//     newPlayerBoard[0][0] = 'miss';
-//     newPlayerBoard[2][5] = 'miss';
-    
-//     setPlayerBoard(newPlayerBoard);
+  // Para calcular coordenadas de drop
+  const gridRef = useRef<HTMLDivElement | null>(null);
 
-//     // Configurar tablero de IA con algunos shots del jugador
-//     const newAiBoard = createEmptyBoard();
-    
-//     // Hits del jugador en barcos de IA
-//     newAiBoard[4][1] = 'hit'; // Hit en cruiser
-//     newAiBoard[5][1] = 'hit'; // Hit en cruiser
-    
-//     // Misses del jugador
-//     newAiBoard[1][1] = 'miss';
-//     newAiBoard[7][3] = 'miss';
-//     newAiBoard[2][8] = 'miss';
-    
-//     setAiBoard(newAiBoard);
-//   });
+  // Inicializar flota y pintarla
+  useEffect(() => {
+    const fleet = createFleet();
 
-//   /**
-//    * Manejar click en tablero del jugador (recibir ataques de IA)
-//    */
-//   const handlePlayerBoardClick = useCallback((row: number, col: number) => {
-//     console.log(`IA atacó posición: ${positionToCoordinate({ row, col })}`);
-//     // En un juego real, aquí manejaríamos el ataque de la IA
-//   }, []);
+    // Posiciones de ejemplo válidas (simple y sin overlaps)
+    const seeds: Array<{ pos: Position; ori: 'horizontal' | 'vertical' }> = [
+      { pos: { row: 0, col: 3 }, ori: 'horizontal' },
+      { pos: { row: 2, col: 0 }, ori: 'vertical' },
+      { pos: { row: 5, col: 3 }, ori: 'horizontal' },
+      { pos: { row: 7, col: 5 }, ori: 'vertical' },
+      { pos: { row: 9, col: 0 }, ori: 'horizontal' },
+    ];
 
-//   /**
-//    * Manejar click en tablero de IA (atacar)
-//    */
-//   const handleAiBoardClick = useCallback((row: number, col: number) => {
-//     const coordinate = positionToCoordinate({ row, col });
-//     console.log(`Jugador atacó posición: ${coordinate}`);
-    
-//     // Simular ataque
-//     const newBoard = [...aiBoard];
-//     const currentState = newBoard[row][col];
-    
-//     if (currentState === 'empty') {
-//       // Simular hit o miss aleatorio
-//       const isHit = Math.random() > 0.7; // 30% chance de hit
-//       newBoard[row][col] = isHit ? 'hit' : 'miss';
-      
-//       if (isHit) {
-//         setTotalHits(prev => prev + 1);
-//       } else {
-//         setTotalMisses(prev => prev + 1);
-//       }
-      
-//       setAiBoard(newBoard);
-//     }
-//   }, [aiBoard]);
+    const placed = fleet.map((s, i) => placeShip(s, seeds[i].pos, seeds[i].ori, BOARD_SIZE, fleet));
+    setShips(placed);
+  }, []);
 
-//   /**
-//    * Reiniciar tableros
-//    */
-//   const resetBoards = () => {
-//     setPlayerBoard(createEmptyBoard());
-//     setAiBoard(createEmptyBoard());
-//     setTotalHits(0);
-//     setTotalMisses(0);
-//     setShowAiShips(false);
-//   };
+  // Pinta el estado 'ship' en las celdas (solo visual; tu Board real puede ocultar barcos si no es del jugador)
+  const paintedCells = useMemo(() => {
+    const board = createEmptyBoard();
+    ships.forEach((ship) => {
+      const coords = getShipCoordinates(ship);
+      coords.forEach(({ row, col }) => {
+        if (row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE) {
+          board[row][col] = 'ship';
+        }
+      });
+    });
+    return board;
+  }, [ships]);
 
-//   return (
-//     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-slate-100 p-4">
-//       <div className="max-w-7xl mx-auto">
-//         {/* Header */}
-//         <div className="text-center mb-8">
-//           <h1 className="text-4xl font-bold text-slate-800 mb-2">
-//             🚢 Sea Warfare - Board Component Demo
-//           </h1>
-//           <p className="text-slate-600">
-//             Tableros interactivos con barcos, estados y efectos visuales
-//           </p>
-//         </div>
+  // Click en celda (para demostrar que el overlay no bloquea interacciones)
+  const handleCellClick = useCallback((row: number, col: number) => {
+    console.log(`Cell click @ ${row},${col}`);
+    // Ejemplo: alternar 'miss' en la celda
+    setCells((prev) => {
+      const next = prev.map((r) => r.slice());
+      next[row][col] = next[row][col] === 'miss' ? 'empty' : 'miss';
+      return next;
+    });
+  }, []);
 
-//         {/* Controles */}
-//         <div className="bg-white rounded-lg shadow-lg p-4 mb-6">
-//           <div className="flex flex-wrap gap-4 items-center justify-center">
-//             <button
-//               onClick={() => setShowAiShips(!showAiShips)}
-//               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-//             >
-//               {showAiShips ? 'Ocultar' : 'Mostrar'} barcos enemigos
-//             </button>
-            
-//             <button
-//               onClick={resetBoards}
-//               className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
-//             >
-//               Reiniciar tableros
-//             </button>
-            
-//             <div className="text-sm text-slate-600">
-//               Fase: <span className="font-semibold capitalize">{gamePhase}</span>
-//             </div>
-//           </div>
-//         </div>
+  // Rotar barco (doble click o click derecho en Ship)
+  const handleShipRotate = useCallback((ship: ShipType) => {
+    setShips((prev) => {
+      const rotated = rotateShip(ship, BOARD_SIZE, prev);
+      return prev.map((s) => (s.id === ship.id ? rotated : s));
+    });
+  }, []);
 
-//         {/* Tableros lado a lado */}
-//         <div className="grid lg:grid-cols-2 gap-8 mb-8">
-          
-//           {/* Tablero del Jugador */}
-//           <div className="space-y-4">
-//             <Board
-//               cells={playerBoard}
-//               isPlayerBoard={true}
-//               onCellClick={handlePlayerBoardClick}
-//               ships={playerShips}
-//               title="🛡️ Tu Tablero"
-//               disabled={gamePhase === 'finished'}
-//             />
-            
-//             <BoardStats
-//               ships={playerShips}
-//               totalHits={2} // Ejemplo: hits recibidos
-//               totalMisses={2} // Ejemplo: misses recibidos
-//             />
-//           </div>
+  // DRAG & DROP: permitir dragover sobre la grilla
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault(); // necesario para permitir drop
+  }, []);
 
-//           {/* Tablero de IA */}
-//           <div className="space-y-4">
-//             <Board
-//               cells={aiBoard}
-//               isPlayerBoard={false}
-//               onCellClick={handleAiBoardClick}
-//               ships={aiShips}
-//               forceShowShips={showAiShips}
-//               title="🎯 Tablero Enemigo"
-//               disabled={gamePhase === 'finished'}
-//             />
-            
-//             <BoardStats
-//               ships={aiShips}
-//               totalHits={totalHits}
-//               totalMisses={totalMisses}
-//             />
-//           </div>
-//         </div>
+  // DRAG & DROP: calcular posición final al soltar
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    const data = e.dataTransfer.getData('application/json');
+    if (!data) return;
 
-//         {/* Información del juego */}
-//         <div className="bg-white rounded-lg shadow-lg p-6">
-//           <h3 className="text-lg font-semibold mb-4">Estado del Juego</h3>
-          
-//           <div className="grid md:grid-cols-3 gap-4 text-sm">
-//             <div className="bg-blue-50 rounded p-3">
-//               <h4 className="font-semibold text-blue-800">Tus Barcos</h4>
-//               <ul className="mt-2 space-y-1">
-//                 {playerShips.map(ship => (
-//                   <li key={ship.id} className="flex justify-between">
-//                     <span className="capitalize">{ship.type}</span>
-//                     <span className={ship.isSunk ? 'text-red-600' : 'text-green-600'}>
-//                       {ship.isSunk ? '💀 Hundido' : '⚓ Activo'}
-//                     </span>
-//                   </li>
-//                 ))}
-//               </ul>
-//             </div>
-            
-//             <div className="bg-red-50 rounded p-3">
-//               <h4 className="font-semibold text-red-800">Barcos Enemigos</h4>
-//               <ul className="mt-2 space-y-1">
-//                 {aiShips.map(ship => (
-//                   <li key={ship.id} className="flex justify-between">
-//                     <span className="capitalize">{ship.type}</span>
-//                     <span className={ship.isSunk ? 'text-red-600' : 'text-gray-600'}>
-//                       {showAiShips ? (ship.isSunk ? '💀 Hundido' : '⚓ Activo') : '❓'}
-//                     </span>
-//                   </li>
-//                 ))}
-//               </ul>
-//             </div>
-            
-//             <div className="bg-yellow-50 rounded p-3">
-//               <h4 className="font-semibold text-yellow-800">Instrucciones</h4>
-//               <ul className="mt-2 space-y-1 text-xs">
-//                 <li>• Click en tablero enemigo para atacar</li>
-//                 <li>• Azul = agua, Gris = barco</li>
-//                 <li>• 💥 = impacto, ○ = fallo</li>
-//                 <li>• 💀 = barco hundido</li>
-//                 <li>• Usa controles para cambiar vista</li>
-//               </ul>
-//             </div>
-//           </div>
-//         </div>
+    const payload = JSON.parse(data);
+    if (payload?.type !== 'ship' || !payload?.shipId) return;
 
-//         {/* Footer */}
-//         <div className="text-center mt-8 text-slate-600">
-//           <p>✅ Board component completamente implementado</p>
-//           <p>🚀 Listo para integrar con lógica de juego y AI</p>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
+    const rect = gridRef.current?.getBoundingClientRect();
+    if (!rect) return;
 
-// 'use client';
+    // Coordenadas del mouse relativas a la grilla
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
 
-// import { useState, useEffect } from 'react';
-// import Board from '@/components/game/Board';
-// import { createFleet } from '@/lib/game-logic/ships/ship-factory';
-// import { placeShip, getShipCoordinates } from '@/lib/game-logic/ships/ship-placement';
-// import type { Ship, CellState, Position } from '@/lib/utils/types';
-// import { BOARD_SIZE } from '@/lib/utils/constants';
-// import { createEmptyBoard } from '@/lib/utils/helpers';
+    // Snap a celda
+    const targetCol = Math.floor(x / CELL_SIZE);
+    const targetRow = Math.floor(y / CELL_SIZE);
 
-// export default function BoardDemoShips() {
-//   const [playerShips, setPlayerShips] = useState<Ship[]>([]);
-//   const [playerBoard, setPlayerBoard] = useState<CellState[][]>(createEmptyBoard());
+    setShips((prev) => {
+      const ship = prev.find((s) => s.id === payload.shipId);
+      if (!ship) return prev;
 
-//   useEffect(() => {
-//     // 1️⃣ Crear flota
-//     const fleet = createFleet();
+      const candidate = placeShip(ship, { row: targetRow, col: targetCol }, ship.orientation);
 
-//     // 2️⃣ Colocar barcos en posiciones fijas (demo)
-//     const positionedFleet = fleet.map((ship, i) => {
-//       const row = i * 2; // ejemplo: fila 0, 2, 4, 6, 8
-//       const col = 0;     // columna 0
-//       return placeShip(ship, { row, col }, 'horizontal');
-//     });
+      // Validar posición con el resto de barcos
+      const others = prev.filter((s) => s.id !== ship.id);
+      const ok = canPlaceShipAt(candidate, candidate.position!, candidate.orientation, BOARD_SIZE, others);
+      if (!ok) {
+        // posición inválida → no mover
+        return prev;
+      }
 
-//     setPlayerShips(positionedFleet);
+      // aplicar cambio
+      return prev.map((s) => (s.id === ship.id ? candidate : s));
+    });
+  }, []);
 
-//     // 3️⃣ Marcar tablero con barcos
-//     const newBoard = createEmptyBoard();
-
-//     positionedFleet.forEach(ship => {
-//       const coords = getShipCoordinates(ship);
-//       coords.forEach(pos => {
-//         newBoard[pos.row][pos.col] = 'ship';
-//       });
-//     });
-
-//     setPlayerBoard(newBoard);
-//   }, []);
-
-//   return (
-//     <div className="p-4">
-//       <h2 className="text-xl font-bold mb-4">🚢 Demo: Flota inicial</h2>
-//       <Board
-//         cells={playerBoard}
-//         ships={playerShips}
-//         isPlayerBoard={true}
-//         onCellClick={() => {}}
-//         title="🛡️ Tu Tablero"
-//       />
-//     </div>
-//   );
-// }
-
-
-import Ship from '../components/game/Ship';
-import { createFleet } from '../lib/game-logic/ships/ship-factory';
-
-const DemoBoard = () => {
-  const fleet = createFleet(); // Genera los 5 barcos
-  const boardCellSize = 40;
+  // Toggle fase (para ver que los barcos dejan de ser "draggables" en battle)
+  const togglePhase = useCallback(() => {
+    setPhase((p) => (p === 'placement' ? 'battle' : 'placement'));
+  }, []);
 
   return (
-    <div style={{ position: 'relative', width: 10 * boardCellSize, height: 10 * boardCellSize, border: '1px solid black' }}>
-      {fleet.map((ship) => (
-        <Ship
-          key={ship.id}
-          ship={ship}
-          boardCellSize={boardCellSize}
-          isGamePhase="placement"
-          isVisible={true}
-        />
-      ))}
+    <div className="min-h-screen p-6 bg-gradient-to-br from-slate-50 to-slate-200">
+      <div className="max-w-5xl mx-auto space-y-4">
+        <header className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-slate-800">🚢 Ship Overlay Demo</h1>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={togglePhase}
+              className="px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+            >
+              Phase: <b className="capitalize ml-1">{phase}</b>
+            </button>
+          </div>
+        </header>
+
+        {/* Contenedor del tablero */}
+        <div className="relative inline-block">
+          {/* Capa GRID: celdas clickeables */}
+          <div
+            ref={gridRef}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+            style={{
+              position: 'relative',
+              width: BOARD_SIZE * CELL_SIZE,
+              height: BOARD_SIZE * CELL_SIZE,
+              display: 'grid',
+              gridTemplateRows: `repeat(${BOARD_SIZE}, ${CELL_SIZE}px)`,
+              gridTemplateColumns: `repeat(${BOARD_SIZE}, ${CELL_SIZE}px)`,
+              border: '2px solid #334155',
+              background: '#0f172a',
+              gap: 1, // simula separador entre celdas
+            }}
+          >
+            {Array.from({ length: BOARD_SIZE }).map((_, r) =>
+              Array.from({ length: BOARD_SIZE }).map((__, c) => (
+                <Cell
+                  key={`cell-${r}-${c}`}
+                  state={paintedCells[r][c] === 'ship' ? 'empty' : (cells[r][c] ?? 'empty')}
+                  position={{ row: r, col: c }}
+                  onClick={() => handleCellClick(r, c)}
+                  disabled={false}
+                  showShip={false} // los barcos se muestran con Ship overlay
+                  isHovered={false}
+                  className="bg-slate-800/60 border border-slate-700 hover:bg-slate-700/60 transition-colors"
+                />
+              ))
+            )}
+          </div>
+
+          {/* Capa OVERLAY: barcos (encima de las celdas) */}
+          <div
+            className="absolute inset-0"
+            style={{ pointerEvents: 'none' }} // deja pasar clicks a celdas; Ship habilita eventos puntuales
+          >
+            {ships.map((ship) => (
+              <Ship
+                key={ship.id}
+                ship={ship}
+                boardCellSize={CELL_SIZE}
+                isGamePhase={phase}
+                isVisible={true}
+                // enable eventos del barco:
+                onShipRotate={handleShipRotate}
+                // para drag necesitamos permitir eventos:
+                onShipClick={(s) => console.log('Ship click:', s.id)}
+                onShipDragStart={() => {}}
+                onShipDragEnd={() => {}}
+                className="pointer-events-auto rounded-lg border border-blue-500/70 bg-blue-500/40 backdrop-blur-sm"
+              />
+            ))}
+          </div>
+        </div>
+
+        <p className="text-sm text-slate-600">
+          Tip: <kbd>drag</kbd> un barco para recolocarlo (fase <b>placement</b>). Doble click o click derecho para rotar.
+          Cambia a fase <b>battle</b> para deshabilitar drag/rotate y prueba clicks en celdas (marcan <em>miss</em>).
+        </p>
+      </div>
+
+      {/* Estilos mínimos para segmentos del barco (maquetación interna) */}
+      <style jsx>{`
+        .ship {
+          display: grid;
+          overflow: hidden;
+        }
+        .ship--horizontal {
+          grid-template-rows: 1fr;
+          grid-template-columns: repeat(var(--ship-len, 1), 1fr);
+        }
+        .ship--vertical {
+          grid-template-columns: 1fr;
+          grid-template-rows: repeat(var(--ship-len, 1), 1fr);
+        }
+        .ship-segment {
+          border: 1px dashed rgba(255,255,255,0.25);
+          position: relative;
+        }
+        .ship-segment--hit {
+          background: rgba(239, 68, 68, 0.6);
+        }
+        .hit-marker {
+          position: absolute;
+          inset: 0;
+          display: grid;
+          place-items: center;
+          font-weight: 700;
+          color: white;
+        }
+      `}</style>
     </div>
   );
-};
-
-export default DemoBoard;
+}
