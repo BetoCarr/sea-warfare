@@ -57,19 +57,19 @@ export function syncBoardFromShips(
         const shipInfo = shipCoordinatesMap.get(key);
         
         if (shipInfo) {
-            // HAY BARCO en esta posición
+            // Ship found at this position
             const { ship, segmentIndex } = shipInfo;
             const isSegmentHit = ship.hits[segmentIndex];
         
         if (isSegmentHit) {
-            // Determinar si es 'hit' o 'sunk'
+            // Correctly marked as 'hit' or 'sunk'
             board[attackPos.row][attackPos.col] = ship.isSunk ? 'sunk' : 'hit';
         } else {
-            // Esto no debería pasar si la lógica de ships está bien
+            // Should not happen if ship logic is consistent
             board[attackPos.row][attackPos.col] = 'ship';
         }
         } else {
-            // NO HAY BARCO en esta posición
+            // Empty cell → mark as 'miss'
             board[attackPos.row][attackPos.col] = 'miss';
         }
     });
@@ -85,7 +85,6 @@ export function syncBoardFromShips(
                 attack.row === pos.row && attack.col === pos.col
             );
             
-            // Solo marcar como 'ship' si no fue atacado
             if (!wasAttacked) {
                 board[pos.row][pos.col] = 'ship';
             }
@@ -139,19 +138,19 @@ export function updateBoardWithAttack(
     currentState: BoardState, 
     attackPosition: Position
 ): BoardState {
-    // Verificar que el ataque no sea duplicado
+    // Check if the attack is a duplicate
     const isDuplicateAttack = currentState.attacks.some(
         attack => attack.row === attackPosition.row && attack.col === attackPosition.col
     );
 
     if (isDuplicateAttack) {
-        return currentState; // No cambiar nada si es ataque duplicado
+        return currentState; // Do not modify state if attack is duplicated
     }
     
-    // Agregar nuevo ataque
+    // Add the new attack
     const newAttacks = [...currentState.attacks, attackPosition];
 
-    // Regenerar board state completo
+    // Rebuild the complete board state
     return createBoardState(currentState.ships, newAttacks);
 }
 
