@@ -1,239 +1,376 @@
-
 'use client';
+import React, { useState, useMemo } from 'react';
 
-import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
-// import Ship from '@/components/Ship'; // tu componente Ship
-import Ship from '@/components/game/Ship'; // tu componente Ship
-import Cell from '@/components/game/Cell'; // tu componente Cell
-// import { createFleet, placeShip, canPlaceShipAt, rotateShip, getShipCoordinates } from '@/lib/game-logic/ship';
-import { createFleet } from '@/lib/game-logic/ships/ship-factory';
-import { placeShip, canPlaceShipAt, rotateShip, getShipCoordinates } from '@/lib/game-logic/ships/ship-placement';
-import type { Ship as ShipType, CellState, Position } from '@/lib/utils/types';
-import { BOARD_SIZE } from '@/lib/utils/constants';
-import { createEmptyBoard } from '@/lib/utils/helpers';
+// ========== TIPOS SIMULADOS ==========
+type CellState = 'empty' | 'ship' | 'hit' | 'miss' | 'sunk';
+type ShipType = 'carrier' | 'battleship' | 'cruiser' | 'submarine' | 'destroyer';
+type Orientation = 'horizontal' | 'vertical';
 
-const CELL_SIZE = 40; // px
+interface Position {
+  row: number;
+  col: number;
+}
 
-export default function ShipOverlayDemoPage() {
-  // Estado de las celdas (solo para visualizar el grid y clicks)
-  const [cells, setCells] = useState<CellState[][]>(createEmptyBoard());
-  // Estado de la flota
-  const [ships, setShips] = useState<ShipType[]>([]);
-  // Fase del juego (en el demo usaremos 'placement' para mover/rotar)
-  const [phase, setPhase] = useState<'placement' | 'battle'>('placement');
+interface Ship {
+  id: string;
+  type: ShipType;
+  size: number;
+  position?: Position;
+  orientation: Orientation;
+  hits: boolean[];
+  isSunk: boolean;
+}
 
-  // Para calcular coordenadas de drop
-  const gridRef = useRef<HTMLDivElement | null>(null);
+// ========== FUNCIONES SIMULADAS ==========
+// Simulación de createFleet
+function createFleet(): Ship[] {
+  return [
+    {
+      id: 'carrier-1',
+      type: 'carrier',
+      size: 5,
+      orientation: 'horizontal',
+      hits: [false, false, false, false, false],
+      isSunk: false
+    },
+    {
+      id: 'battleship-1',
+      type: 'battleship',
+      size: 4,
+      orientation: 'vertical',
+      hits: [false, false, false, false],
+      isSunk: false
+    },
+    {
+      id: 'cruiser-1',
+      type: 'cruiser',
+      size: 3,
+      orientation: 'horizontal',
+      hits: [false, false, false],
+      isSunk: false
+    }
+  ];
+}
 
-  // Inicializar flota y pintarla
-  useEffect(() => {
-    const fleet = createFleet();
+// Simulación de placeShip
+function placeShip(ship: Ship, position: Position, orientation: Orientation): Ship {
+  return {
+    ...ship,
+    position,
+    orientation
+  };
+}
 
-    // Posiciones de ejemplo válidas (simple y sin overlaps)
-    const seeds: Array<{ pos: Position; ori: 'horizontal' | 'vertical' }> = [
-      { pos: { row: 0, col: 3 }, ori: 'horizontal' },
-      { pos: { row: 2, col: 0 }, ori: 'vertical' },
-      { pos: { row: 5, col: 3 }, ori: 'horizontal' },
-      { pos: { row: 7, col: 5 }, ori: 'vertical' },
-      { pos: { row: 9, col: 0 }, ori: 'horizontal' },
-    ];
-
-    const placed = fleet.map((s, i) => placeShip(s, seeds[i].pos, seeds[i].ori, BOARD_SIZE, fleet));
-    setShips(placed);
-  }, []);
-
-  // Pinta el estado 'ship' en las celdas (solo visual; tu Board real puede ocultar barcos si no es del jugador)
-  const paintedCells = useMemo(() => {
-    const board = createEmptyBoard();
-    ships.forEach((ship) => {
-      const coords = getShipCoordinates(ship);
-      coords.forEach(({ row, col }) => {
-        if (row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE) {
-          board[row][col] = 'ship';
-        }
+// Simulación de getShipCoordinates
+function getShipCoordinates(ship: Ship): Position[] {
+  if (!ship.position) return [];
+  
+  const coords: Position[] = [];
+  for (let i = 0; i < ship.size; i++) {
+    if (ship.orientation === 'horizontal') {
+      coords.push({
+        row: ship.position.row,
+        col: ship.position.col + i
       });
+    } else {
+      coords.push({
+        row: ship.position.row + i,
+        col: ship.position.col
+      });
+    }
+  }
+  return coords;
+}
+
+// Simulación de damageShip
+function damageShip(ship: Ship, segmentIndex: number): Ship {
+  const newHits = [...ship.hits];
+  newHits[segmentIndex] = true;
+  
+  const isSunk = newHits.every(hit => hit);
+  
+  return {
+    ...ship,
+    hits: newHits,
+    isSunk
+  };
+}
+
+// ========== BOARD FACTORY FUNCTIONS ==========
+
+function createEmptyBoard(size = 10): CellState[][] {
+  return Array.from({ length: size }, () => 
+    Array.from({ length: size }, () => 'empty')
+  );
+}
+
+// ========== BOARD SYNC FUNCTIONS ==========
+
+function syncBoardFromShips(ships: Ship[], attacks: Position[] = [], size = 10): CellState[][] {
+  const board = createEmptyBoard(size);
+  
+  // PASO 1: Mapear coordenadas de barcos
+  const shipCoordinatesMap = new Map<string, { ship: Ship; segmentIndex: number }>();
+  
+  ships.forEach(ship => {
+    if (!ship.position) return;
+    const coordinates = getShipCoordinates(ship);
+    coordinates.forEach((pos, segmentIndex) => {
+      const key = `${pos.row},${pos.col}`;
+      shipCoordinatesMap.set(key, { ship, segmentIndex });
     });
-    return board;
-  }, [ships]);
-
-  // Click en celda (para demostrar que el overlay no bloquea interacciones)
-  const handleCellClick = useCallback((row: number, col: number) => {
-    console.log(`Cell click @ ${row},${col}`);
-    // Ejemplo: alternar 'miss' en la celda
-    setCells((prev) => {
-      const next = prev.map((r) => r.slice());
-      next[row][col] = next[row][col] === 'miss' ? 'empty' : 'miss';
-      return next;
-    });
-  }, []);
-
-  // Rotar barco (doble click o click derecho en Ship)
-  const handleShipRotate = useCallback((ship: ShipType) => {
-    setShips((prev) => {
-      const rotated = rotateShip(ship, BOARD_SIZE, prev);
-      return prev.map((s) => (s.id === ship.id ? rotated : s));
-    });
-  }, []);
-
-  // DRAG & DROP: permitir dragover sobre la grilla
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault(); // necesario para permitir drop
-  }, []);
-
-  // DRAG & DROP: calcular posición final al soltar
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    const data = e.dataTransfer.getData('application/json');
-    if (!data) return;
-
-    const payload = JSON.parse(data);
-    if (payload?.type !== 'ship' || !payload?.shipId) return;
-
-    const rect = gridRef.current?.getBoundingClientRect();
-    if (!rect) return;
-
-    // Coordenadas del mouse relativas a la grilla
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    // Snap a celda
-    const targetCol = Math.floor(x / CELL_SIZE);
-    const targetRow = Math.floor(y / CELL_SIZE);
-
-    setShips((prev) => {
-      const ship = prev.find((s) => s.id === payload.shipId);
-      if (!ship) return prev;
-
-      const candidate = placeShip(ship, { row: targetRow, col: targetCol }, ship.orientation);
-
-      // Validar posición con el resto de barcos
-      const others = prev.filter((s) => s.id !== ship.id);
-      const ok = canPlaceShipAt(candidate, candidate.position!, candidate.orientation, BOARD_SIZE, others);
-      if (!ok) {
-        // posición inválida → no mover
-        return prev;
+  });
+  
+  // PASO 2: Procesar ataques
+  attacks.forEach(attackPos => {
+    const key = `${attackPos.row},${attackPos.col}`;
+    const shipInfo = shipCoordinatesMap.get(key);
+    
+    if (shipInfo) {
+      const { ship, segmentIndex } = shipInfo;
+      const isSegmentHit = ship.hits[segmentIndex];
+      
+      if (isSegmentHit) {
+        board[attackPos.row][attackPos.col] = ship.isSunk ? 'sunk' : 'hit';
+      } else {
+        board[attackPos.row][attackPos.col] = 'ship';
       }
-
-      // aplicar cambio
-      return prev.map((s) => (s.id === ship.id ? candidate : s));
+    } else {
+      board[attackPos.row][attackPos.col] = 'miss';
+    }
+  });
+  
+  // PASO 3: Marcar barcos no atacados
+  ships.forEach(ship => {
+    if (!ship.position) return;
+    const coordinates = getShipCoordinates(ship);
+    coordinates.forEach((pos) => {
+      const wasAttacked = attacks.some(attack => 
+        attack.row === pos.row && attack.col === pos.col
+      );
+      
+      if (!wasAttacked) {
+        board[pos.row][pos.col] = 'ship';
+      }
     });
-  }, []);
+  });
+  
+  return board;
+}
 
-  // Toggle fase (para ver que los barcos dejan de ser "draggables" en battle)
-  const togglePhase = useCallback(() => {
-    setPhase((p) => (p === 'placement' ? 'battle' : 'placement'));
-  }, []);
+// ========== COMPONENTE PRINCIPAL ==========
 
+export default function BoardSyncDemo() {
+  // Estado inicial: crear flota y colocar barcos
+  const [ships, setShips] = useState<Ship[]>(() => {
+    const fleet = createFleet();
+    return [
+      placeShip(fleet[0], { row: 0, col: 0 }, 'horizontal'), // Carrier (5)
+      placeShip(fleet[1], { row: 2, col: 0 }, 'vertical'),   // Battleship (4)
+      placeShip(fleet[2], { row: 5, col: 5 }, 'horizontal'), // Cruiser (3)
+    ];
+  });
+  
+  const [attacks, setAttacks] = useState<Position[]>([]);
+  const [step, setStep] = useState(0);
+  
+  // Generar board usando syncBoardFromShips
+  const board = useMemo(() => {
+    return syncBoardFromShips(ships, attacks);
+  }, [ships, attacks]);
+  
+  // Función para simular ataques paso a paso
+  const simulateAttack = () => {
+    const simulatedAttacks: Position[] = [
+      { row: 0, col: 0 }, // Hit al carrier
+      { row: 0, col: 1 }, // Hit al carrier
+      { row: 1, col: 1 }, // Miss
+      { row: 2, col: 0 }, // Hit al battleship
+      { row: 0, col: 2 }, // Hit al carrier
+      { row: 3, col: 3 }, // Miss
+      { row: 0, col: 3 }, // Hit al carrier
+      { row: 0, col: 4 }, // Hit al carrier (se hunde)
+    ];
+    
+    if (step < simulatedAttacks.length) {
+      const newAttack = simulatedAttacks[step];
+      setAttacks(prev => [...prev, newAttack]);
+      
+      // Aplicar daño al barco si es hit
+      const hitShip = ships.find(ship => {
+        if (!ship.position) return false;
+        const coords = getShipCoordinates(ship);
+        return coords.some(pos => pos.row === newAttack.row && pos.col === newAttack.col);
+      });
+      
+      if (hitShip) {
+        const coords = getShipCoordinates(hitShip);
+        const segmentIndex = coords.findIndex(pos => 
+          pos.row === newAttack.row && pos.col === newAttack.col
+        );
+        
+        if (segmentIndex !== -1) {
+          const damagedShip = damageShip(hitShip, segmentIndex);
+          setShips(prev => prev.map(s => s.id === hitShip.id ? damagedShip : s));
+        }
+      }
+      
+      setStep(prev => prev + 1);
+    }
+  };
+  
+  const reset = () => {
+    setAttacks([]);
+    setStep(0);
+    // Resetear hits en barcos
+    setShips(prev => prev.map(ship => ({
+      ...ship,
+      hits: Array(ship.size).fill(false),
+      isSunk: false
+    })));
+  };
+  
+  // Función para renderizar el board
+  const renderBoard = () => {
+    return (
+      <div className="grid grid-cols-10 gap-1 p-4 bg-slate-800 rounded-lg">
+        {board.map((row, r) => 
+          row.map((cell, c) => {
+            const isAttacked = attacks.some(a => a.row === r && a.col === c);
+            
+            return (
+              <div
+                key={`${r}-${c}`}
+                className={`
+                  w-8 h-8 border border-slate-600 flex items-center justify-center text-xs font-bold
+                  ${cell === 'empty' ? 'bg-blue-900' : ''}
+                  ${cell === 'ship' ? 'bg-gray-500' : ''}
+                  ${cell === 'hit' ? 'bg-red-500 text-white' : ''}
+                  ${cell === 'miss' ? 'bg-blue-600 text-white' : ''}
+                  ${cell === 'sunk' ? 'bg-red-900 text-white' : ''}
+                  ${isAttacked ? 'ring-2 ring-yellow-400' : ''}
+                `}
+              >
+                {cell === 'hit' && '×'}
+                {cell === 'miss' && '○'}
+                {cell === 'sunk' && '☠'}
+                {cell === 'ship' && '■'}
+              </div>
+            );
+          })
+        )}
+      </div>
+    );
+  };
+  
   return (
-    <div className="min-h-screen p-6 bg-gradient-to-br from-slate-50 to-slate-200">
-      <div className="max-w-5xl mx-auto space-y-4">
-        <header className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-slate-800">🚢 Ship Overlay Demo</h1>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={togglePhase}
-              className="px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
-            >
-              Phase: <b className="capitalize ml-1">{phase}</b>
-            </button>
+    <div className="p-6 max-w-6xl mx-auto space-y-6">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold mb-2">🎯 Board Sync Demo</h1>
+        <p className="text-gray-600">Paso {step}/8 - Observa cómo ships (fuente de verdad) se sincronizan con el board</p>
+      </div>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Board Visual */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold">📋 Board Visual (generado from ships)</h2>
+          {renderBoard()}
+          <div className="flex gap-3 text-xs flex-wrap">
+            <span className="flex items-center gap-1">
+              <div className="w-4 h-4 bg-gray-500 border"></div> Ship
+            </span>
+            <span className="flex items-center gap-1">
+              <div className="w-4 h-4 bg-red-500 border"></div> Hit
+            </span>
+            <span className="flex items-center gap-1">
+              <div className="w-4 h-4 bg-blue-600 border"></div> Miss
+            </span>
+            <span className="flex items-center gap-1">
+              <div className="w-4 h-4 bg-red-900 border"></div> Sunk
+            </span>
           </div>
-        </header>
-
-        {/* Contenedor del tablero */}
-        <div className="relative inline-block">
-          {/* Capa GRID: celdas clickeables */}
-          <div
-            ref={gridRef}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-            style={{
-              position: 'relative',
-              width: BOARD_SIZE * CELL_SIZE,
-              height: BOARD_SIZE * CELL_SIZE,
-              display: 'grid',
-              gridTemplateRows: `repeat(${BOARD_SIZE}, ${CELL_SIZE}px)`,
-              gridTemplateColumns: `repeat(${BOARD_SIZE}, ${CELL_SIZE}px)`,
-              border: '2px solid #334155',
-              background: '#0f172a',
-              gap: 1, // simula separador entre celdas
-            }}
-          >
-            {Array.from({ length: BOARD_SIZE }).map((_, r) =>
-              Array.from({ length: BOARD_SIZE }).map((__, c) => (
-                <Cell
-                  key={`cell-${r}-${c}`}
-                  state={paintedCells[r][c] === 'ship' ? 'empty' : (cells[r][c] ?? 'empty')}
-                  position={{ row: r, col: c }}
-                  onClick={() => handleCellClick(r, c)}
-                  disabled={false}
-                  showShip={false} // los barcos se muestran con Ship overlay
-                  isHovered={false}
-                  className="bg-slate-800/60 border border-slate-700 hover:bg-slate-700/60 transition-colors"
-                />
-              ))
-            )}
+          
+          <div className="bg-yellow-100 p-3 rounded-lg text-sm">
+            <strong>syncBoardFromShips() en acción:</strong>
+            <br />1. Mapea coordenadas de barcos
+            <br />2. Procesa {attacks.length} ataques
+            <br />3. Marca barcos no atacados
           </div>
-
-          {/* Capa OVERLAY: barcos (encima de las celdas) */}
-          <div
-            className="absolute inset-0"
-            style={{ pointerEvents: 'none' }} // deja pasar clicks a celdas; Ship habilita eventos puntuales
-          >
-            {ships.map((ship) => (
-              <Ship
-                key={ship.id}
-                ship={ship}
-                boardCellSize={CELL_SIZE}
-                isGamePhase={phase}
-                isVisible={true}
-                // enable eventos del barco:
-                onShipRotate={handleShipRotate}
-                // para drag necesitamos permitir eventos:
-                onShipClick={(s) => console.log('Ship click:', s.id)}
-                onShipDragStart={() => {}}
-                onShipDragEnd={() => {}}
-                className="pointer-events-auto rounded-lg border border-blue-500/70 bg-blue-500/40 backdrop-blur-sm"
-              />
+        </div>
+        
+        {/* Ship States */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold">🚢 Ships State (fuente de verdad)</h2>
+          <div className="space-y-3 bg-slate-100 p-4 rounded-lg max-h-80 overflow-y-auto">
+            {ships.map(ship => (
+              <div key={ship.id} className="p-3 bg-white rounded border">
+                <div className="font-medium text-sm capitalize flex justify-between">
+                  <span>{ship.type} (size: {ship.size})</span>
+                  <span className={`text-xs px-2 py-1 rounded ${ship.isSunk ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                    {ship.isSunk ? '☠ SUNK' : '⛵ Afloat'}
+                  </span>
+                </div>
+                <div className="text-xs text-gray-600 mt-1">
+                  Position: ({ship.position?.row}, {ship.position?.col}) {ship.orientation}
+                </div>
+                <div className="text-xs mt-2">
+                  <strong>Hits array:</strong> [{ship.hits.map((h, i) => 
+                    <span key={i} className={h ? 'text-red-600' : 'text-green-600'}>
+                      {h ? '●' : '○'}
+                    </span>
+                  )}]
+                </div>
+                <div className="text-xs mt-1 text-gray-500">
+                  Hits count: {ship.hits.filter(h => h).length}/{ship.size}
+                </div>
+              </div>
             ))}
           </div>
         </div>
-
-        <p className="text-sm text-slate-600">
-          Tip: <kbd>drag</kbd> un barco para recolocarlo (fase <b>placement</b>). Doble click o click derecho para rotar.
-          Cambia a fase <b>battle</b> para deshabilitar drag/rotate y prueba clicks en celdas (marcan <em>miss</em>).
-        </p>
       </div>
-
-      {/* Estilos mínimos para segmentos del barco (maquetación interna) */}
-      <style jsx>{`
-        .ship {
-          display: grid;
-          overflow: hidden;
-        }
-        .ship--horizontal {
-          grid-template-rows: 1fr;
-          grid-template-columns: repeat(var(--ship-len, 1), 1fr);
-        }
-        .ship--vertical {
-          grid-template-columns: 1fr;
-          grid-template-rows: repeat(var(--ship-len, 1), 1fr);
-        }
-        .ship-segment {
-          border: 1px dashed rgba(255,255,255,0.25);
-          position: relative;
-        }
-        .ship-segment--hit {
-          background: rgba(239, 68, 68, 0.6);
-        }
-        .hit-marker {
-          position: absolute;
-          inset: 0;
-          display: grid;
-          place-items: center;
-          font-weight: 700;
-          color: white;
-        }
-      `}</style>
+      
+      {/* Controls */}
+      <div className="flex gap-3 justify-center">
+        <button
+          onClick={simulateAttack}
+          disabled={step >= 8}
+          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          🎯 Simular Ataque {step < 8 ? `${step + 1}` : '(Completado)'}
+        </button>
+        <button
+          onClick={reset}
+          className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+        >
+          🔄 Reset Demo
+        </button>
+      </div>
+      
+      {/* Debug Info */}
+      <div className="bg-slate-100 p-4 rounded-lg text-sm">
+        <h3 className="font-semibold mb-2">🐛 Debug Info:</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <strong>Ataques realizados:</strong> {attacks.length}
+            <div className="text-xs mt-1 font-mono">
+              {attacks.length > 0 ? attacks.map((a, i) => `(${a.row},${a.col})`).join(', ') : 'Ninguno'}
+            </div>
+          </div>
+          <div>
+            <strong>Barcos hundidos:</strong> {ships.filter(s => s.isSunk).length}/{ships.length}
+          </div>
+          <div>
+            <strong>Hits totales:</strong> {ships.reduce((acc, s) => acc + s.hits.filter(h => h).length, 0)}
+          </div>
+        </div>
+        
+        {step >= 8 && (
+          <div className="mt-3 p-2 bg-green-100 rounded text-green-800">
+            ✅ Demo completado! El carrier está hundido y puedes ver cómo el board se sincroniza automáticamente.
+          </div>
+        )}
+      </div>
     </div>
   );
 }
+
