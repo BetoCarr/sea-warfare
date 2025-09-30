@@ -6,24 +6,24 @@ import { hitShipAt } from '../ships/ship-damage';
 import { findShipAtPosition } from '../ships/ship-queries';
 
 /**
- * Attack outcome at a specific position
+ * Result of a single attack
  */
 export interface AttackResult {
     position: Position;
     type: 'hit' | 'miss' | 'sunk' | 'invalid'; 
     impactedShip?: Ship;
     originalShip?: Ship;
-    error?: string;  // ← NUEVO: Para detalles del error en ataques inválidos
+    error?: string; // Extra details in case of invalid attack
 }
 
 /**
- * Full state returned after processing an attack
+ * Game state after processing an attack
  */
 export interface GameAttackState {
     boardState: BoardState;
     attackResult: AttackResult;
     isGameOver: boolean;
-    winner?: 'player' | 'ai';            // Ganador (si aplica)
+    winner?: 'player' | 'ai';            
 }
 
 /**
@@ -34,34 +34,30 @@ export interface AttackValidation {
     requireInBounds: boolean;
 }
 
-// ============================================================================
-// PASO 2: VALIDACIÓN DE ATAQUES
-// ============================================================================
-
-// Configuración por defecto para ataques
+/**
+ * Default validation rules
+ */
 export const DEFAULT_ATTACK_VALIDATION: AttackValidation = {
     allowDuplicateAttacks: false,
     requireInBounds: true
 };
 
 /**
- * Valida si un ataque es permitido según las reglas del juego
- * @param boardState - Estado actual del tablero
- * @param attackPosition - Posición a atacar
- * @param validation - Reglas de validación
- * @returns true si el ataque es válido
+ * Checks if an attack is valid according to the given rules
+ * @param boardState - Current board state
+ * @param attackPosition - Position being attacked
+ * @param validation - Validation rules
+ * @returns true if the attack is valid
  */
 export function isValidAttack(
     boardState: BoardState,
     attackPosition: Position,
     validation: AttackValidation = DEFAULT_ATTACK_VALIDATION
 ): boolean {
-     // Check board bounds
     if (validation.requireInBounds && !isPositionInBounds(attackPosition, BOARD_SIZE)) {
         return false;
     }
 
-    // Verificar ataques duplicados
     if (!validation.allowDuplicateAttacks && wasPositionAttacked(boardState, attackPosition)) {
         return false;
     }
@@ -70,23 +66,21 @@ export function isValidAttack(
 }
 
 /**
- * Obtiene un mensaje de error específico para ataques inválidos
- * @param boardState - Estado actual del tablero
- * @param attackPosition - Posición a atacar
- * @param validation - Reglas de validación
- * @returns Mensaje de error o null si es válido
+ * Returns an error message if an attack is invalid
+ * @param boardState - Current board state
+ * @param attackPosition - Position being attacked
+ * @param validation - Validation rules
+ * @returns Error message or null if valid
  */
 export function getAttackValidationError(
     boardState: BoardState,
     attackPosition: Position,
     validation: AttackValidation = DEFAULT_ATTACK_VALIDATION
 ): string | null {
-    // Bounds validation
     if (validation.requireInBounds && !isPositionInBounds(attackPosition, BOARD_SIZE)) {
         return `Position (${attackPosition.row}, ${attackPosition.col}) is outside the board (size: ${BOARD_SIZE})`;
     }
 
-    // Duplicate validation
     if (!validation.allowDuplicateAttacks && wasPositionAttacked(boardState, attackPosition)) {
         return `Position (${attackPosition.row}, ${attackPosition.col}) was already attacked`;
     }
@@ -94,17 +88,11 @@ export function getAttackValidationError(
     return null;
 }
 
-
-// ============================================================================
-// PASO 3: LÓGICA CENTRAL - DETERMINAR RESULTADO DEL ATAQUE
-// ============================================================================
-
 /**
- * Determina el resultado de un ataque basándose en la posición y los barcos
- * Esta es la función CORE - convierte posición → resultado del ataque
- * @param ships - Array de barcos en el tablero
- * @param attackPosition - Posición del ataque
- * @returns Resultado detallado del ataque
+ * Determines the outcome of an attack (hit, miss, sunk)
+ * @param ships - List of ships on the board
+ * @param attackPosition - Position being attacked
+ * @returns Detailed attack result
  */
 export function determineAttackResult(
     ships: Ship[],
@@ -116,13 +104,12 @@ export function determineAttackResult(
         return { position: attackPosition, type: 'miss' };
     }
 
-    // 2. Aplicar el daño al barco
     const updatedShip = hitShipAt(targetShip, attackPosition);
 
     const baseResult = {
         position: attackPosition,
-        originalShip: targetShip,      // Ship antes del daño
-        impactedShip: updatedShip,     // Ship después del daño
+        originalShip: targetShip,
+        impactedShip: updatedShip,     
     };
 
     return updatedShip.isSunk 
@@ -130,16 +117,13 @@ export function determineAttackResult(
         : { ...baseResult, type: 'hit' as const };
 }
 
-// ============================================================================
-// PASO 4: FUNCIÓN PRINCIPAL - PROCESAR ATAQUE COMPLETO
-// ============================================================================
 /**
- * Procesa un ataque completo: validación + resultado + actualización de estado
- * Esta es la función principal que usarás en tu juego
- * @param currentBoardState - Estado actual del tablero
- * @param attackPosition - Posición a atacar
- * @param validation - Reglas de validación
- * @returns Estado completo del juego después del ataque
+ * Processes an attack:
+ * validates → resolves result → updates board → checks game over
+ * @param currentBoardState - Current board state
+ * @param attackPosition - Position being attacked
+ * @param validation - Validation rules
+ * @returns Updated game state after the attack
  */
 export function processAttack(
     currentBoardState: BoardState,
@@ -151,20 +135,18 @@ export function processAttack(
 
     if (validationError) {
         return {
-            boardState: currentBoardState,  // No cambiar estado si hay error
+            boardState: currentBoardState, 
             attackResult: { 
                 position: attackPosition, 
-                type: 'invalid',           // ← MÁS CLARO: 'invalid' no 'miss'
-                error: validationError     // ← DETALLE DEL ERROR
+                type: 'invalid',          
+                error: validationError 
             },
             isGameOver: false,
         };
     }
 
-    // PASO 2: Determinar resultado del ataque
     const attackResult = determineAttackResult(currentBoardState.ships, attackPosition);
 
-    // PASO 3: Actualizar array de barcos (si hubo impacto)
     let updatedShips = currentBoardState.ships;
 
     if (attackResult.impactedShip) {
@@ -173,30 +155,23 @@ export function processAttack(
         );
     }   
 
-
-    // PASO 4: Añadir el ataque a la lista de ataques
     const newAttacks = [...currentBoardState.attacks, attackResult.position];
-    // PASO 5: Regenerar board state completo
     const newBoardState = createBoardState(updatedShips, newAttacks);
-    // PASO 6: Verificar si el juego terminó
     const isGameOver = checkGameOver(updatedShips);
 
     return {
         boardState: newBoardState,
         attackResult,
         isGameOver,
-        winner: isGameOver ? 'player' : undefined // Por ahora solo player vs AI
+        winner: isGameOver ? 'player' : undefined 
     };
 }
 
-// ============================================================================
-// PASO 5: FUNCIONES AUXILIARES - GAME OVER Y UTILIDADES
-// ============================================================================
 
 /**
- * Verifica si el juego ha terminado (todos los barcos hundidos)
- * @param ships - Array de barcos a verificar
- * @returns true si todos los barcos están hundidos
+ * Checks if all ships are sunk
+ * @param ships - List of ships
+ * @returns true if all ships are sunk
  */
 export function checkGameOver(ships: Ship[]): boolean {
     return ships.length > 0 && ships.every(ship => ship.isSunk);
