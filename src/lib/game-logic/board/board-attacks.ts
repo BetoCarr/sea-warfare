@@ -2,7 +2,6 @@ import type { Position, Ship } from '@/lib/utils/types';
 import { createBoardState, BoardState, wasPositionAttacked } from './board-sync';
 import { BOARD_SIZE } from '@/lib/utils/constants';
 import { isPositionInBounds } from './board-factory';
-import { getShipCoordinates } from '@/lib/game-logic/ships/ship-placement';
 import { hitShipAt } from '../ships/ship-damage';
 import { findShipAtPosition } from '../ships/ship-queries';
 
@@ -12,9 +11,8 @@ import { findShipAtPosition } from '../ships/ship-queries';
 export interface AttackResult {
     position: Position;
     type: 'hit' | 'miss' | 'sunk' | 'invalid'; 
-    hitShip?: Ship;
-    sunkShip?: Ship;
-    newShipState?: Ship;
+    impactedShip?: Ship;
+    originalShip?: Ship;
     error?: string;  // ← NUEVO: Para detalles del error en ataques inválidos
 }
 
@@ -118,26 +116,18 @@ export function determineAttackResult(
         return { position: attackPosition, type: 'miss' };
     }
 
-        // 2. Aplicar el daño al barco
+    // 2. Aplicar el daño al barco
     const updatedShip = hitShipAt(targetShip, attackPosition);
 
-    // 3. Determinar resultado
-    if (updatedShip.isSunk) {
-        return {
-            position: attackPosition,
-            type: 'sunk',
-            hitShip: targetShip,
-            sunkShip: updatedShip,
-            newShipState: updatedShip,
-        };
-    }
-
-    return {
+    const baseResult = {
         position: attackPosition,
-        type: 'hit',
-        hitShip: targetShip,
-        newShipState: updatedShip,
+        originalShip: targetShip,      // Ship antes del daño
+        impactedShip: updatedShip,     // Ship después del daño
     };
+
+    return updatedShip.isSunk 
+        ? { ...baseResult, type: 'sunk' as const }
+        : { ...baseResult, type: 'hit' as const };
 }
 
 // ============================================================================
@@ -157,11 +147,7 @@ export function processAttack(
     validation: AttackValidation = DEFAULT_ATTACK_VALIDATION
 ): GameAttackState {
     // PASO 1: Validar el ataque
-    const validationError = getAttackValidationError(
-        currentBoardState, 
-        attackPosition, 
-        validation
-    );
+    const validationError = getAttackValidationError(currentBoardState, attackPosition, validation);
 
     if (validationError) {
         return {
@@ -176,25 +162,22 @@ export function processAttack(
     }
 
     // PASO 2: Determinar resultado del ataque
-    const attackResult = determineAttackResult(
-        currentBoardState.ships, 
-        attackPosition
-    );
+    const attackResult = determineAttackResult(currentBoardState.ships, attackPosition);
 
     // PASO 3: Actualizar array de barcos (si hubo impacto)
     let updatedShips = currentBoardState.ships;
-    if (attackResult.type === 'hit' || attackResult.type === 'sunk') {
+
+    if (attackResult.impactedShip) {
         updatedShips = currentBoardState.ships.map(ship => 
-            ship.id === attackResult.newShipState!.id ? attackResult.newShipState! : ship
+            ship.id === attackResult.impactedShip!.id ? attackResult.impactedShip! : ship
         );
-    }
+    }   
+
 
     // PASO 4: Añadir el ataque a la lista de ataques
     const newAttacks = [...currentBoardState.attacks, attackResult.position];
-
     // PASO 5: Regenerar board state completo
     const newBoardState = createBoardState(updatedShips, newAttacks);
-
     // PASO 6: Verificar si el juego terminó
     const isGameOver = checkGameOver(updatedShips);
 
@@ -219,65 +202,3 @@ export function checkGameOver(ships: Ship[]): boolean {
     return ships.length > 0 && ships.every(ship => ship.isSunk);
 }
 
-// /**
-//  * Obtiene estadísticas de la flota para UI/debugging
-//  * @param ships - Array de barcos
-//  * @returns Estadísticas detalladas
-//  */
-// export function getFleetStats(ships: Ship[]): {
-//     total: number;
-//     sunk: number;
-//     remaining: number;
-//     hitPoints: number;
-//     totalHitPoints: number;
-// } {
-//     const total = ships.length;
-//     const sunk = ships.filter(ship => ship.isSunk).length;
-//     const remaining = total - sunk;
-    
-//     const hitPoints = ships.reduce((sum, ship) => 
-//         sum + ship.damage.filter(hit => hit).length, 0
-//     );
-
-//     const totalHitPoints = ships.reduce((sum, ship) => 
-//         sum + ship.size, 0
-//     );
-
-//     return { total, sunk, remaining, hitPoints, totalHitPoints };
-// }
-
-// /**
-//  * Encuentra todos los barcos en una posición específica
-//  * @param ships - Array de barcos
-//  * @param position - Posición a verificar
-//  * @returns Array de barcos en esa posición (normalmente 0 o 1)
-//  */
-// export function findShipsAtPosition(ships: Ship[], position: Position): Ship[] {
-//     return ships.filter(ship => {
-//         const coordinates = getShipCoordinates(ship);
-//         return coordinates.some(pos => 
-//             pos.row === position.row && pos.col === position.col
-//         );
-//     });
-// }
-
-// /**
-//  * Obtiene todas las posiciones disponibles para atacar
-//  * @param boardState - Estado actual del tablero
-//  * @returns Array de posiciones que no han sido atacadas
-//  */
-// export function getAvailableAttackPositions(boardState: BoardState): Position[] {
-//     const available: Position[] = [];
-//     const { rows, cols } = boardState.dimensions;
-
-//     for (let row = 0; row < rows; row++) {
-//         for (let col = 0; col < cols; col++) {
-//             const position: Position = { row, col };
-//             if (!wasPositionAttacked(boardState, position)) {
-//                 available.push(position);
-//             }
-//         }
-//     }
-
-//     return available;
-// }
