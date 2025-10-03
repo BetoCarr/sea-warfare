@@ -17,17 +17,19 @@ export enum GamePhase {
  * More fine-grained game statuses (optional).
  * Use this when you need transient states for UI/async flows.
  */
-export type GameStatus =
-    | 'idle'
-    | 'placing_ships'
-    | 'waiting_for_player'
-    | 'player_turn'
-    | 'ai_turn'
-    | 'ai_thinking'
-    | 'processing_attack'
-    | 'resolving_attack'
-    | 'ship_sunk'         
-    | 'finished';
+export enum GameStatus {
+    IDLE = 'idle',
+    PLACING_SHIPS = 'placing_ships',
+    WAITING_FOR_PLAYER = 'waiting_for_player',
+    PLAYER_TURN = 'player_turn',
+    AI_TURN = 'ai_turn',
+    AI_THINKING = 'ai_thinking',
+    PROCESSING_ATTACK = 'processing_attack',
+    RESOLVING_ATTACK = 'resolving_attack',
+    SHIP_SUNK = 'ship_sunk',
+    FINISHED = 'finished',
+}
+
 
 /**
  * Which side's turn it is
@@ -74,6 +76,24 @@ export interface GameConfig {
     allowShipRotation: boolean;
     showAIShips: boolean; 
 }
+
+
+/**
+ * Standard result for any game action
+ * Provides success status, optional messages, and additional data
+ */
+export interface GameActionResult<T = any> {
+    success: boolean;
+    message?: string;
+    error?: string;              // ← NUEVO: Error específico
+    data?: T;                    // ← NUEVO: Datos genéricos
+    
+    // Campos específicos opcionales
+    attackResult?: AttackResult;
+    updatedShip?: Ship;
+    removedShipId?: string;
+}
+
 /**
  * Global game state managed in store
  */
