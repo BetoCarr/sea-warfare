@@ -7,16 +7,15 @@ import type {
     Player,
     GameActionResult
 } from './game-types';
-import { GamePhase, GameStatus } from './game-types'; // Usaremos solo los enums
-
-
+import { GamePhase, GameStatus } from './game-types'; 
+import { canStartGame, getStartGameBlockerMessage } from './game-selectors';
 import type { Ship, Position, Orientation } from '../utils/types';
 import { createBoardState } from '@/lib/game-logic/board/board-sync';
 import { BOARD_SIZE } from '@/lib/utils/constants';
 import { placeShip } from '../game-logic/ships/ship-placement';
 
 /**
- * Configuración por defecto del juego
+ * Default game configuration
  */
 const DEFAULT_CONFIG: GameConfig = {
     boardSize: BOARD_SIZE,
@@ -26,7 +25,7 @@ const DEFAULT_CONFIG: GameConfig = {
 };
 
 /**
- * Crea un jugador inicial vacío
+ * Creates a base player object with an empty board and no ships
  */
 function createInitialPlayer(id: string, name: string, type: 'human' | 'ai'): Player {
     return {
@@ -39,51 +38,49 @@ function createInitialPlayer(id: string, name: string, type: 'human' | 'ai'): Pl
     };
 }
 
-
 /**
- * Estado inicial del juego
+ * Creates the initial global game state
+ * Called both on first load and when resetting the game.
  */
-
 function createInitialGameState(config?: Partial<GameConfig>): GameState {
     const gameConfig = { ...DEFAULT_CONFIG, ...config };
     
     return {
         gameId: crypto.randomUUID?.() ?? `game-${Date.now()}`,
         
-        // Fases y estado
+        // High-level lifecycle
         phase: GamePhase.SETUP,
         status: GameStatus.IDLE,
         
-        // Jugadores
+        // Player entities
         player: createInitialPlayer('player-1', 'Player', 'human'),
         ai: createInitialPlayer('ai-1', 'AI', 'ai'),
         
-        // Control de turnos
+        // Turn tracking
         currentTurn: 'player',
         turnNumber: 0,
         
-        // Historial
+        // History & timestamps
         moveHistory: [],
         startTime: undefined,
         endTime: undefined,
         
-        // Configuración
+        // Configuration
         config: gameConfig,
         
-        // Estado de último ataque (útil para UI feedback)
+        // UI feedback helpers
         lastAttack: undefined,
-        
-        // Resultado final
         outcome: undefined
     };
 }
 
 
 /**
- * Acciones del Game Store
+ * Game actions interface
+ * Defines all the operations the store exposes
  */
 interface GameActions {
-  // Ciclo de vida del juego
+    // Lifecycle
     initializeGame: (config?: Partial<GameConfig>) => void;
     startGame: () => GameActionResult;
     resetGame: () => void;
@@ -97,34 +94,41 @@ interface GameActions {
     playerAttack: (position: Position) => Promise<GameActionResult>;
     aiAttack: () => Promise<GameActionResult>;
     
-    // Utilidades
+    // Utility
     setPhase: (phase: GamePhase) => void;
     setStatus: (status: GameStatus) => void;
 }
 
 /**
- * Game Store completo (Estado + Acciones)
+ * The complete store type (state + actions)
  */
 interface GameStore extends GameState, GameActions {}
 
+/**
+ * === Main Zustand Store ===
+ * Manages the full game state lifecycle using Immer for immutable updates
+ * and DevTools integration for debugging.
+ */
 export const useGameStore = create<GameStore>()(
     devtools(
         immer((set, get) => ({
             ...createInitialGameState(),
-
+            /**
+             * Initializes the game state.
+             * Rebuilds the store with fresh IDs, clean boards, and sets phase to PLACEMENT.
+             */
             initializeGame: (config) => { 
                 console.log('[GameStore] initializeGame called with config:', config);
                 set(draft => {
                     const newState = createInitialGameState(config);
 
-                    // Sobrescribimos todo el estado con el nuevo
+                    // Replace the entire state with a fresh instance
                     Object.assign(draft, newState);
 
-                    // Cambiamos fase y estado
+                    // Move to placement phase
                     draft.phase = GamePhase.PLACEMENT;
                     draft.status = GameStatus.PLACING_SHIPS;
 
-                    // Log de depuración
                     console.log('[GameStore] Game initialized:', {
                         id: draft.gameId,
                         phase: draft.phase,
@@ -132,67 +136,31 @@ export const useGameStore = create<GameStore>()(
                     });
                 });
             },
+            /**
+             * Attempts to start the game.
+             * Uses selectors to validate preconditions before moving into BATTLE phase.
+             */
             startGame: () : GameActionResult => { 
                 console.log('[GameStore] startGame called');
 
                 const state = get();
                 
-                // ===== VALIDACIONES =====
-                
-                // 1. Validar fase actual
-                if (state.phase !== GamePhase.PLACEMENT) {
-                    const error = `Cannot start game from ${state.phase} phase`;
-                    console.warn('[GameStore] ⚠️', error);
+                // --- Validation layer (delegated to selectors) ---
+                const blocker = getStartGameBlockerMessage(state);
+                if (blocker) {
+                    console.warn('[GameStore] ⚠️', blocker);
                     return {
                         success: false,
-                        message: 'Game can only be started from placement phase',
-                        error: 'INVALID_PHASE'
+                        message: blocker,
+                        error: 'CANNOT_START'
                     };
                 }
-                
-                // 2. Validar que el jugador esté listo
-                if (!state.player.isReady) {
-                    const error = 'Player is not ready. Place all ships first.';
-                    console.warn('[GameStore] ⚠️', error);
-                    return {
-                        success: false,
-                        message: error,
-                        error: 'PLAYER_NOT_READY'
-                    };
-                }
-                
-                // 3. Validar que la IA esté lista
-                if (!state.ai.isReady) {
-                    const error = 'AI is not ready. Wait for AI initialization.';
-                    console.warn('[GameStore] ⚠️', error);
-                    return {
-                        success: false,
-                        message: error,
-                        error: 'AI_NOT_READY'
-                    };
-                }
-                
-                // 4. Validar que ambos tengan barcos
-                if (state.player.ships.length === 0) {
-                    const error = 'Player has no ships placed';
-                    console.warn('[GameStore] ⚠️', error);
-                    return {
-                        success: false,
-                        message: 'Place your ships before starting',
-                        error: 'NO_SHIPS_PLACED'
-                    };
-                }
-
+                // --- Transition into battle phase ---
                 set(draft => {
-                    // Cambiar fase
                     draft.phase = GamePhase.BATTLE;
                     draft.status = GameStatus.WAITING_FOR_PLAYER;
-                    
-                    // Inicializar turno
                     draft.currentTurn = 'player';
                     draft.turnNumber = 1;
-                    
-                    // Timestamp de inicio
                     draft.startTime = new Date();
                     
                     console.log('[GameStore] ✅ Game started successfully', {
@@ -211,13 +179,16 @@ export const useGameStore = create<GameStore>()(
                     }
                 };
             },
+            /**
+             * Resets the entire game but preserves the existing configuration.
+             * Useful for "Play Again" without losing settings.
+             */
             resetGame: () => { 
                 console.log('[GameStore] resetGame called');
-                // Obtenemos la configuración actual del store
+
                 const currentState = get();
-                // Creamos un nuevo estado limpio, pero conservando la configuración actual
                 const newState = createInitialGameState(currentState.config);
-                // Actualizar estado
+                
                 set(draft => {
                     Object.assign(draft, newState);
                     

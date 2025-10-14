@@ -85,10 +85,9 @@ export interface GameConfig {
 export interface GameActionResult<T = any> {
     success: boolean;
     message?: string;
-    error?: string;              // ← NUEVO: Error específico
-    data?: T;                    // ← NUEVO: Datos genéricos
+    error?: string;
+    data?: T;              
     
-    // Campos específicos opcionales
     attackResult?: AttackResult;
     updatedShip?: Ship;
     removedShipId?: string;
