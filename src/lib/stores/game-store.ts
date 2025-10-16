@@ -10,6 +10,7 @@ import type {
 import { GamePhase, GameStatus } from './game-types'; 
 import { canStartGame, getStartGameBlockerMessage } from './game-selectors';
 import type { Ship, Position, Orientation } from '../utils/types';
+import { generateAIShips } from '../game-logic/ships/ai-ship-generator';
 import { createBoardState } from '@/lib/game-logic/board/board-sync';
 import { BOARD_SIZE } from '@/lib/utils/constants';
 import { placeShip } from '../game-logic/ships/ship-placement';
@@ -97,6 +98,10 @@ interface GameActions {
     // Utility
     setPhase: (phase: GamePhase) => void;
     setStatus: (status: GameStatus) => void;
+
+    // Internal helpers (no exportar para uso directo en componentes)
+    _initializeAI: () => void;
+    _transitionToNextTurn: () => void;
 }
 
 /**
@@ -135,6 +140,10 @@ export const useGameStore = create<GameStore>()(
                         status: draft.status
                     });
                 });
+                setTimeout(() => {
+                    console.log('[GameStore] 🤖 Scheduling AI initialization');
+                    get()._initializeAI();
+                }, 100);
             },
             /**
              * Attempts to start the game.
@@ -206,6 +215,57 @@ export const useGameStore = create<GameStore>()(
             aiAttack: async () => { return { success: false }; },
             setPhase: (phase) => set(draft => { draft.phase = phase; }),
             setStatus: (status) => set(draft => { draft.status = status; }),
+            /**
+             * INTERNAL: Initializes AI with randomly placed ships
+             * Called automatically by initializeGame()
+             */
+            _initializeAI: () => {
+                console.log('[GameStore] 🤖 _initializeAI called');
+                
+                set(draft => {
+                    const aiShips = generateAIShips(draft.config.boardSize);
+                    
+                    draft.ai.ships = aiShips;
+                    draft.ai.boardState = createBoardState(aiShips, []);
+                    draft.ai.isReady = aiShips.length > 0;
+                    
+                    console.log('[GameStore] ✅ AI initialized:', {
+                        shipCount: aiShips.length,
+                        isReady: draft.ai.isReady
+                    });
+                });
+            },
+            /**
+             * INTERNAL: Transitions to the next player's turn
+             * Handles status updates and potential AI trigger
+             */
+            _transitionToNextTurn: () => {
+                console.log('[GameStore] 🔄 _transitionToNextTurn called');
+                
+                const state = get();
+                const nextTurn = state.currentTurn === 'player' ? 'ai' : 'player';
+                
+                set(draft => {
+                    draft.currentTurn = nextTurn;
+                    draft.status = nextTurn === 'player' 
+                        ? GameStatus.WAITING_FOR_PLAYER 
+                        : GameStatus.AI_THINKING;
+                    
+                    console.log('[GameStore] ✅ Turn transitioned:', {
+                        from: state.currentTurn,
+                        to: nextTurn,
+                        status: draft.status
+                    });
+                });
+                
+                // Si es turno de la IA, activarla después de un delay
+                if (nextTurn === 'ai') {
+                    setTimeout(() => {
+                        console.log('[GameStore] 🎯 Triggering AI attack');
+                        get().aiAttack();
+                    }, 1000); // 1 segundo de delay para UX
+                }
+            }
         })),
         { name: 'SeaWarfareGameStore' }
     )

@@ -7,6 +7,8 @@ export default function GameControls() {
   const initializeGame = useGameStore((state) => state.initializeGame);
   const startGame = useGameStore((state) => state.startGame);
   const resetGame = useGameStore((state) => state.resetGame);
+  const _initializeAI = useGameStore((state) => state._initializeAI); // ⚠️ Solo para test
+
   const phase = useGameStore((state) => state.phase);
   const status = useGameStore((state) => state.status);
   const player = useGameStore((state) => state.player);
@@ -26,7 +28,16 @@ export default function GameControls() {
     }));
     console.log("[TEST] Forced ready state");
   };
-
+  const handleTestAI = () => {
+      console.clear();
+      console.log("🧪 Testing AI Initialization...");
+      _initializeAI();
+      setTimeout(() => {
+          const state = useGameStore.getState(); // ✅ leer snapshot actualizado
+          console.log("🤖 AI Ships:", state.ai.ships);
+          console.log("📊 Board Snapshot:", state.ai.boardState?.board);
+      }, 300); // pequeño delay para permitir setState
+    };
   return (
     <div style={{ padding: 20, fontFamily: "monospace" }}>
       <h1>🧪 Game Store Test</h1>
@@ -38,7 +49,7 @@ export default function GameControls() {
         <button onClick={handleStartGame}>🚀 Start Game</button>
         <button onClick={resetGame}>🔄 Reset Game</button>
         <button onClick={handleForceReady}>⚙️ Force Ready State</button>
-
+        <button onClick={handleTestAI}>Test Initialize AI 🤖</button>
       </div>
 
       <div style={{ marginTop: 20 }}>
