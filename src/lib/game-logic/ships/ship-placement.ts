@@ -1,4 +1,5 @@
 import type { Ship, Position, Orientation } from '@/lib/utils/types';
+import { createBoardState } from '../board/board-sync';
 import { BOARD_SIZE } from '@/lib/utils/constants';
 /**
  * RESPONSIBILITY 2: POSITIONING AND PLACEMENT MANAGEMENT
@@ -81,12 +82,53 @@ export function canPlaceShipAt(
  * Places a ship at a specific position and orientation on the board
  * - Throws an error if placement is invalid
  */
+// export function placeShip(
+//     ship: Ship,
+//     position: Position,
+//     orientation: Orientation,
+//     boardSize: number = BOARD_SIZE,
+//     existingShips: Ship[] = []
+// ): {
+//     success: boolean;
+//     ship?: Ship;
+//     boardState?: ReturnType<typeof createBoardState>;
+//     message?: string;
+// } {
+//     // Validación de posición
+//     if (!canPlaceShipAt(ship, position, orientation, boardSize, existingShips)) {
+//         return {
+//             success: false,
+//             message: `Cannot place ${ship.type} at row ${position.row}, col ${position.col}.`
+//         };
+//     }
+
+//     // Crear una versión actualizada del barco
+//     const placedShip: Ship = {
+//         ...ship,
+//         position: { ...position },
+//         orientation
+//     };
+
+//     // Crear un nuevo array de barcos incluyendo el nuevo
+//     const updatedShips = [...existingShips, placedShip];
+
+//     // Recalcular el estado del tablero con los barcos actuales
+//     const newBoardState = createBoardState(updatedShips, []);
+
+//     return {
+//         success: true,
+//         ship: placedShip,
+//         boardState: newBoardState,
+//         message: `${ship.type} placed successfully.`
+//     };
+// }
+
 export function placeShip(
     ship: Ship,
     position: Position,
     orientation: Orientation,
-    boardSize: number = BOARD_SIZE,
-    existingShips: Ship[] = []
+    boardSize: number = BOARD_SIZE,    
+    existingShips: Ship[],
 ): Ship {
     if (!canPlaceShipAt(ship, position, orientation, boardSize, existingShips)) {
         throw new Error(`Cannot place ${ship.type} at the specified position`);

@@ -208,13 +208,92 @@ export const useGameStore = create<GameStore>()(
                     });
                 });
             },
-            placePlayerShip: (ship) => { /* lógica aquí */ return { success: false }; },
+            placePlayerShip: (ship) => {
+                const state = get();
+
+                // 1️⃣ Validar fase actual
+                if (state.phase !== GamePhase.PLACEMENT) {
+                    return {
+                        success: false,
+                        message: 'You can only place ships during the placement phase.',
+                        error: 'INVALID_PHASE'
+                    };
+                }
+
+                // 2️⃣ Validar jugador y tablero
+                const player = state.player;
+                if (!player) {
+                    return { success: false, message: 'Player not initialized', error: 'NO_PLAYER' };
+                }
+
+                // 3️⃣ Evitar duplicados
+                const alreadyPlaced = player.ships.some(s => s.id === ship.id);
+                if (alreadyPlaced) {
+                    return {
+                        success: false,
+                        message: `${ship.type} already placed.`,
+                        error: 'DUPLICATE_SHIP'
+                    };
+                }
+
+                try {
+                    // 4️⃣ Intentar colocar el barco
+                    const placedShip = placeShip(
+                        ship,
+                        ship.position!,
+                        ship.orientation!,
+                        state.config.boardSize,
+                        state.player.ships
+                    );
+
+                    // 5️⃣ Actualizar estado del jugador
+                    set((draft) => {
+                        draft.player.ships.push(placedShip);
+                        draft.player.boardState = createBoardState(draft.player.ships, []);
+
+                        if (draft.player.ships.length >= 5) {
+                            draft.player.isReady = true;
+                            console.log('[GameStore] ✅ Player is ready with all ships placed');
+                        }
+
+                        console.log('[GameStore] ✅ Ship placed successfully:', {
+                            type: placedShip.type,
+                            position: placedShip.position,
+                            orientation: placedShip.orientation
+                        });
+                    });
+
+                    return {
+                        success: true,
+                        message: 'Ship placed successfully!',
+                        data: { ship: placedShip }
+                    };
+
+                } catch (error: any) {
+                    // 6️⃣ Manejar error de validación
+                    console.warn('[GameStore] ❌ Failed to place ship:', error.message);
+
+                    return {
+                        success: false,
+                        message: error.message || 'Invalid ship placement.',
+                        error: 'INVALID_PLACEMENT'
+                    };
+                }
+            },
+
             removePlayerShip: (shipId) => { /* lógica aquí */ return { success: false }; },
             confirmPlacement: () => { return { success: false }; },
             playerAttack: async (position) => { return { success: false }; },
             aiAttack: async () => { return { success: false }; },
             setPhase: (phase) => set(draft => { draft.phase = phase; }),
             setStatus: (status) => set(draft => { draft.status = status; }),
+
+
+
+
+
+
+
             /**
              * INTERNAL: Initializes AI with randomly placed ships
              * Called automatically by initializeGame()
