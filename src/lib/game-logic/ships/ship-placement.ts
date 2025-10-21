@@ -82,47 +82,6 @@ export function canPlaceShipAt(
  * Places a ship at a specific position and orientation on the board
  * - Throws an error if placement is invalid
  */
-// export function placeShip(
-//     ship: Ship,
-//     position: Position,
-//     orientation: Orientation,
-//     boardSize: number = BOARD_SIZE,
-//     existingShips: Ship[] = []
-// ): {
-//     success: boolean;
-//     ship?: Ship;
-//     boardState?: ReturnType<typeof createBoardState>;
-//     message?: string;
-// } {
-//     // Validación de posición
-//     if (!canPlaceShipAt(ship, position, orientation, boardSize, existingShips)) {
-//         return {
-//             success: false,
-//             message: `Cannot place ${ship.type} at row ${position.row}, col ${position.col}.`
-//         };
-//     }
-
-//     // Crear una versión actualizada del barco
-//     const placedShip: Ship = {
-//         ...ship,
-//         position: { ...position },
-//         orientation
-//     };
-
-//     // Crear un nuevo array de barcos incluyendo el nuevo
-//     const updatedShips = [...existingShips, placedShip];
-
-//     // Recalcular el estado del tablero con los barcos actuales
-//     const newBoardState = createBoardState(updatedShips, []);
-
-//     return {
-//         success: true,
-//         ship: placedShip,
-//         boardState: newBoardState,
-//         message: `${ship.type} placed successfully.`
-//     };
-// }
-
 export function placeShip(
     ship: Ship,
     position: Position,

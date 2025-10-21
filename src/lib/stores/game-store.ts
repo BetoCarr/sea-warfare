@@ -13,7 +13,7 @@ import type { Ship, Position, Orientation } from '../utils/types';
 import { generateAIShips } from '../game-logic/ships/ai-ship-generator';
 import { createBoardState } from '@/lib/game-logic/board/board-sync';
 import { BOARD_SIZE } from '@/lib/utils/constants';
-import { placeShip } from '../game-logic/ships/ship-placement';
+import { placeShip, removeShipFromBoard } from '../game-logic/ships/ship-placement';
 
 /**
  * Default game configuration
@@ -279,18 +279,74 @@ export const useGameStore = create<GameStore>()(
                     };
                 }
             },
-            removePlayerShip: (shipId) => { /* lógica aquí */ return { success: false }; },
+            /**
+             * Removes a previously placed ship from the player's board.
+             * - Only available during the PLACEMENT phase
+             * - Updates the board state after removal
+             * - Marks the player as "not ready" if fewer than 5 ships remain
+             */
+            removePlayerShip: (shipId) => {
+                console.log('[GameStore] 🗑️ removePlayerShip called with:', shipId);
+
+                const state = get();
+
+                // Validate current phase
+                if (state.phase !== GamePhase.PLACEMENT) {
+                    return {
+                        success: false,
+                        message: 'You can only remove ships during the placement phase.',
+                        error: 'INVALID_PHASE'
+                    };
+                }
+
+                // Validate player
+                const player = state.player;
+                if (!player) {
+                    return {
+                        success: false,
+                        message: 'Player not initialized.',
+                        error: 'NO_PLAYER'
+                    };
+                }
+
+                // Find the target ship to remove
+                const targetShip = player.ships.find(s => s.id === shipId);
+                if (!targetShip) {
+                    console.warn('[GameStore] ⚠️ Ship not found:', shipId);
+                    return {
+                        success: false,
+                        message: 'Ship not found on board.',
+                        error: 'SHIP_NOT_FOUND'
+                    };
+                }
+
+                // Clear ship position (optional, for consistency)
+                const clearedShip = removeShipFromBoard(targetShip);
+
+                // Update global state
+                set((draft) => {
+                    draft.player.ships = draft.player.ships.filter(s => s.id !== shipId);
+                    draft.player.boardState = createBoardState(draft.player.ships, []);
+                    draft.player.isReady = draft.player.ships.length >= 5;
+
+                    console.log('[GameStore] 🚮 Ship removed successfully:', {
+                        removedShip: clearedShip.type,
+                        remainingShips: draft.player.ships.length,
+                        isReady: draft.player.isReady
+                    });
+                });
+
+                return {
+                    success: true,
+                    message: `Ship ${targetShip.type} removed successfully.`,
+                    data: { shipId }
+                };
+            },
             confirmPlacement: () => { return { success: false }; },
             playerAttack: async (position) => { return { success: false }; },
             aiAttack: async () => { return { success: false }; },
             setPhase: (phase) => set(draft => { draft.phase = phase; }),
             setStatus: (status) => set(draft => { draft.status = status; }),
-
-
-
-
-
-
 
             /**
              * INTERNAL: Initializes AI with randomly placed ships
