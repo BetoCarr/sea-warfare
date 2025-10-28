@@ -17,6 +17,13 @@ export interface AttackResult {
 }
 
 /**
+ * Last attack summary for quick access (extends AttackResult)
+ */
+export interface LastAttack extends AttackResult {
+    by: 'player' | 'ai';
+}
+
+/**
  * Game state after processing an attack
  */
 export interface GameAttackState {

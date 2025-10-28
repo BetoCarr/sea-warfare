@@ -1,5 +1,5 @@
 import type { BoardState } from '@/lib/game-logic/board/board-sync';
-import type { AttackResult } from '@/lib/game-logic/board/board-attacks';
+import type { AttackResult, LastAttack } from '@/lib/game-logic/board/board-attacks';
 import type { Ship } from '@/lib/utils/types';
 import type { Position } from '@/lib/utils/types';
 
@@ -62,7 +62,7 @@ export interface MoveHistoryEntry {
     turnNumber: number;
     playerId: string; 
     position: Position;
-    result: 'hit' | 'miss' | 'sunk';
+    result: 'hit' | 'miss' | 'sunk' | 'invalid'; 
     timestamp: Date;
     shipSunk?: string;  // optional sunk ship identifier/name
 }
@@ -122,7 +122,7 @@ export interface GameState {
     config: GameConfig;
 
     // last raw attack result (useful for UI feedback)
-    lastAttack?: AttackResult;
+    lastAttack?: LastAttack;
 
     // final outcome (present when phase === GAME_OVER)
     outcome?: GameOutcome;

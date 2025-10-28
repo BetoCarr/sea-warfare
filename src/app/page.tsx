@@ -1,49 +1,79 @@
-"use client";
+// 'use client';
+// import React, { useEffect } from 'react';
+// import { useGameStore } from '@/lib/stores/game-store';
+// import { GamePhase } from '@/lib/stores/game-types';
+// // import { useGameStore } from '@/lib/game/store';
+// // import { GamePhase } from '@/lib/game/game-types';
+// import { createBoardState } from '@/lib/game-logic/board/board-sync';
 
-import { useEffect } from "react";
-import { useGameStore } from "@/lib/stores/game-store";
-import { createShip } from "@/lib/game-logic/ships/ship-factory";
+// export default function Page() {
+//   const initializeGame = useGameStore((s) => s.initializeGame);
+//   const playerAttack = useGameStore((s) => s.playerAttack);
+//   const set = useGameStore((s) => s.set); // si tienes set expuesto, o usa set directamente dentro de store
 
-export default function Page() {
-  const { initializeGame, placePlayerShip, removePlayerShip } = useGameStore();
+//   useEffect(() => {
+//     console.log('=== 🧪 Test: playerAttack simple ===');
 
-  useEffect(() => {
-    console.clear();
-    console.log("🧩 Testing Player Ship Removal...");
+//     // 1️⃣ Inicializar juego vacío
+//     initializeGame({
+//       boardSize: 5,
+//       aiDifficulty: 'easy',
+//       allowShipRotation: true,
+//       showAIShips: true,
+//     });
 
-    // Paso 1️⃣: Inicializar el juego
-    initializeGame();
+//     // 2️⃣ Crear un tablero de IA con un solo barco
+//     const simpleAIShip = {
+//       id: 'ship-1',
+//       type: 'Destroyer' as const,
+//       size: 2,
+//       position: { row: 0, col: 0 },
+//       orientation: 'horizontal' as const,
+//       hits: [],
+//       isSunk: false,
+//     };
 
-    setTimeout(() => {
-      // Paso 2️⃣: Crear y colocar un barco manualmente
-      const cruiser = createShip("cruiser");
-      cruiser.position = { row: 4, col: 2 };
-      cruiser.orientation = "horizontal";
+//     // 3️⃣ Forzar el tablero de IA directamente en el estado
+//     useGameStore.setState((draft) => {
+//       draft.phase = GamePhase.BATTLE;
+//       draft.ai.boardState = createBoardState([simpleAIShip], []);
+//       draft.ai.ships = [simpleAIShip];
+//       draft.currentTurn = 'player';
+//     });
 
-      console.log("⚙️ Trying to place:", cruiser);
-      const placementResult = placePlayerShip(cruiser);
-      console.log("📜 Placement Result:", placementResult);
+//     console.log('[Setup] Simple AI board ready:', useGameStore.getState().ai.boardState);
 
-      // Paso 3️⃣: Verificar estado actual del jugador
-      const stateBefore = useGameStore.getState();
-      console.log("🧍 Ships before removal:", stateBefore.player.ships.length);
+//     // 4️⃣ Ejecutar ataque del jugador
+//     const attackPosition = { row: 0, col: 0 };   // --- 5️⃣ Ejecutar ataques secuenciales ---
+//     setTimeout(async () => {
+//       console.group('🚀 Attack Sequence');
 
-      // Paso 4️⃣: Eliminar el barco recién colocado
-      const removeResult = removePlayerShip(cruiser.id);
-      console.log("🗑️ Remove Result:", removeResult);
+//       console.log('🎯 [1] Player attacks (0,0)');
+//       const result1 = await playerAttack({ row: 0, col: 0 });
+//       console.log('➡️ Result 1:', result1);
+//       console.log('🧩 State after first attack:', useGameStore.getState());
 
-      // Paso 5️⃣: Revisar el estado actualizado
-      const stateAfter = useGameStore.getState();
-      console.log("🧭 Remaining ships after removal:", stateAfter.player.ships.length);
-      console.log("🧩 Player board after removal:", stateAfter.player.boardState.board);
+//       // Segundo ataque: hundir el barco
+//       setTimeout(async () => {
+//           console.log('💨 [2] Player attacks (2,2)');
+//           const result3 = await playerAttack({ row: 2, col: 2 });
+//           console.log('➡️ Result 2:', result3);
+//           console.log('🏁 Final Game State:', useGameStore.getState());
 
-    }, 400); // Pequeño delay para permitir initializeGame + AI init
-  }, []);
+//         // Tercer ataque: fallar
+//         setTimeout(async () => {
+//           console.log('💥 [3] Player attacks (0,1)');
+//           const result2 = await playerAttack({ row: 0, col: 1 });
+//           console.log('➡️ Result 3:', result2);
+//           console.log('🧩 State after second attack:', useGameStore.getState());
 
-  return (
-    <main className="p-4">
-      <h1 className="text-xl font-bold">Testing Ship Removal</h1>
-      <p>Check console for output 🚀</p>
-    </main>
-  );
-}
+      
+
+//           console.groupEnd();
+//         }, 800);
+//       }, 800);
+//     }, 1000);   
+//   }, []);
+
+//   return <div className="p-6">Check console for playerAttack test logs</div>;
+// }

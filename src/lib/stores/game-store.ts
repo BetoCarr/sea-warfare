@@ -14,6 +14,7 @@ import { generateAIShips } from '../game-logic/ships/ai-ship-generator';
 import { createBoardState } from '@/lib/game-logic/board/board-sync';
 import { BOARD_SIZE } from '@/lib/utils/constants';
 import { placeShip, removeShipFromBoard } from '../game-logic/ships/ship-placement';
+import { processAttack } from '../game-logic/board/board-attacks';
 
 /**
  * Default game configuration
@@ -342,8 +343,186 @@ export const useGameStore = create<GameStore>()(
                     data: { shipId }
                 };
             },
-            confirmPlacement: () => { return { success: false }; },
-            playerAttack: async (position) => { return { success: false }; },
+            /**
+             * Confirms the player's ship placement phase.
+             * - Validates that all ships have been placed correctly
+             * - Marks the player as ready
+             * - If AI is also ready, transitions to the BATTLE phase automatically
+             */
+            confirmPlacement: () => {
+                console.log('[GameStore] ⚓ confirmPlacement called');
+
+                const state = get();
+
+                // --- Validate phase ---
+                if (state.phase !== GamePhase.PLACEMENT) {
+                    return {
+                        success: false,
+                        message: 'You can only confirm placement during the placement phase.',
+                        error: 'INVALID_PHASE'
+                    };
+                }
+
+                // --- Validate player existence ---
+                const player = state.player;
+                if (!player) {
+                    return {
+                        success: false,
+                        message: 'Player not initialized.',
+                        error: 'NO_PLAYER'
+                    };
+                }
+
+                // --- Validate ship count ---
+                if (player.ships.length < 5) {
+                    console.warn('[GameStore] ⚠️ Not all ships placed:', player.ships.length);
+                    return {
+                        success: false,
+                        message: 'You must place all ships before confirming.',
+                        error: 'INCOMPLETE_PLACEMENT'
+                    };
+                }
+
+                // --- Validate individual ship integrity ---
+                const invalidShips = player.ships.filter(s => !s.position || !s.orientation);
+                if (invalidShips.length > 0) {
+                    console.warn('[GameStore] ⚠️ Found ships with missing position/orientation:', invalidShips);
+                    return {
+                        success: false,
+                        message: 'Some ships are not fully placed on the board.',
+                        error: 'INVALID_SHIP_DATA'
+                    };
+                }
+
+                // --- Update player readiness ---
+                set(draft => {
+                    draft.player.isReady = true;
+                    draft.player.boardState = createBoardState(draft.player.ships, []);
+
+                    console.log('[GameStore] ✅ Player placement confirmed:', {
+                        totalShips: draft.player.ships.length,
+                        isReady: draft.player.isReady
+                    });
+
+                    // --- Transition to battle phase if AI is ready ---
+                    if (draft.ai.isReady) {
+                        draft.phase = GamePhase.BATTLE;
+                        draft.status = GameStatus.WAITING_FOR_PLAYER;
+                        draft.currentTurn = 'player';
+                        draft.turnNumber = 1;
+                        draft.startTime = new Date();
+
+                        console.log('[GameStore] 🚀 Both players ready — battle phase started!');
+                    } else {
+                        console.log('[GameStore] ⏳ Waiting for AI initialization...');
+                    }
+                });
+
+                return {
+                    success: true,
+                    message: state.ai.isReady
+                        ? 'Placement confirmed! The battle begins.'
+                        : 'Placement confirmed. Waiting for AI setup...',
+                    data: {
+                        playerReady: true,
+                        aiReady: state.ai.isReady,
+                        phase: state.ai.isReady ? GamePhase.BATTLE : GamePhase.PLACEMENT
+                    }
+                };
+            },
+            playerAttack: async (position) => { 
+                console.log('[GameStore] 🎯 playerAttack called:', position);
+                const state = get();
+
+                // --- Validate phase and turn ---
+                if (state.phase !== GamePhase.BATTLE) {
+                    return {
+                        success: false,
+                        message: 'You can only attack during the battle phase.',
+                        error: 'INVALID_PHASE'
+                    };
+                }
+
+                if (state.currentTurn !== 'player') {
+                    return {
+                        success: false,
+                        message: 'It is not your turn.',
+                        error: 'INVALID_TURN'
+                    };
+                }
+
+                // --- Process attack using helpers ---
+                const { boardState, attackResult, isGameOver, winner } = processAttack(
+                    state.ai.boardState,
+                    position
+                );
+                
+                // --- Update global state ---
+                set(draft => {
+                    // Update AI board state
+                    draft.ai.boardState = boardState;
+                    // Record move history if valid
+                    draft.lastAttack = {
+                        by: 'player',
+                        ...attackResult
+                    };
+                    // Log the attack in move history
+                    if (attackResult.type !== 'invalid') {
+                        draft.moveHistory.push({
+                            turnNumber: state.turnNumber,
+                            playerId: state.player.id,
+                            position,
+                            result: attackResult.type,
+                            timestamp: new Date(),
+                            shipSunk: attackResult.type === 'sunk'
+                                ? attackResult.impactedShip?.type
+                                : undefined
+                        });
+                    }
+                    // Update status based on attack result
+                    switch (attackResult.type) {
+                        case 'hit':
+                            draft.status = GameStatus.RESOLVING_ATTACK;
+                            console.log(`[GameStore] 💥 [Turn ${state.turnNumber}] Player hit AI ship: ${attackResult.impactedShip?.type} at (${position.row}, ${position.col})`);
+                            break;
+                        case 'sunk':
+                            draft.status = GameStatus.SHIP_SUNK;
+                            console.log('[GameStore] 🚢 AI ship sunk:', attackResult.impactedShip?.type);
+                            break;
+                        case 'miss':
+                            draft.status = GameStatus.AI_TURN;
+                            console.log('[GameStore] 💨 Player missed.');
+                            break;
+                        case 'invalid':
+                            draft.status = GameStatus.IDLE;
+                            console.warn('[GameStore] ⚠️ Invalid attack:', attackResult.error);
+                            break;
+                    }
+                    // Check for game over
+                    if (isGameOver) {
+                        draft.status = GameStatus.FINISHED;
+                        draft.outcome = { winner: 'player' };
+                        draft.endTime = new Date();
+                        console.log('[GameStore] 🏆 Player has destroyed all AI ships!');
+                    }
+                });
+                // --- Trasition to next turn if game continues ---
+                if (!isGameOver && attackResult.type !== 'invalid') {
+                    setTimeout(() => get()._transitionToNextTurn(), 800);
+                }
+                // --- Return action result ---
+                return {
+                    success: attackResult.type !== 'invalid',
+                    message: attackResult.error
+                        ? attackResult.error
+                        : attackResult.type === 'hit'
+                            ? 'Hit!'
+                            : attackResult.type === 'sunk'
+                                ? 'You sunk an AI ship!'
+                                : 'Miss!',
+                    data: attackResult
+                };
+            },
             aiAttack: async () => { return { success: false }; },
             setPhase: (phase) => set(draft => { draft.phase = phase; }),
             setStatus: (status) => set(draft => { draft.status = status; }),
