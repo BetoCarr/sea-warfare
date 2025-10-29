@@ -524,7 +524,7 @@ export const useGameStore = create<GameStore>()(
                     data: attackResult
                 };
             },
-            
+
             // inside game-store.ts (aiAttack action)
             /**
              * 🤖 Handles the AI's attack turn.
@@ -566,8 +566,35 @@ export const useGameStore = create<GameStore>()(
                     data: result
                 };
             },
-            setPhase: (phase) => set(draft => { draft.phase = phase; }),
-            setStatus: (status) => set(draft => { draft.status = status; }),
+            // inside game-store.ts (state actions)
+            /**
+             * RESPONSIBILITY: 🌀 PHASE MANAGEMENT
+             * 
+             * - Updates the global GamePhase (e.g., SETUP → BATTLE → GAME_OVER)
+             * - Centralizes transitions for cleaner flow control
+             * - Future hook point: handle UI transitions, reset timers, etc.
+             */
+            setPhase: (phase) => {
+                console.log(`[GameStore] 🔄 setPhase called → ${phase}`);
+                set(draft => {
+
+                    draft.phase = phase;
+                });
+            },
+            /**
+             * RESPONSIBILITY: ⏱️ GAME STATUS MANAGEMENT
+             * 
+             * - Updates the current sub-status of gameplay (e.g., "waiting_for_player", "ai_thinking")
+             * - Useful for controlling UI states and preventing invalid actions
+             * - Future hook point: trigger animations, sounds, or network syncs
+             */
+            setStatus: (status) => {
+                console.log(`[GameStore] 🔄 setStatus called → ${status}`);
+                set(draft => {
+                    draft.status = status;
+                });
+            },
+
 
             /**
              * INTERNAL: Initializes AI with randomly placed ships
