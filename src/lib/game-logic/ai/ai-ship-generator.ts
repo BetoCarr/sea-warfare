@@ -1,9 +1,8 @@
 import type { Ship } from "@/lib/utils/types";
-import { createFleet } from "./ship-factory";
-import { placeShip } from './ship-placement';
-import { getValidPlacements } from './ship-validation';
 import { BOARD_SIZE } from '@/lib/utils/constants';
-
+import { createFleet } from "../ships/ship-factory";
+import { placeShip } from "../ships/ship-placement";
+import { getValidPlacements } from "../ships/ship-validation";
 /**
  * RESPONSIBILITY: 🤖 AI FLEET GENERATION
  *

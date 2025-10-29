@@ -10,11 +10,12 @@ import type {
 import { GamePhase, GameStatus } from './game-types'; 
 import { canStartGame, getStartGameBlockerMessage } from './game-selectors';
 import type { Ship, Position, Orientation } from '../utils/types';
-import { generateAIShips } from '../game-logic/ships/ai-ship-generator';
+import { generateAIShips } from '../game-logic/ai/ai-ship-generator';
 import { createBoardState } from '@/lib/game-logic/board/board-sync';
 import { BOARD_SIZE } from '@/lib/utils/constants';
 import { placeShip, removeShipFromBoard } from '../game-logic/ships/ship-placement';
 import { processAttack } from '../game-logic/board/board-attacks';
+import { chooseAIAttackPosition } from '../game-logic/ai/ai-attack';
 
 /**
  * Default game configuration
@@ -523,7 +524,48 @@ export const useGameStore = create<GameStore>()(
                     data: attackResult
                 };
             },
-            aiAttack: async () => { return { success: false }; },
+            
+            // inside game-store.ts (aiAttack action)
+            /**
+             * 🤖 Handles the AI's attack turn.
+             *
+             * - Selects a random valid position using `chooseAIAttackPosition`
+             * - Executes the attack via `processAttack`
+             * - Updates the player's board state, move history, and `lastAttack`
+             * - Handles possible outcomes (hit, miss, sunk, invalid)
+             * - Returns a standardized `GameActionResult` for consistency with `playerAttack`
+             */
+            aiAttack: async () => {
+                console.log('[GameStore] 🤖 aiAttack called');
+                const state = get();
+                const boardSize = state.config.boardSize; 
+                const pos = chooseAIAttackPosition(state.player.boardState, boardSize);
+
+                // processAttack expects BoardState etc. — reuse your board-attacks helpers
+                const result = processAttack(state.player.boardState, pos);
+
+                set(draft => {
+                    draft.player.boardState = result.boardState;
+                    // update moveHistory, lastAttack, status, etc. as you did in playerAttack
+                    draft.moveHistory.push({
+                        turnNumber: draft.turnNumber,
+                        playerId: draft.ai.id,
+                        position: pos,
+                        result: result.attackResult.type,
+                        timestamp: new Date(),
+                        shipSunk: result.attackResult.type === 'sunk' ? result.attackResult.impactedShip?.type : undefined
+                    });
+
+                    draft.lastAttack = { ...result.attackResult, by: 'ai' }; // if LastAttack type matches
+                    // handle status/turn/outcome same as playerAttack...
+                });
+
+                return {
+                    success: result.attackResult.type !== 'invalid',
+                    message: result.attackResult.type === 'hit' ? 'AI hit!' : result.attackResult.type === 'sunk' ? 'AI sunk a ship!' : result.attackResult.type === 'miss' ? 'AI missed.' : result.attackResult.error,
+                    data: result
+                };
+            },
             setPhase: (phase) => set(draft => { draft.phase = phase; }),
             setStatus: (status) => set(draft => { draft.status = status; }),
 
