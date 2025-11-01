@@ -1,60 +1,39 @@
+// components/TempStoreTest.tsx
 'use client';
-import React, { useEffect } from 'react';
-import { useGameStore } from '@/lib/stores/game-store';
-import { GamePhase } from '@/lib/stores/game-types';
-import { GameStatus } from '@/lib/stores/game-types';
-// import { useGameStore } from '@/lib/game/store';
-// import { GamePhase } from '@/lib/game/game-types';
-import { createShip } from '@/lib/game-logic/ships/ship-factory';
-import { createBoardState } from '@/lib/game-logic/board/board-sync';
 
-export default function Page() {
-    const initializeGame = useGameStore((s) => s.initializeGame);
-    const playerAttack = useGameStore((s) => s.playerAttack);
-    const setPhase = useGameStore((s) => s.setPhase);
-    const setStatus = useGameStore((s) => s.setStatus);
-    //   const set = useGameStore((s) => s.set); // si tienes set expuesto, o usa set directamente dentro de store
+import { useTemporaryGameStore } from '@/lib/stores/temporary-game-store';
+import { GamePhase, GameStatus } from '@/lib/stores/game-types';
 
-    useEffect(() => {
-        console.log('=== 🧪 Test: setPhase & setStatus ===');
-
-        // 1️⃣ Inicializa el juego
-        initializeGame({
-            boardSize: 5,
-            aiDifficulty: 'easy',
-            allowShipRotation: true,
-            showAIShips: true,
-        });
-
-        // 2️⃣ Cambiar manualmente de fase
-        setTimeout(() => {
-            console.log('➡️ Changing phase to BATTLE...');
-            setPhase(GamePhase.BATTLE);
-
-            console.log('➡️ Changing status to waiting_for_player...');
-            setStatus(GameStatus.WAITING_FOR_PLAYER);
-
-            console.log('✅ Updated game state:', useGameStore.getState());
-        }, 1000);
-
-        // 3️⃣ Ejecutar una pequeña prueba adicional del flujo existente
-        const simpleAIShip = {
-            id: 'ship-1',
-            type: 'destroyer' as const,
-            size: 2,
-            position: { row: 0, col: 0 },
-            orientation: 'horizontal' as const,
-            hits: [],
-            isSunk: false,
-        };
-
-        useGameStore.setState((draft) => {
-            draft.ai.boardState = createBoardState([simpleAIShip], [], 5);
-            draft.ai.ships = [simpleAIShip];
-        });
-
-        console.log('[Setup] ✅ AI board ready for extended tests.');
-    }, []);;
-
-    return <div className="p-6">Check console for playerAttack test logs</div>;
+export default function TempStoreTest() {
+    const phase = useTemporaryGameStore(state => state.phase);
+    const status = useTemporaryGameStore(state => state.status);
+    const setPhase = useTemporaryGameStore(state => state.setPhase);
+    const setStatus = useTemporaryGameStore(state => state.setStatus);
+    
+    return (
+        <div className="p-4 border rounded">
+            <h2 className="text-xl font-bold mb-4">🧪 Temp Store Test</h2>
+            
+            <div className="mb-4">
+                <p><strong>Phase:</strong> {phase}</p>
+                <p><strong>Status:</strong> {status}</p>
+            </div>
+            
+            <div className="space-x-2">
+                <button 
+                    onClick={() => setPhase(GamePhase.PLACEMENT)}
+                    className="px-4 py-2 bg-blue-500 text-white rounded"
+                >
+                    Set PLACEMENT Phase
+                </button>
+                
+                <button 
+                    onClick={() => setStatus(GameStatus.PLACING_SHIPS)}
+                    className="px-4 py-2 bg-green-500 text-white rounded"
+                >
+                    Set PLACING_SHIPS Status
+                </button>
+            </div>
+        </div>
+    );
 }
