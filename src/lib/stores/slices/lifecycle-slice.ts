@@ -5,14 +5,12 @@ import { createInitialGameState } from "../utils/initial-state";
 import { getStartGameBlockerMessage } from "../game-selectors";
 
 /**
- * =========================================================
- * 🧠 Lifecycle Slice
- * ---------------------------------------------------------
- * Controla el ciclo de vida del juego:
- *  - initializeGame
- *  - startGame
- *  - resetGame
- * =========================================================
+ * Slice: LifecycleSlice
+ * ----------------------------------------------------------
+ * Handles the overall lifecycle of the game:
+ *  - initializeGame: creates a fresh state with given config
+ *  - startGame: validates readiness and begins the battle
+ *  - resetGame: resets to an initial clean state
  */
 export interface LifecycleSlice {
     initializeGame: (config?: Partial<GameConfig>) => void;
@@ -20,6 +18,11 @@ export interface LifecycleSlice {
     resetGame: () => void;
 }
 
+/**
+ * Lifecycle slice implementation
+ * ----------------------------------------------------------
+ * Includes reference to `_initializeAI` from helper slice.
+ */
 export const createLifecycleSlice: StateCreator<
     GameState & LifecycleSlice & { _initializeAI: () => void },
     [["zustand/immer", never], ["zustand/devtools", never]],
@@ -27,16 +30,22 @@ export const createLifecycleSlice: StateCreator<
     LifecycleSlice
 > = (set, get) => ({
     /**
-     * Inicializa el juego con una configuración parcial o por defecto.
+     * Initializes the game state using the provided configuration.
+     * Resets all relevant fields, generates new player/AI states,
+     * and transitions to the placement phase.
      */
     initializeGame: (config) => {
         console.log("[Lifecycle] 🎮 initializeGame called with config:", config);
 
         set(
             (draft) => {
+                // Build a new base state with optional overrides
                 const newState = createInitialGameState(config);
+                
+                // Replace entire draft with new initial structure
                 Object.assign(draft, newState);
 
+                // Transition to placement phase (player places ships)
                 draft.phase = GamePhase.PLACEMENT;
                 draft.status = GameStatus.PLACING_SHIPS;
 
@@ -51,14 +60,15 @@ export const createLifecycleSlice: StateCreator<
             "lifecycle/initializeGame"
         );
 
-        // Inicialización diferida de la IA
+        // Schedule delayed AI initialization to ensure store stability
         setTimeout(() => {
             console.log("[Lifecycle] 🤖 Scheduling AI initialization");
             get()._initializeAI();
         }, 100);
     },
     /**
-     * Inicia el juego (valida que todos estén listos).
+     * Starts the battle phase after verifying that the setup
+     * conditions are satisfied. Returns a standardized result.
      */
     startGame: () => {
         console.log("[Lifecycle] 🚀 startGame called");
@@ -66,11 +76,13 @@ export const createLifecycleSlice: StateCreator<
         const state = get();
         const blocker = getStartGameBlockerMessage(state);
 
+        // Prevent game start if there are setup blockers
         if (blocker) {
             console.warn("[Lifecycle] ⚠️ Cannot start game:", blocker);
             return { success: false, message: blocker };
         }
 
+        // Advance to battle phase and waiting state
         set(
             (draft) => {
                 draft.phase = GamePhase.BATTLE;
@@ -83,16 +95,19 @@ export const createLifecycleSlice: StateCreator<
         console.log("[Lifecycle] ✅ Game started successfully");
         return { success: true, message: "Game started" };
     },
-
     /**
-     * Reinicia completamente el estado del juego.
+     * Restores the store to a clean state, effectively restarting
+     * the game flow and resetting all runtime data.
      */
     resetGame: () => {
         console.log("[Lifecycle] 🔄 resetGame called");
         set(
             (draft) => {
+                // Rebuild base game state with default configuration
                 const newState = createInitialGameState();
                 Object.assign(draft, newState);
+                
+                // Set back to setup phase and idle status
                 draft.phase = GamePhase.SETUP;
                 draft.status = GameStatus.IDLE;
             },
