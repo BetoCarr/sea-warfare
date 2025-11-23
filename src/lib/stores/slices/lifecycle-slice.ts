@@ -1,8 +1,9 @@
 import { StateCreator } from "zustand";
-import type { GameState, GameConfig, GameActionResult } from "../game-types";
+import type { GameConfig, GameActionResult } from "../game-types";
 import { GamePhase, GameStatus } from "../game-types";
 import { createInitialGameState } from "../utils/initial-state";
 import { getStartGameBlockerMessage } from "../game-selectors";
+import type { CompleteGameStore, GameStoreMiddlewares } from "../store-types";
 
 /**
  * Slice: LifecycleSlice
@@ -24,8 +25,8 @@ export interface LifecycleSlice {
  * Includes reference to `_initializeAI` from helper slice.
  */
 export const createLifecycleSlice: StateCreator<
-    GameState & LifecycleSlice & { _initializeAI: () => void },
-    [["zustand/immer", never], ["zustand/devtools", never]],
+    CompleteGameStore, 
+    GameStoreMiddlewares,
     [],
     LifecycleSlice
 > = (set, get) => ({
@@ -63,7 +64,7 @@ export const createLifecycleSlice: StateCreator<
         // Schedule delayed AI initialization to ensure store stability
         setTimeout(() => {
             console.log("[Lifecycle] 🤖 Scheduling AI initialization");
-            get()._initializeAI();
+            // get()._initializeAI();
         }, 100);
     },
     /**

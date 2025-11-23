@@ -1,5 +1,6 @@
 import type { StateCreator } from 'zustand';
-import { GameState, GamePhase, GameStatus } from '../game-types';
+import { GamePhase, GameStatus } from '../game-types';
+import type { CompleteGameStore, GameStoreMiddlewares } from '../store-types';
 /**
  * Slice: UtilitySlice
  * ----------------------------------------------------------
@@ -21,8 +22,8 @@ export interface UtilitySlice {
  * Basic setters for high-level game properties.
  */
 export const createUtilitySlice: StateCreator<
-    GameState & UtilitySlice,  // ← CAMBIO: Tipo completo del store
-    [["zustand/immer", never], ["zustand/devtools", never]],  // ← CAMBIO: Middlewares
+    CompleteGameStore,
+    GameStoreMiddlewares,
     [],
     UtilitySlice
 > = (set) => ({
@@ -32,10 +33,14 @@ export const createUtilitySlice: StateCreator<
      * and game-over stages.
      */
     setPhase: (phase) => {
-        console.log(`[GameStore] 🔄 setPhase → ${phase}`);
-        set((state) => {
-            (state as any).phase = phase;
-        });
+        console.log(`[Utility] 🔄 setPhase → ${phase}`);
+        set(
+            (draft) => {
+                draft.phase = phase;
+            },
+            false,
+            'utility/setPhase'
+        );
     },
     /**
      * Updates the current game status.
@@ -43,9 +48,13 @@ export const createUtilitySlice: StateCreator<
      * complement the active game phase.
      */
     setStatus: (status) => {
-        console.log(`[GameStore] 🔄 setStatus → ${status}`);
-        set((state) => {
-            (state as any).status = status;
-        });
+        console.log(`[Utility] 🔄 setStatus → ${status}`);
+        set(
+            (draft) => {
+                draft.status = status;
+            },
+            false,
+            'utility/setStatus'
+        );
     },
 });

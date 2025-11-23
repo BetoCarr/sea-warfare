@@ -1,9 +1,12 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
-import type { GameState } from './game-types';
-import { createUtilitySlice, type UtilitySlice } from './slices/utility-slice';
 import { createInitialGameState } from './utils/initial-state';
+import { createUtilitySlice } from './slices/utility-slice';
+import { createLifecycleSlice } from './slices/lifecycle-slice';
+import { createPlacementSlice } from './slices/placement-slice';
+import type { CompleteGameStore } from './store-types';
+
 /**
  * Store: TemporaryGameStore
  * ----------------------------------------------------------
@@ -19,26 +22,18 @@ import { createInitialGameState } from './utils/initial-state';
  * and minimal coupling between slices.
  */
 
-/**
- * Combined type representing the temporary store.
- * Includes all slices currently under evaluation.
- */
-export type TemporaryGameStore = GameState & UtilitySlice;
-
-/**
- * Temporary store implementation
- * ----------------------------------------------------------
- * Combines multiple slices into a single Zustand store.
- * Wrapped with `immer` for immutable state handling and
- * `devtools` for enhanced debugging support.
- */
-export const useTemporaryGameStore = create<TemporaryGameStore>()(
+export const useTemporaryGameStore = create<CompleteGameStore>()(
     devtools(
         immer((...args) => ({
             // --- Slice composition -----------------------------------------
             ...createInitialGameState(),
-            ...createUtilitySlice(...args),
             
+             // Slices
+            ...createUtilitySlice(...args),
+            ...createLifecycleSlice(...args),
+            ...createPlacementSlice(...args),
+
+
             // --- Future slices ---------------------------------------------
             // Additional slices will be added incrementally:
             // ...createLifecycleSlice(...args),
