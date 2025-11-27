@@ -239,7 +239,12 @@ export const createPlacementSlice: StateCreator<
                 error: "NO_PLAYER",
             };
         }
-
+        if (!state.ai.isReady) {
+            return {
+                success: false,
+                message: "AI is not ready yet"
+            }
+        }
         const player = state.player;
 
         // --- Validate ship count ---
@@ -275,17 +280,6 @@ export const createPlacementSlice: StateCreator<
                 );
 
                 console.log("[Placement] Player confirmed placement.");
-
-                // --- Start battle immediately if AI is ready ---
-                if (draft.ai.isReady) {
-                    draft.phase = GamePhase.BATTLE;
-                    draft.status = GameStatus.WAITING_FOR_PLAYER;
-                    draft.currentTurn = "player";
-                    draft.turnNumber = 1;
-                    draft.startTime = new Date();
-
-                    console.log("[Placement] Battle phase started!");
-                }
             },
             false,
             "placement/confirmPlacement"
