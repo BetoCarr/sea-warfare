@@ -74,7 +74,7 @@ export const createBattleSlice: StateCreator<
 
             if (attackResult.type !== "invalid") {
                 draft.moveHistory.push({
-                    turnNumber: draft.turnNumber,
+                    turnNumber: draft.turnNumber++,
                     playerId: draft.player.id,
                     position,
                     result: attackResult.type,
@@ -109,14 +109,10 @@ export const createBattleSlice: StateCreator<
 
                 console.log("[Battle] ✅ Player wins");
             }
-
         }, false, "battle/playerAttack");
-
-        // --- Switch turn if valid move and not over ---
+        
         if (attackResult.type !== "invalid" && !isGameOver) {
-            setTimeout(() => {
-                get()._transitionToNextTurn;
-            }, 600);
+            get()._transitionToNextTurn();
         }
 
         return {
@@ -194,9 +190,7 @@ export const createBattleSlice: StateCreator<
         }, false, "battle/aiAttack");
 
         if (attackResult.type !== "invalid" && !isGameOver) {
-            setTimeout(() => {
-                get()._transitionToNextTurn();
-            }, 600);
+            get()._transitionToNextTurn();
         }
 
         return {

@@ -44,7 +44,7 @@ export const createTurnSlice: StateCreator<
             setTimeout(() => {
                 console.log("[GameStore] 🎯 Triggering AI attack");
                 get().aiAttack();
-            }, 1000);
+            }, 3000);
         }
     }
 });
