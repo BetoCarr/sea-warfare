@@ -64,7 +64,7 @@ export const createLifecycleSlice: StateCreator<
         // Schedule delayed AI initialization to ensure store stability
         setTimeout(() => {
             console.log("[Lifecycle] 🤖 Scheduling AI initialization");
-            // get()._initializeAI();
+            get()._initializeAI();
         }, 100);
     },
     /**

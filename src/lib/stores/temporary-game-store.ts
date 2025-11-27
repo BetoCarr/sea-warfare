@@ -5,6 +5,9 @@ import { createInitialGameState } from './utils/initial-state';
 import { createUtilitySlice } from './slices/utility-slice';
 import { createLifecycleSlice } from './slices/lifecycle-slice';
 import { createPlacementSlice } from './slices/placement-slice';
+import { createBattleSlice } from './slices/battle-slice';
+import { createTurnSlice } from "./slices/turn-slice";
+import { createAISlice } from './slices/ai-slice';
 import type { CompleteGameStore } from './store-types';
 
 /**
@@ -32,12 +35,9 @@ export const useTemporaryGameStore = create<CompleteGameStore>()(
             ...createUtilitySlice(...args),
             ...createLifecycleSlice(...args),
             ...createPlacementSlice(...args),
-
-
-            // --- Future slices ---------------------------------------------
-            // Additional slices will be added incrementally:
-            // ...createLifecycleSlice(...args),
-            // ...createPlacementSlice(...args),
+            ...createBattleSlice(...args),
+            ...createTurnSlice(...args),
+            ...createAISlice(...args),
         })),
         { 
             name: 'TemporaryGameStore',

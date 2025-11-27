@@ -2,6 +2,9 @@ import type { GameState } from "./game-types";
 import type { UtilitySlice } from "./slices/utility-slice";
 import type { LifecycleSlice } from "./slices/lifecycle-slice";
 import type { PlacementSlice } from "./slices/placement-slice";
+import type { BattleSlice } from "./slices/battle-slice";
+import type { TurnSlice } from "./slices/turn-slice";
+import type { AISlice } from "./slices/ai-slice";
 
 /**
  * Complete Game Store type
@@ -19,7 +22,10 @@ import type { PlacementSlice } from "./slices/placement-slice";
 export type CompleteGameStore = GameState & 
     UtilitySlice & 
     LifecycleSlice & 
-    PlacementSlice;
+    PlacementSlice & 
+    BattleSlice & 
+    TurnSlice &
+    AISlice;
 
 /**
  * Store middlewares
