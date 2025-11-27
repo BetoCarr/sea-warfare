@@ -3,6 +3,10 @@ import type { AttackResult, LastAttack } from '@/lib/game-logic/board/board-atta
 import type { Ship } from '@/lib/utils/types';
 import type { Position } from '@/lib/utils/types';
 
+export interface AIMemory {
+    lastAttacks: Position[];
+}
+
 /**
  * High-level game phases
  */
@@ -53,6 +57,11 @@ export interface Player {
     boardState: BoardState;
     ships: Ship[];
     isReady: boolean;        // Para saber si terminó de colocar barcos
+}
+
+export interface AIPlayer extends Player {
+    type: 'ai';
+    memory: AIMemory;
 }
 
 /**
@@ -107,10 +116,11 @@ export interface GameState {
     
     // players
     player: Player;
-    ai: Player;
+    ai: AIPlayer;
+
     
     // turn control
-    currentTurn: 'player' | 'ai';
+    currentTurn: GameTurn;
     turnNumber: number;
     
     // history & timestamps
