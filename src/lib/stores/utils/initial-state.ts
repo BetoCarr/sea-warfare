@@ -1,24 +1,70 @@
-import type { GameState, GameConfig, Player } from "../game-types";
+import type { GameState, GameConfig, Player, AIPlayer } from "../game-types";
 import { GamePhase, GameStatus } from "../game-types";
 import { createBoardState } from "@/lib/game-logic/board/board-sync";
 import { DEFAULT_CONFIG } from "./constants";
+
 /**
- * Creates a base player object with an empty board and no ships
+ * Strict Player ID type
+ */
+export type PlayerId = `player-${number}` | `ai-${number}`;
+
+/**
+ * Overload for HUMAN player
  */
 export function createInitialPlayer(
-    id: string, 
-    name: string, 
-    type: 'human' | 'ai'
-): Player {
-    return {
+    id: PlayerId,
+    name: string,
+    type: "human"
+): Player;
+
+/**
+ * Overload for AI player
+ */
+export function createInitialPlayer(
+    id: PlayerId,
+    name: string,
+    type: "ai"
+): AIPlayer;
+
+/**
+ * Implementation
+ */
+export function createInitialPlayer(
+    id: string,
+    name: string,
+    type: "human" | "ai"
+): Player | AIPlayer {
+    const basePlayer = {
         id,
         name,
-        type,
         boardState: createBoardState([], []),
         ships: [],
         isReady: false
     };
+
+    if (type === "ai") {
+        return {
+            ...basePlayer,
+            type: "ai",
+            memory: {
+                lastAttacks: []
+            }
+        };
+    }
+
+    return {
+        ...basePlayer,
+        type: "human"
+    }
 }
+
+
+
+
+
+
+
+
 
 /**
  * Creates the initial global game state
@@ -34,9 +80,9 @@ export function createInitialGameState(config?: Partial<GameConfig>): GameState 
         status: GameStatus.IDLE,
         
         // Player entities
-        player: createInitialPlayer('player-1', 'Player', 'human'),
-        ai: createInitialPlayer('ai-1', 'AI', 'ai'),
-        
+        player: createInitialPlayer("player-1", "Player", "human"),
+        ai: createInitialPlayer("ai-1", "AI", "ai"),
+
         // Turn tracking
         currentTurn: 'player',
         turnNumber: 0,
