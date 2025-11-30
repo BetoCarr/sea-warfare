@@ -1,7 +1,7 @@
 'use client';
 
-import { useTemporaryGameStore } from "@/lib/stores/temporary-game-store";
-import { GamePhase, GameStatus } from "@/lib/stores/game-types";
+import { useGameStore } from "@/lib/store/game-store";
+import { GamePhase, GameStatus } from "@/lib/store/game-types";
 
 export default function Home() {
     const {
@@ -19,7 +19,7 @@ export default function Home() {
         confirmPlacement,
         placePlayerShip,
         playerAttack,
-    } = useTemporaryGameStore();
+    } = useGameStore();
 
 
     const handleInit = () => {

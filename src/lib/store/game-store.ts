@@ -25,7 +25,7 @@ import type { CompleteGameStore } from './store-types';
  * and minimal coupling between slices.
  */
 
-export const useTemporaryGameStore = create<CompleteGameStore>()(
+export const useGameStore = create<CompleteGameStore>()(
     devtools(
         immer((...args) => ({
             // --- Slice composition -----------------------------------------
@@ -52,10 +52,10 @@ export const useTemporaryGameStore = create<CompleteGameStore>()(
  * 
  * Useful for unit testing or debugging outside of React context.
  */
-export const getTempGameState = () => useTemporaryGameStore.getState();
+export const getGameState = () => useGameStore.getState();
 
 /**
  * Subscribes to store updates for external observers or test utilities.
  * Returns the unsubscribe function provided by Zustand.
  */
-export const subscribeToTempStore = useTemporaryGameStore.subscribe;
+export const subscribeToGameStore = useGameStore.subscribe;
