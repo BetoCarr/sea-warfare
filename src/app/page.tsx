@@ -1,7 +1,10 @@
-import Image from "next/image";
+'use client';
 
 export default function Home() {
-  return (
-    <div className="bg-blue-500 text-white p-4">¡Listo para desarrollar!</div>
-  );
+    return (
+        <main className="p-8">
+            <h1 className="text-2xl font-bold">Sea Warfare (WIP)</h1>
+            <p className="mt-4">Development environment active.</p>
+        </main>
+    );
 }
