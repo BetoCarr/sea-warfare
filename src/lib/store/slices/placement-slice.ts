@@ -1,33 +1,32 @@
 import type { StateCreator } from "zustand";
 import type { Ship } from "@/lib/utils/types";
-import { GamePhase, GameStatus } from "../game-types";
+import { GamePhase } from "../game-types";
 import  { placeShip, removeShipFromBoard } from "../../game-logic/ships/ship-placement"
 import { createBoardState } from "@/lib/game-logic/board/board-sync";
 import type { CompleteGameStore, GameStoreMiddlewares } from "../store-types";
+import type { GameActionResult } from "../game-types";
 
-export interface PlacementSlice {
-    placePlayerShip: (ship: Ship) => {
-        success: boolean;
-        message: string;
-        error?: string;
-        data?: any;
-    };
-
-    removePlayerShip: (shipId: string) => {
-        success: boolean;
-        message: string;
-        error?: string;
-        data?: any;
-    };
-
-    confirmPlacement: () => {
-        success: boolean;
-        message: string;
-        error?: string;
-        data?: any;
-    };
+// --- Result Types ---
+export interface PlaceShipResult {
+    ship: Ship;
 }
 
+export interface RemoveShipResult {
+    shipId: string;
+}
+
+export interface ConfirmPlacementResult {
+    playerReady: boolean;
+    aiReady: boolean;
+    phase: GamePhase;
+}
+
+// --- Slice Interface ---
+export interface PlacementSlice {
+    placePlayerShip: (ship: Ship) => GameActionResult<PlaceShipResult>;
+    removePlayerShip: (shipId: string) => GameActionResult<RemoveShipResult>;
+    confirmPlacement: () => GameActionResult<ConfirmPlacementResult>;
+}
 /**
  * Slice: PlacementSlice
  * ----------------------------------------------------------
@@ -133,11 +132,16 @@ export const createPlacementSlice: StateCreator<
                 message: `${placedShip.type} placed successfully.`,
                 data: { ship: placedShip },
             };
-        } catch (error: any) {
-            console.warn("[Placement] Error placing ship:", error.message);
+        } catch (error: unknown) {
+            const message = error instanceof Error 
+                ? error.message 
+                : "Invalid ship placement.";
+
+            console.warn("[Placement] Error placing ship:", message);
+
             return {
                 success: false,
-                message: error.message || "Invalid ship placement.",
+                message,
                 error: "INVALID_PLACEMENT",
             };
         }
@@ -242,7 +246,8 @@ export const createPlacementSlice: StateCreator<
         if (!state.ai.isReady) {
             return {
                 success: false,
-                message: "AI is not ready yet"
+                message: "AI is not ready yet",
+                error: "AI_NOT_READY",
             }
         }
         const player = state.player;
@@ -264,8 +269,7 @@ export const createPlacementSlice: StateCreator<
         if (invalidShips.length > 0) {
             return {
                 success: false,
-                message:
-                    "Some ships are missing a position or orientation.",
+                message: "Some ships are missing a position or orientation.",
                 error: "INVALID_SHIP_DATA",
             };
         }

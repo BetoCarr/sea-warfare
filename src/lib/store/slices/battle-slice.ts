@@ -4,6 +4,13 @@ import { processAttack } from "../../game-logic/board/board-attacks";
 import { chooseAIAttackPosition } from "../../game-logic/ai/ai-attack";
 import type { CompleteGameStore, GameStoreMiddlewares } from "../store-types";
 import type { Position } from "@/lib/utils/types";
+import type { GameActionResult } from "../game-types";
+import type { AttackResult } from "../../game-logic/board/board-attacks";
+
+export interface BattleSlice {
+    playerAttack: (position: Position) => Promise<GameActionResult<AttackResult>>;
+    aiAttack: () => Promise<GameActionResult<AttackResult>>;
+}
 
 /**
  * Slice: BattleSlice
@@ -14,22 +21,6 @@ import type { Position } from "@/lib/utils/types";
  * - Turn transitions
  * - Game over detection
  */
-export interface BattleSlice {
-    playerAttack: (position: Position) => Promise<{
-        success: boolean;
-        message: string;
-        error?: string;
-        data?: any;
-    }>;
-
-    aiAttack: () => Promise<{
-        success: boolean;
-        message: string;
-        error?: string;
-        data?: any;
-    }>;
-}
-
 export const createBattleSlice: StateCreator<
     CompleteGameStore,
     GameStoreMiddlewares,

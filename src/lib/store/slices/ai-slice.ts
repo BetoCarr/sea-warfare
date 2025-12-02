@@ -54,7 +54,6 @@ export const createAISlice: StateCreator<
             (draft) => {
                 draft.ai.ships = aiShips;
                 draft.ai.boardState = createBoardState(aiShips, []);
-                // draft.ai.isReady = aiShips.length > 0;
                 draft.ai.isReady = true;
 
                 console.log("[AI] ✅ AI initialized:", {
@@ -75,7 +74,6 @@ export const createAISlice: StateCreator<
         set(
             (draft) => {
                 draft.ai.ships = [];
-                // draft.ai.boardState = null as any;
                 draft.ai.boardState = createBoardState([], []);
 
                 draft.ai.isReady = false;

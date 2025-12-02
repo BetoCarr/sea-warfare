@@ -91,7 +91,7 @@ export interface GameConfig {
  * Standard result for any game action
  * Provides success status, optional messages, and additional data
  */
-export interface GameActionResult<T = any> {
+export interface GameActionResult<T = unknown> {
     success: boolean;
     message?: string;
     error?: string;
