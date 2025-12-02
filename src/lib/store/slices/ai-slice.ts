@@ -27,24 +27,35 @@ export interface AISlice {
      */
     debugRegenerateAI: () => void;
 }
-
+/**
+ * AI Slice Implementation
+ */
 export const createAISlice: StateCreator<
     CompleteGameStore,
     GameStoreMiddlewares,
     [],
     AISlice
 > = (set, get) => ({
+    /**
+     * Initialize AI with randomly placed ships
+     */
     _initializeAI: () => {
         console.log("[AI] 🤖 Initializing AI...");
 
         const state = get();
         const aiShips = generateAIShips(state.config.boardSize);
 
+        if (!aiShips || aiShips.length === 0) {
+            console.error("[AI] ❌ Failed to generate AI ships");
+            return;
+        }
+
         set(
             (draft) => {
                 draft.ai.ships = aiShips;
                 draft.ai.boardState = createBoardState(aiShips, []);
-                draft.ai.isReady = aiShips.length > 0;
+                // draft.ai.isReady = aiShips.length > 0;
+                draft.ai.isReady = true;
 
                 console.log("[AI] ✅ AI initialized:", {
                     shipCount: aiShips.length,
@@ -52,7 +63,7 @@ export const createAISlice: StateCreator<
                 });
             },
             false,
-            "ai/initializeAI"
+            "ai/_initializeAI"
         );
     },
     /**
@@ -64,12 +75,14 @@ export const createAISlice: StateCreator<
         set(
             (draft) => {
                 draft.ai.ships = [];
-                draft.ai.boardState = null as any;
+                // draft.ai.boardState = null as any;
+                draft.ai.boardState = createBoardState([], []);
+
                 draft.ai.isReady = false;
 
-                draft.ai.memory = {
-                    lastAttacks: [],
-                };
+                if (draft.ai.memory) {
+                    draft.ai.memory.lastAttacks = [];
+                }
             },
             false,
             "ai/resetAI"
@@ -78,8 +91,21 @@ export const createAISlice: StateCreator<
     /**
      * Debug method: regenerates AI ships only (no full reset needed)
      */
+
     debugRegenerateAI: () => {
-        console.log("[AI] 🧪 Debug regenerating AI...")
-        get()._initializeAI()
+        if (process.env.NODE_ENV !== 'development') {
+            console.warn("[AI] ⚠️ debugRegenerateAI only available in development");
+            return;
+        }
+
+        console.log("[AI] 🧪 Debug: Regenerating AI ships...");
+        
+        // Reset AI first, then initialize
+        get().resetAI();
+        
+        // Wait a tick for state to settle
+        setTimeout(() => {
+            get()._initializeAI();
+        }, 50);
     }
 });
