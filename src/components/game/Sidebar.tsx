@@ -53,14 +53,14 @@ export function Sidebar() {
     const timeoutRef = useRef<number | null>(null);
 
     const { phase, currentTurn, player, ai, confirmPlacement } = useGameStore(
-    useShallow((state) => ({
-        phase: state.phase,
-        currentTurn: state.currentTurn,
-        player: state.player,
-        ai: state.ai,
-        confirmPlacement: state.confirmPlacement,
-    }))
-);
+        useShallow((state) => ({
+            phase: state.phase,
+            currentTurn: state.currentTurn,
+            player: state.player,
+            ai: state.ai,
+            confirmPlacement: state.confirmPlacement,
+        }))
+    );
 
     // derivaciones fuera del selector (buena práctica)
     const playerShipsCount = player.ships.length;
@@ -169,58 +169,4 @@ export function Sidebar() {
             )}
         </aside>
     );
-
-
-    // return (
-    //     <aside
-    //         className="w-full md:w-64 bg-slate-900 text-white p-4 rounded-lg
-    //                     flex flex-col gap-4 border border-slate-700 shadow-lg"
-    //     >
-    //     <h2 className="text-xl font-bold">Game Info</h2>
-
-    //     {/* Phase */}
-    //     <div className="flex flex-col">
-    //         <span className="text-sm text-slate-400">Phase</span>
-    //         <span className="text-lg font-semibold">
-    //             {phase === GamePhase.SETUP && "Setup"}
-    //             {phase === GamePhase.PLACEMENT && "Placement"}
-    //             {phase === GamePhase.BATTLE && "Battle"}
-    //             {phase === GamePhase.GAME_OVER && "Game Over"}
-    //         </span>
-    //     </div>
-
-    //     {/* Turn */}
-    //     {phase === GamePhase.BATTLE && (
-    //         <div className="flex flex-col">
-    //             <span className="text-sm text-slate-400">Turn</span>
-    //             <span className="text-lg font-semibold">
-    //                 {currentTurn === "player" ? "Your turn" : "AI's turn"}
-    //             </span>
-    //         </div>
-    //     )}
-
-    //     {/* Ships */}
-    //     <div className="flex flex-col">
-    //         <span className="text-sm text-slate-400">Ships Remaining</span>
-    //         <div className="text-md">
-    //             <p>🧭 Player: {player?.ships.length ?? 0}</p>
-    //             <p>🤖 AI: {ai?.ships.length ?? 0}</p>
-    //         </div>
-    //     </div>
-
-    //     {/* Confirm placement */}
-    //     {phase === GamePhase.PLACEMENT && (
-    //         <button
-    //             onClick={handleConfirm}
-    //             disabled={!player?.isReady || !ai?.isReady}
-    //             className="mt-4 py-2 px-3 rounded bg-blue-600 disabled:bg-slate-700
-    //                     hover:bg-blue-500 transition-colors"
-    //         >
-    //         {player?.isReady && ai?.isReady
-    //             ? "Start Battle"
-    //             : "Waiting..."}
-    //         </button>
-    //     )}
-    //     </aside>
-    // );
 }

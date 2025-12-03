@@ -175,7 +175,7 @@ export default function Board({
                 {/* Main grid: row labels + cells */}
                 <div className="grid gap-1" style={{ gridTemplateColumns: `2rem repeat(${size}, 2rem)` }}>
                     {Array.from({ length: size }, (_, rowIndex) => (
-                        <>
+                        <div key={`row-${rowIndex}`} className="grid grid-cols-[2rem_repeat(size,_2rem)] items-center">
                             {/* Row label (1, 2, 3...) */}
                             <div
                                 key={`row-label-${rowIndex}`}
@@ -216,7 +216,7 @@ export default function Board({
                                     />
                                 </div>
                             ))}
-                        </>
+                        </div>
                     ))}
                 </div>
                 {/* Board info / stats (debug-friendly) */}
