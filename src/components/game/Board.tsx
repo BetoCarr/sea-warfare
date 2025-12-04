@@ -1,10 +1,10 @@
 'use client';
-
+import React from 'react';
 import { useState, useCallback, useMemo } from 'react';
 import Cell from './Cell';
 import { cn } from '@/lib/utils/utils'; // Utility to combine class names dynamically
 import { BOARD_SIZE } from '@/lib/utils/constants';
-import type {CellState, Position, Ship } from '@/lib/utils/types';
+import type { CellState, Position, Ship } from '@/lib/utils/types';
 
 interface BoardProps {
     size?: number;                  // Board size (default 10x10)
@@ -14,7 +14,6 @@ interface BoardProps {
     ships?: Ship[];                 // List of placed ships
     forceShowShips?: boolean;       // Forces ships to be visible (debug or game over)
     disabled?: boolean;             // Prevents interaction
-    title?: string;                 // Optional board title
     className?: string;             // Custom style overrides
     hoveredCell?: Position | null;  // Externally controlled hovered cell
 }
@@ -37,7 +36,6 @@ export default function Board({
     ships = [],
     forceShowShips = false,
     disabled = false,
-    title,
     className,
     hoveredCell
 }: BoardProps) {
@@ -149,83 +147,70 @@ export default function Board({
     }, [cells, getCellInfo, showShips]);
 
     return (
-        <div className={cn("inline-block", className)}>
-            {/* Optional board title */}
-            {title && (
-                <h3 className="text-lg font-semibold mb-3 text-center text-slate-800">
-                    {title}
-                </h3>
-            )}
-        
-            {/* Board container with border and shadow */}
-            <div className="bg-white rounded-lg shadow-lg p-4 border-2 border-slate-200">
-                {/* Column labels (A, B, C...) */}
-                <div className="grid mb-2" style={{ gridTemplateColumns: `2rem repeat(${size}, 2rem)` }}>
-                    <div></div> {/* Empty top-left corner */}
+        <div className={cn("w-full flex flex-col", className)}>
+            {/* CONTENEDOR RESPONSIVE CUADRADO */}
+            <div className="w-full aspect-square">
+                {/* GRID TOTAL: incluye coordenadas + celdas */}
+                <div
+                    className="grid w-full h-full"
+                    style={{
+                        gridTemplateColumns: `repeat(${size + 1}, 1fr)`,
+                        gridTemplateRows: `repeat(${size + 1}, 1fr)`
+                    }}
+                >
+                    {/* ESQUINA VACÍA */}
+                    <div></div>
+
+                    {/* CABECERA DE COLUMNAS A-J */}
                     {columnLabels.map((label) => (
                         <div
                             key={label}
-                            className="text-center text-sm font-semibold text-slate-600 h-8 flex items-center justify-center"
+                            className="flex items-center justify-center text-sm text-slate-400"
                         >
                             {label}
                         </div>
                     ))}
-                </div>
 
-                {/* Main grid: row labels + cells */}
-                <div className="grid gap-1" style={{ gridTemplateColumns: `2rem repeat(${size}, 2rem)` }}>
-                    {Array.from({ length: size }, (_, rowIndex) => (
-                        <div key={`row-${rowIndex}`} className="grid grid-cols-[2rem_repeat(size,_2rem)] items-center">
-                            {/* Row label (1, 2, 3...) */}
-                            <div
-                                key={`row-label-${rowIndex}`}
-                                className="text-center text-sm font-semibold text-slate-600 w-8 h-8 flex items-center justify-center"
-                            >
-                                {rowLabels[rowIndex]}
+                    {/* FILAS + CELDAS */}
+                    {rowLabels.map((rowLabel, row) => (
+                        <React.Fragment key={row}>
+                            {/* Etiqueta lateral */}
+                            <div className="flex items-center justify-center text-sm text-slate-400">
+                                {rowLabel}
                             </div>
-                            
-                            {/* Row cells */}
-                            {Array.from({ length: size }, (_, colIndex) => (
-                                <div
-                                    key={`cell-${rowIndex}-${colIndex}`}
-                                    onMouseEnter={() => handleCellHover(rowIndex, colIndex)}
-                                    onMouseLeave={handleCellLeave}
-                                    className="relative"
-                                >
-                                    <Cell
-                                        state={getCellDisplayState(rowIndex, colIndex)}
-                                        position={{ row: rowIndex, col: colIndex }}
-                                        onClick={() => handleCellClick(rowIndex, colIndex)}
-                                        disabled={disabled}
-                                        showShip={showShips}
-                                        isHovered={isCellHovered(rowIndex, colIndex)}
-                                        className={cn(
-                                        "transition-all duration-200",
-                                        
-                                        // Highlight row/column when hovered
-                                        effectiveHoveredCell && (
-                                            effectiveHoveredCell.row === rowIndex || 
-                                            effectiveHoveredCell.col === colIndex
-                                        ) && "ring-1 ring-blue-300 ring-opacity-50",
-                                        
-                                        // Different border color for player vs enemy
-                                        isPlayerBoard 
-                                            ? "border-blue-400" 
-                                            : "border-red-400",
-                                        )}
-                                    />
-                                </div>
+
+                            {columnLabels.map((_, col) => (
+                                <Cell
+                                    key={`${row}-${col}`}
+                                    state={getCellDisplayState(row, col)}
+                                    position={{ row, col }}
+                                    onClick={() => handleCellClick(row, col)}
+                                    // onHover={() => handleCellHover(row, col)}
+                                    // onLeave={handleCellLeave}
+                                    disabled={disabled}
+                                    showShip={showShips}
+                                    isHovered={
+                                        effectiveHoveredCell?.row === row ||
+                                        effectiveHoveredCell?.col === col
+                                    }
+                                    className={cn(
+                                        "border transition-all duration-150",
+                                        isPlayerBoard
+                                            ? "border-blue-400"
+                                            : "border-red-400"
+                                    )}
+                                />
                             ))}
-                        </div>
+                        </React.Fragment>
                     ))}
                 </div>
-                {/* Board info / stats (debug-friendly) */}
-                <div className="mt-3 text-xs text-slate-500 text-center">
-                    {isPlayerBoard ? "Tu tablero" : "Tablero enemigo"} • 
-                    {ships.length} barco{ships.length !== 1 ? 's' : ''} • 
-                    {size}×{size}
-                    {disabled && " • Deshabilitado"}
-                </div>
+            </div>
+            {/* Board info / stats (debug-friendly) */}
+            <div className="mt-3 text-xs text-slate-500 text-center">
+                {isPlayerBoard ? "Tu tablero" : "Tablero enemigo"} • 
+                {ships.length} barco{ships.length !== 1 ? 's' : ''} • 
+                {size}×{size}
+                {disabled && " • Deshabilitado"}
             </div>
         </div>
     );

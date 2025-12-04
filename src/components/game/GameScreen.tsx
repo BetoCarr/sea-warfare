@@ -34,12 +34,13 @@ export function GameScreen() {
     };
 
     return (
+
         <main className="min-h-screen w-full bg-slate-900 text-white flex justify-center py-8 px-4">
-            <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-[1fr_0.6fr_1fr] gap-6">
 
                 {/* Player Board */}
-                <section className="md:col-span-1 bg-slate-800 rounded-xl p-4 shadow-lg">
-                    <h2 className="text-center mb-4 text-lg font-semibold text-sky-300">
+                <section className="bg-slate-800 rounded-xl p-2 shadow-lg flex flex-col items-center">
+                    <h2 className="text-center mb-3 text-lg font-semibold text-sky-300">
                         Your Fleet
                     </h2>
                     <Board
@@ -50,20 +51,20 @@ export function GameScreen() {
                         onCellClick={handlePlayerCellClick}
                         forceShowShips={true}
                         disabled={phase === GamePhase.GAME_OVER}
-                        title="Your Board"
-                    />                
+                    />
                 </section>
-                {/* Sidebar (middle panel) */}
-                <section className="md:col-span-1 bg-slate-800 rounded-xl p-4 shadow-lg flex flex-col gap-4">
+
+                {/* Sidebar */}
+                <section className="bg-slate-800 rounded-xl p-2 shadow-lg flex flex-col gap-4 items-center">
                     <Sidebar />
                 </section>
 
                 {/* AI Board */}
-                <section className="md:col-span-1 bg-slate-800 rounded-xl p-4 shadow-lg">
-                    <h2 className="text-center mb-4 text-lg font-semibold text-red-300">
+                <section className="bg-slate-800 rounded-xl p-2 shadow-lg flex flex-col items-center">
+                    <h2 className="text-center mb-3 text-lg font-semibold text-red-300">
                         Enemy Waters
                     </h2>
-                    {/* <AIBoard /> */}
+                    {/* AIBoard */}
                 </section>
             </div>
         </main>
