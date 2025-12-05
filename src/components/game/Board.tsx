@@ -132,13 +132,10 @@ export default function Board({
     const getCellDisplayState = useCallback((row: number, col: number): CellState => {
         const currentState = cells[row]?.[col] || 'empty';
         const cellInfo = getCellInfo(row, col);
-        
-        // Si la celda tiene estado hit, miss, o sunk, mostrar ese estado
         if (currentState === 'hit' || currentState === 'miss' || currentState === 'sunk') {
             return currentState;
         }
         
-        // Si hay un barco y debemos mostrarlo
         if (cellInfo.hasShip && showShips) {
             return 'ship';
         }
@@ -147,106 +144,49 @@ export default function Board({
     }, [cells, getCellInfo, showShips]);
 
     return (
-        <div className={cn("w-full flex flex-col", className)}>
-            {/* CONTENEDOR RESPONSIVE CUADRADO */}
-            <div className="w-full aspect-square">
-                {/* GRID TOTAL: incluye coordenadas + celdas */}
-                <div
-                    className="grid w-full h-full"
-                    style={{
-                        gridTemplateColumns: `repeat(${size + 1}, 1fr)`,
-                        gridTemplateRows: `repeat(${size + 1}, 1fr)`
-                    }}
-                >
-                    {/* ESQUINA VACÍA */}
-                    <div></div>
+        <div className="w-full mx-auto max-w-[min(90vw,550px)]">
+            <div
+                className="grid"
+                style={{
+                    gridTemplateColumns: `auto repeat(${size}, minmax(0, 1fr))`,
+                    gap: "2px",
+                }}
+            >
+                {/* --- Row 0: empty corner + column labels --- */}
+                <div></div>
+                {Array.from({ length: size }).map((_, i) => (
+                    <div
+                        key={`col-${i}`}
+                        className="text-sm text-slate-300 text-center"
+                    >
+                        {String.fromCharCode(65 + i)}
+                    </div>
+                ))}
 
-                    {/* CABECERA DE COLUMNAS A-J */}
-                    {columnLabels.map((label) => (
+                {/* --- Rows and cells --- */}
+                {Array.from({ length: size }).map((_, row) => (
+                    <React.Fragment key={row}>
+                        {/* Row number label */}
                         <div
-                            key={label}
-                            className="flex items-center justify-center text-sm text-slate-400"
+                            key={`row-${row}`}
+                            className="text-sm text-slate-300 text-center flex items-center justify-center"
                         >
-                            {label}
+                            {row + 1}
                         </div>
-                    ))}
 
-                    {/* FILAS + CELDAS */}
-                    {rowLabels.map((rowLabel, row) => (
-                        <React.Fragment key={row}>
-                            {/* Etiqueta lateral */}
-                            <div className="flex items-center justify-center text-sm text-slate-400">
-                                {rowLabel}
-                            </div>
-
-                            {columnLabels.map((_, col) => (
-                                <Cell
-                                    key={`${row}-${col}`}
-                                    state={getCellDisplayState(row, col)}
-                                    position={{ row, col }}
-                                    onClick={() => handleCellClick(row, col)}
-                                    // onHover={() => handleCellHover(row, col)}
-                                    // onLeave={handleCellLeave}
-                                    disabled={disabled}
-                                    showShip={showShips}
-                                    isHovered={
-                                        effectiveHoveredCell?.row === row ||
-                                        effectiveHoveredCell?.col === col
-                                    }
-                                    className={cn(
-                                        "border transition-all duration-150",
-                                        isPlayerBoard
-                                            ? "border-blue-400"
-                                            : "border-red-400"
-                                    )}
-                                />
-                            ))}
-                        </React.Fragment>
-                    ))}
-                </div>
-            </div>
-            {/* Board info / stats (debug-friendly) */}
-            <div className="mt-3 text-xs text-slate-500 text-center">
-                {isPlayerBoard ? "Tu tablero" : "Tablero enemigo"} • 
-                {ships.length} barco{ships.length !== 1 ? 's' : ''} • 
-                {size}×{size}
-                {disabled && " • Deshabilitado"}
-            </div>
-        </div>
-    );
-}
-
-/**
- * BoardStats component shows a compact summary of the board:
- * - Remaining vs total ships.
- * - Total hits and misses.
- * 
- * Useful for side panels, scoreboards, or debugging.
- */
-interface BoardStatsProps {
-    ships: Ship[];
-    totalHits: number;
-    totalMisses: number;
-}
-
-export function BoardStats({ ships, totalHits, totalMisses }: BoardStatsProps) {
-    const shipsRemaining = ships.filter(ship => !ship.isSunk).length;
-    const shipsTotal = ships.length;
-    
-    return (
-        <div className="bg-slate-100 rounded-lg p-3 text-sm">
-            <div className="grid grid-cols-2 gap-4">
-                <div>
-                    <p className="font-semibold text-slate-700">Barcos</p>
-                    <p className="text-slate-600">{shipsRemaining}/{shipsTotal} activos</p>
-                </div>
-                <div>
-                    <p className="font-semibold text-slate-700">Disparos</p>
-                    <p className="text-slate-600">
-                        <span className="text-red-600">{totalHits}</span> impactos • 
-                        <span className="text-blue-600">{totalMisses}</span> fallos
-                    </p>
-                </div>
+                        {/* Individual board cells */}
+                        {Array.from({ length: size }).map((_, col) => (
+                            <Cell
+                                key={`${row}-${col}`}
+                                state={cells[row][col]}
+                                position={{ row, col }}
+                                onClick={() => onCellClick(row, col)}
+                                disabled={disabled}
+                                showShip={isPlayerBoard || forceShowShips}
+                            />
+                        ))}
+                    </ React.Fragment>
+                ))}
             </div>
         </div>
     );
