@@ -1,7 +1,7 @@
 "use client";
 
 import Board from "./Board";
-import { GameHUD } from "./GameHUD";
+import { GameHUD } from "../hud/GameHUD";
 import { useShallow } from "zustand/react/shallow";
 import { useGameStore } from "@/lib/store/game-store";
 import { GamePhase } from "@/lib/store/game-types";

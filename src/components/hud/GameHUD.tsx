@@ -4,49 +4,9 @@ import { useState, useRef } from "react";
 import { useGameStore } from "@/lib/store/game-store";
 import { GamePhase } from "@/lib/store/game-types";
 import { useShallow } from "zustand/react/shallow";
-// ============================================================================
-// CONSTANTS & HELPERS
-// ============================================================================
-const PHASE_LABELS: Record<GamePhase, string> = {
-    [GamePhase.SETUP]: "Setup",
-    [GamePhase.PLACEMENT]: "Placement",
-    [GamePhase.BATTLE]: "Battle",
-    [GamePhase.GAME_OVER]: "Game Over",
-};
-
-const PHASE_COLORS: Record<GamePhase, string> = {
-    [GamePhase.SETUP]: "text-gray-400",
-    [GamePhase.PLACEMENT]: "text-yellow-400",
-    [GamePhase.BATTLE]: "text-green-400",
-    [GamePhase.GAME_OVER]: "text-red-400",
-};
-
-function getPhaseLabel(phase: GamePhase): string {
-    return PHASE_LABELS[phase] ?? "Unknown";
-}
-
-function getPhaseColor(phase: GamePhase): string {
-    return PHASE_COLORS[phase] ?? "text-white";
-}
-
-function getTurnLabel(turn: 'player' | 'ai'): string {
-    return turn === 'player' ? "🎯 Your turn" : "🤖 AI's turn";
-}
-
-function getTurnColor(turn: 'player' | 'ai'): string {
-    return turn === 'player' ? "text-green-400" : "text-orange-400";
-}
-
-function getButtonLabel(playerReady: boolean, aiReady: boolean): string {
-    if (playerReady && aiReady) return "⚔️ Start Battle";
-    if (!playerReady) return "📍 Place your ships...";
-    if (!aiReady) return "⏳ Waiting for AI...";
-    return "Waiting...";
-}
-
-// ============================================================================
-// COMPONENT
-// ============================================================================
+import { PhaseSection } from "./PhaseSection";
+import { TurnSection } from "./TurnSection";
+import { ShipsRemainingSection } from "./ShipsRemainingSection";
 
 export function GameHUD() {
     const [feedback, setFeedback] = useState<string | null>(null);
@@ -115,42 +75,10 @@ export function GameHUD() {
                 🎮 Game Info
             </h2>
 
-            {/* Phase Section */}
-            <div className="flex flex-col gap-1">
-                <span className="text-sm text-slate-400">Phase</span>
-                <span className={`text-lg font-semibold ${getPhaseColor(phase)}`}>
-                    {getPhaseLabel(phase)}
-                </span>
-            </div>
-
-            {/* Turn Section */}
-            {phase === GamePhase.BATTLE && (
-                <div className="flex flex-col gap-1">
-                    <span className="text-sm text-slate-400">Current Turn</span>
-                    <span className={`text-lg font-semibold ${getTurnColor(currentTurn)}`}>
-                        {getTurnLabel(currentTurn)}
-                    </span>
-                </div>
-            )}
-
-            {/* Ships Remaining */}
-            <div className="flex flex-col gap-2">
-                <span className="text-sm text-slate-400">Ships Remaining</span>
-                <div className="text-md space-y-2">
-                    <div className="flex items-center justify-between">
-                        <span>🧭 Player:</span>
-                        <span className="font-mono font-bold text-green-400">
-                            {playerShipsRemaining}
-                        </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <span>🤖 AI:</span>
-                        <span className="font-mono font-bold text-orange-400">
-                            {aiShipsRemaining}
-                        </span>
-                    </div>
-                </div>
-            </div>
+            <PhaseSection />
+            <TurnSection />
+            <ShipsRemainingSection />
+            
             {/* Board Stats */}
             <div className="flex flex-col gap-2">
                 <span className="text-sm text-slate-400">Board Stats</span>
@@ -218,7 +146,7 @@ export function GameHUD() {
                             transition-all duration-200
                             hover:scale-105 active:scale-95"
                 >
-                    {getButtonLabel(playerReady, aiReady)}
+                    {/* {getButtonLabel(playerReady, aiReady)} */}
                 </button>
             )}
         </aside>
