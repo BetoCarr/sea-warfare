@@ -4,7 +4,6 @@ import { useState, useRef } from "react";
 import { useGameStore } from "@/lib/store/game-store";
 import { GamePhase } from "@/lib/store/game-types";
 import { useShallow } from "zustand/react/shallow";
-
 // ============================================================================
 // CONSTANTS & HELPERS
 // ============================================================================
@@ -48,26 +47,53 @@ function getButtonLabel(playerReady: boolean, aiReady: boolean): string {
 // ============================================================================
 // COMPONENT
 // ============================================================================
-export function Sidebar() {
+
+export function GameHUD() {
     const [feedback, setFeedback] = useState<string | null>(null);
     const timeoutRef = useRef<number | null>(null);
+    
+    const {
+        phase,
+        currentTurn,
 
-    const { phase, currentTurn, player, ai, confirmPlacement } = useGameStore(
-        useShallow((state) => ({
-            phase: state.phase,
-            currentTurn: state.currentTurn,
-            player: state.player,
-            ai: state.ai,
-            confirmPlacement: state.confirmPlacement,
-        }))
-    );
+        playerReady,
+        aiReady,
 
-    // derivaciones fuera del selector (buena práctica)
-    const playerShipsCount = player.ships.length;
-    const aiShipsCount = ai.ships.length;
-    const playerReady = player.isReady;
-    const aiReady = ai.isReady;
+        playerHits,
+        playerMisses,
 
+        aiHits,
+        aiMisses,
+
+        playerShipsRemaining,
+        aiShipsRemaining,
+
+        totalPlayerShips,
+        totalAiShips,
+
+        confirmPlacement,
+    } = useGameStore(
+    useShallow((state) => ({
+        phase: state.phase,
+        currentTurn: state.currentTurn,
+
+        playerReady: state.player.isReady,
+        aiReady: state.ai.isReady,
+
+        playerHits: state.player.boardState.hits.length,
+        playerMisses: state.player.boardState.misses.length,
+        aiHits: state.ai.boardState.hits.length,
+        aiMisses: state.ai.boardState.misses.length,
+
+        playerShipsRemaining: state.player.ships.filter(s => !s.isSunk).length,
+        aiShipsRemaining: state.ai.ships.filter(s => !s.isSunk).length,
+
+        totalPlayerShips: state.player.ships.length,
+        totalAiShips: state.ai.ships.length,
+
+        confirmPlacement: state.confirmPlacement,
+    }))
+);
 
      // Confirm placement / Start battle
     const handleConfirm = () => {
@@ -114,18 +140,46 @@ export function Sidebar() {
                     <div className="flex items-center justify-between">
                         <span>🧭 Player:</span>
                         <span className="font-mono font-bold text-green-400">
-                            {playerShipsCount}
+                            {playerShipsRemaining}
                         </span>
                     </div>
                     <div className="flex items-center justify-between">
                         <span>🤖 AI:</span>
                         <span className="font-mono font-bold text-orange-400">
-                            {aiShipsCount}
+                            {aiShipsRemaining}
                         </span>
                     </div>
                 </div>
             </div>
+            {/* Board Stats */}
+            <div className="flex flex-col gap-2">
+                <span className="text-sm text-slate-400">Board Stats</span>
+                <div className="bg-slate-800 p-3 rounded border border-slate-700 space-y-3">
+                    {/* Player Board */}
+                    <div>
+                        <p className="text-sm font-semibold text-green-400">Player Board</p>
+                        <p className="text-xs text-slate-300">
+                            Hits: <span className="font-bold">{playerHits}</span> 
+                            Misses: <span className="font-bold">{playerMisses}</span> 
+                        </p>
+                        <p className="text-xs text-slate-400">
+                            Ships: {totalPlayerShips}
+                        </p>
+                    </div>
 
+                    {/* AI Board */}
+                    <div>
+                        <p className="text-sm font-semibold text-orange-400">AI Board</p>
+                        <p className="text-xs text-slate-300">
+                            Hits: <span className="font-bold">{aiHits}</span> •
+                            Misses: <span className="font-bold">{aiMisses}</span>
+                        </p>
+                        <p className="text-xs text-slate-400">
+                            Ships: {totalAiShips}
+                        </p>
+                    </div>
+                </div>
+            </div>
             {/* Readiness Indicators */}
             {phase === GamePhase.PLACEMENT && (
                 <div className="flex flex-col gap-2 text-sm">
@@ -170,47 +224,3 @@ export function Sidebar() {
         </aside>
     );
 }
-
-
-/**
- * BoardStats component shows a compact summary of the board:
- * - Remaining vs total ships.
- * - Total hits and misses.
- * 
- * Useful for side panels, scoreboards, or debugging.
- */
-// interface BoardStatsProps {
-//     ships: Ship[];
-//     totalHits: number;
-//     totalMisses: number;
-// }
-
-// export function BoardStats({ ships, totalHits, totalMisses }: BoardStatsProps) {
-//     const shipsRemaining = ships.filter(ship => !ship.isSunk).length;
-//     const shipsTotal = ships.length;
-    
-//     return (
-//         <div className="bg-slate-100 rounded-lg p-3 text-sm">
-//             <div className="grid grid-cols-2 gap-4">
-//                 <div>
-//                     <p className="font-semibold text-slate-700">Barcos</p>
-//                     <p className="text-slate-600">{shipsRemaining}/{shipsTotal} activos</p>
-//                 </div>
-//                 <div>
-//                     <p className="font-semibold text-slate-700">Disparos</p>
-//                     <p className="text-slate-600">
-//                         <span className="text-red-600">{totalHits}</span> impactos • 
-//                         <span className="text-blue-600">{totalMisses}</span> fallos
-//                     </p>
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// }
-    // {/* Board info / stats (debug-friendly) */}
-    // <div className="mt-3 text-xs text-slate-500 text-center">
-    //     {isPlayerBoard ? "Tu tablero" : "Tablero enemigo"} • 
-    //     {ships.length} barco{ships.length !== 1 ? 's' : ''} • 
-    //     {size}×{size}
-    //     {disabled && " • Deshabilitado"}
-    // </div>

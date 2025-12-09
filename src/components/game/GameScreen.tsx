@@ -1,19 +1,21 @@
 "use client";
 
 import Board from "./Board";
-import { Sidebar } from "./Sidebar";
+import { GameHUD } from "./GameHUD";
 import { useShallow } from "zustand/react/shallow";
 import { useGameStore } from "@/lib/store/game-store";
 import { GamePhase } from "@/lib/store/game-types";
+import type { Ship } from "@/lib/utils/types";
 export function GameScreen() {
 
-    const { player, ai, phase, currentTurn, playerAttack} = useGameStore(
+    const { player, ai, phase, currentTurn, playerAttack, placePlayerShip} = useGameStore(
         useShallow((state) => ({
             player: state.player,
             ai: state.ai,
             phase: state.phase,
             currentTurn: state.currentTurn,
             playerAttack: state.playerAttack,
+            placePlayerShip: state.placePlayerShip,
         }))
     );
 
@@ -33,8 +35,8 @@ export function GameScreen() {
         // }
     };
 
-    return (
 
+    return (
         <main className="min-h-screen w-full bg-slate-900 text-white flex justify-center py-8 px-4">
             <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-[1fr_0.6fr_1fr] gap-6">
                 {/* Player Board */}
@@ -55,7 +57,7 @@ export function GameScreen() {
 
                 {/* Sidebar */}
                 <section className="bg-slate-800 rounded-xl p-2 shadow-lg flex flex-col gap-4 items-center">
-                    <Sidebar />
+                    <GameHUD />
                 </section>
 
                 {/* AI Board */}
