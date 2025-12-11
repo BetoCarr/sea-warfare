@@ -1,0 +1,15 @@
+:root {
+  --color-primary: #2563eb; /* blue-600 */
+  --color-primary-hover: #3b82f6; /* blue-500 */
+  --color-secondary: #4b5563; /* gray-600 */
+  --color-bg-panel: #1e293b; /* slate-800 */
+  --color-bg-card: #1e293b;
+  --color-text-muted: #94a3b8; /* slate-400 */
+  --color-text: #f1f5f9; /* slate-100 */
+  --color-phase-setup: #f59e0b; /* amber-500 */
+  --color-phase-placement: #10b981; /* emerald-500 */
+  --color-phase-battle: #ef4444; /* red-500 */
+  --color-phase-gameover: #6b7280; /* gray-500 */
+  --color-turn-player: #10b981; /* emerald-500 */
+  --color-turn-ai: #f97316; /* orange-500 */
+}
