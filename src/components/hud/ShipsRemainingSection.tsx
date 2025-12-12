@@ -1,9 +1,12 @@
 "use client";
 
-import { useGameStore } from "@/lib/store/game-store";
-import { useShallow } from "zustand/react/shallow";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
+import { Section } from "@/components/ui/layout/Section";
+import { Panel } from "@/components/ui/layout/Panel";
+import { StatRow } from "@/components/ui/layout/StatRow";
+import { useGameStore } from "@/lib/store/game-store";
+import { useShallow } from "zustand/react/shallow";
 
 export function ShipsRemainingSection() {
   const { playerRemaining, aiRemaining } = useGameStore(
@@ -15,21 +18,30 @@ export function ShipsRemainingSection() {
 
   return (
     <Card className="flex flex-col gap-2">
-      <span className="text-sm text-slate-400">Ships Remaining</span>
-      <div className="text-md space-y-2">
-        <div className="flex items-center justify-between">
-          <Badge className="bg-slate-800 text-green-400">🧭 Player</Badge>
-          <Badge className="bg-slate-800 text-green-400 font-bold">
-            {playerRemaining}
-          </Badge>
-        </div>
-        <div className="flex items-center justify-between">
-          <Badge className="bg-slate-800 text-orange-400">🤖 AI</Badge>
-          <Badge className="bg-slate-800 text-orange-400 font-bold">
-            {aiRemaining}
-          </Badge>
-        </div>
-      </div>
+      <Section title="Ships Remaining">
+        <Panel>
+          <StatRow
+            label={
+              <Badge className="bg-slate-800 text-green-400">🧭 Player</Badge>
+            }
+            value={
+              <Badge className="bg-slate-800 text-green-400 font-bold">
+                {playerRemaining}
+              </Badge>
+            }
+          />
+          <StatRow
+            label={
+              <Badge className="bg-slate-800 text-orange-400">🤖 AI</Badge>
+            }
+            value={
+              <Badge className="bg-slate-800 text-orange-400 font-bold">
+                {aiRemaining}
+              </Badge>
+            }
+          />
+        </Panel>
+      </Section>
     </Card>
   );
 }
