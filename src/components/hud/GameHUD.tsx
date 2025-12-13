@@ -18,34 +18,11 @@ export function GameHUD() {
   const [feedback, setFeedback] = useState<string | null>(null);
   const timeoutRef = useRef<number | null>(null);
 
-  const {
-    phase,
-    currentTurn,
-    playerReady,
-    aiReady,
-    playerHits,
-    playerMisses,
-    aiHits,
-    aiMisses,
-    playerShipsRemaining,
-    aiShipsRemaining,
-    // totalPlayerShips,
-    // totalAiShips,
-    confirmPlacement,
-  } = useGameStore(
+  const { phase, playerReady, aiReady, confirmPlacement } = useGameStore(
     useShallow((state) => ({
       phase: state.phase,
-      currentTurn: state.currentTurn,
       playerReady: state.player.isReady,
       aiReady: state.ai.isReady,
-      playerHits: state.player.boardState.hits.length,
-      playerMisses: state.player.boardState.misses.length,
-      aiHits: state.ai.boardState.hits.length,
-      aiMisses: state.ai.boardState.misses.length,
-      playerShipsRemaining: state.player.ships.filter((s) => !s.isSunk).length,
-      aiShipsRemaining: state.ai.ships.filter((s) => !s.isSunk).length,
-      totalPlayerShips: state.player.ships.length,
-      totalAiShips: state.ai.ships.length,
       confirmPlacement: state.confirmPlacement,
     }))
   );
@@ -70,12 +47,7 @@ export function GameHUD() {
       <PhaseSection />
       <TurnSection />
       <ShipsRemainingSection />
-      <BoardStats
-        playerHits={playerHits}
-        playerMisses={playerMisses}
-        aiHits={aiHits}
-        aiMisses={aiMisses}
-      />
+      <BoardStats />
       <ReadinessIndicators />
       {/* Feedback Message */}
       {feedback && (
