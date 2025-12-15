@@ -1,20 +1,23 @@
-"use client";
-
-import { useState, useRef } from "react";
+import { useRef, useState } from "react";
 import { useGameStore } from "@/lib/store/game-store";
 import { GamePhase } from "@/lib/store/game-types";
 import { useShallow } from "zustand/react/shallow";
-import { PhaseSection } from "./PhaseSection";
-import { TurnSection } from "./TurnSection";
-import { ShipsRemainingSection } from "./ShipsRemainingSection";
+// import { ShipPalette } from "@/components/game/ShipPalette";
 import { BoardStats } from "./BoardStats";
+import { PhaseSection } from "./PhaseSection";
 import { ReadinessIndicators } from "./ReadinessIndicators";
+import { ShipsRemainingSection } from "./ShipsRemainingSection";
+import { TurnSection } from "./TurnSection";
 // import { FeedbackMessage } from "./FeedbackMessage";
 // import { StartBattleButton } from "./StartBattleButton";
-import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 
-export function GameHUD() {
+interface GameHUDProps {
+  onInitialize?: () => void;
+}
+
+export function GameHUD({ onInitialize }: GameHUDProps) {
   const [feedback, setFeedback] = useState<string | null>(null);
   const timeoutRef = useRef<number | null>(null);
 
@@ -45,25 +48,46 @@ export function GameHUD() {
         🎮 Game Info
       </h2>
       <PhaseSection />
-      <TurnSection />
-      <ShipsRemainingSection />
-      <BoardStats />
-      <ReadinessIndicators />
+
+      {/* SETUP PHASE: Initialize Game */}
+      {phase === GamePhase.SETUP && (
+        <>
+          <Button variant="primary" onClick={onInitialize} className="mt-auto">
+            Initialize Game
+          </Button>
+        </>
+      )}
+
+      {/* PLACEMENT PHASE: Ship Selection & Readiness */}
+      {phase === GamePhase.PLACEMENT && (
+        <>
+          {/* <ShipPalette /> */}
+          <ReadinessIndicators />
+          <Button
+            variant="primary"
+            disabled={!playerReady || !aiReady}
+            onClick={handleConfirm}
+            className="mt-auto"
+          >
+            Start Battle
+          </Button>
+        </>
+      )}
+
+      {/* BATTLE PHASE: Stats & Turn Info */}
+      {phase === GamePhase.BATTLE && (
+        <>
+          <TurnSection />
+          <ShipsRemainingSection />
+          <BoardStats />
+        </>
+      )}
+
       {/* Feedback Message */}
       {feedback && (
         <div className="text-sm p-2 rounded bg-slate-800 text-center border border-slate-600">
           {feedback}
         </div>
-      )}
-      {/* Start Battle Button */}
-      {phase === GamePhase.PLACEMENT && (
-        <Button
-          variant="primary"
-          disabled={!playerReady || !aiReady}
-          className="mt-auto"
-        >
-          {/* {getButtonLabel(playerReady, aiReady)} */}
-        </Button>
       )}
     </Card>
   );
