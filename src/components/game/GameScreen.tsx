@@ -16,6 +16,8 @@ export function GameScreen() {
         currentTurn,
         playerAttack,
         placePlayerShip,
+        removePlayerShip,
+        selectShip,
         initializeGame,
         selectedShipId,
         orientation
@@ -27,6 +29,8 @@ export function GameScreen() {
             currentTurn: state.currentTurn,
             playerAttack: state.playerAttack,
             placePlayerShip: state.placePlayerShip,
+            removePlayerShip: state.removePlayerShip,
+            selectShip: state.selectShip,
             initializeGame: state.initializeGame,
             selectedShipId: state.selectedShipId,
             orientation: state.orientation,
@@ -44,6 +48,27 @@ export function GameScreen() {
     // Callback para click en el tablero del jugador
     const handlePlayerCellClick = (row: number, col: number) => {
         if (phase === GamePhase.PLACEMENT) {
+            
+            // Check if there is already a ship at this cell to remove it
+            // Logic: loop through placed ships and see if coordinates match
+            const shipAtCell = player.ships.find(ship => {
+                if (!ship.position) return false;
+                const { row: sRow, col: sCol } = ship.position;
+                if (ship.orientation === 'horizontal') {
+                    return row === sRow && col >= sCol && col < sCol + ship.size;
+                } else {
+                    return col === sCol && row >= sRow && row < sRow + ship.size;
+                }
+            });
+
+            if (shipAtCell) {
+                // If clicked a placed ship, remove it (Pick up)
+                removePlayerShip(shipAtCell.id);
+                selectShip(shipAtCell.id); // Select it so user can place it again immediately
+                return;
+            }
+
+            // Normal Placement Logic
             if (!selectedShipId) {
                 console.warn("No ship selected");
                 return;
