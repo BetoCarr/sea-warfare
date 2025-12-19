@@ -23,6 +23,14 @@ export interface ConfirmPlacementResult {
 
 // --- Slice Interface ---
 export interface PlacementSlice {
+    // State
+    selectedShipId: string | null;
+    // orientation: ship;
+    orientation: "horizontal" | "vertical";
+    
+    // Actions
+    selectShip: (shipId: string | null) => void;
+    toggleOrientation: () => void;
     placePlayerShip: (ship: Ship) => GameActionResult<PlaceShipResult>;
     removePlayerShip: (shipId: string) => GameActionResult<RemoveShipResult>;
     confirmPlacement: () => GameActionResult<ConfirmPlacementResult>;
@@ -53,6 +61,23 @@ export const createPlacementSlice: StateCreator<
     [],
     PlacementSlice
 > = (set, get) => ({
+    // Initial State
+    selectedShipId: null,
+    orientation: "horizontal",
+
+    // Actions
+    selectShip: (shipId) => {
+        set((state) => {
+            state.selectedShipId = shipId;
+        }, false, "placement/selectShip");
+    },
+
+    toggleOrientation: () => {
+        set((state) => {
+            state.orientation = state.orientation === "horizontal" ? "vertical" : "horizontal";
+        }, false, "placement/toggleOrientation");
+    },
+
 
     /**
      * Places a player ship on the board during the PLACEMENT phase.

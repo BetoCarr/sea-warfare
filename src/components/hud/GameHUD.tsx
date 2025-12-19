@@ -2,7 +2,8 @@ import { useRef, useState } from "react";
 import { useGameStore } from "@/lib/store/game-store";
 import { GamePhase } from "@/lib/store/game-types";
 import { useShallow } from "zustand/react/shallow";
-// import { ShipPalette } from "@/components/game/ShipPalette";
+import { ShipPalette } from "../game/ShipPalette";
+import { OrientationToggle } from "@/components/game/OrientationToggle";
 import { BoardStats } from "./BoardStats";
 import { PhaseSection } from "./PhaseSection";
 import { ReadinessIndicators } from "./ReadinessIndicators";
@@ -61,7 +62,8 @@ export function GameHUD({ onInitialize }: GameHUDProps) {
       {/* PLACEMENT PHASE: Ship Selection & Readiness */}
       {phase === GamePhase.PLACEMENT && (
         <>
-          {/* <ShipPalette /> */}
+          <ShipPalette />
+          <OrientationToggle />
           <ReadinessIndicators />
           <Button
             variant="primary"
