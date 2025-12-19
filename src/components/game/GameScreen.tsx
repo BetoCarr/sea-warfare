@@ -80,6 +80,46 @@ export function GameScreen() {
         }
     };
 
+    // Handler for Drag and Drop placement
+    const handleDragOver = (row: number, col: number, e: React.DragEvent) => {
+        if (phase === GamePhase.PLACEMENT) {
+            e.preventDefault(); // Allows the drop
+        }
+    };
+
+    const handleDrop = (row: number, col: number, e: React.DragEvent) => {
+        if (phase !== GamePhase.PLACEMENT) return;
+        e.preventDefault();
+
+        const dataStr = e.dataTransfer.getData("application/json");
+        if (!dataStr) return;
+
+        try {
+            const data = JSON.parse(dataStr) as { id: string; type: ShipType; size: number };
+            const { id, type, size } = data;
+
+            // Construct Ship object
+            const newShip: Ship = {
+                id, // Use the ID from the palette (e.g. carrier-1)
+                type,
+                size,
+                position: { row, col },
+                orientation: orientation,
+                hits: [],
+                isSunk: false
+            };
+            
+            // Attempt to place
+            const result = placePlayerShip(newShip);
+            if (!result.success) {
+                console.warn("Drag placement failed:", result.message);
+                // TODO: Show toast
+            }
+        } catch (err) {
+            console.error("Failed to parse drag data", err);
+        }
+    };
+
     return (
         <main className="min-h-screen w-full bg-slate-900 text-white flex justify-center py-8 px-4">
             <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-[1fr_0.6fr_1fr] gap-6">
@@ -92,8 +132,10 @@ export function GameScreen() {
                         size={10}
                         cells={playerBoard}
                         isPlayerBoard={true}
-                        ships={player.ships}
                         onCellClick={handlePlayerCellClick}
+                        onCellDrop={handleDrop}
+                        onCellDragOver={handleDragOver}
+                        ships={player.ships}
                         forceShowShips={true}
                         disabled={phase === GamePhase.GAME_OVER}
                     />

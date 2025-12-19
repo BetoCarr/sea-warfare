@@ -12,6 +12,10 @@ interface CellProps {
     showShip?: boolean;         // Controls whether ships are visible to the player
     isHovered?: boolean;        // Used to highlight a cell during targeting/placement
     className?: string;         // Optional custom className for style overrides
+    onDrop?: (e: React.DragEvent) => void;
+    onDragOver?: (e: React.DragEvent) => void;
+    onDragEnter?: (e: React.DragEvent) => void;
+    onDragLeave?: (e: React.DragEvent) => void;
 }
 
 /**
@@ -30,6 +34,10 @@ export default function Cell({
     showShip = false,
     isHovered = false,
     className,
+    onDrop,
+    onDragOver,
+    onDragEnter,
+    onDragLeave
 }: CellProps) {
 
     // Local state used to trigger temporary animations (e.g., pulse on click)
@@ -151,6 +159,10 @@ export default function Cell({
             data-testid={`cell-${position.row}-${position.col}`}
             data-state={state}
             title={`${String.fromCharCode(65 + position.col)}${position.row + 1}`}
+            onDrop={onDrop}
+            onDragOver={onDragOver}
+            onDragEnter={onDragEnter}
+            onDragLeave={onDragLeave}
         >
             <span className="pointer-events-none">
                 {getCellContent()}

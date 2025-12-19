@@ -16,6 +16,8 @@ interface BoardProps {
     disabled?: boolean;             // Prevents interaction
     className?: string;             // Custom style overrides
     hoveredCell?: Position | null;  // Externally controlled hovered cell
+    onCellDrop?: (row: number, col: number, e: React.DragEvent) => void;
+    onCellDragOver?: (row: number, col: number, e: React.DragEvent) => void;
 }
 
 /**
@@ -37,7 +39,9 @@ export default function Board({
     forceShowShips = false,
     disabled = false,
     className,
-    hoveredCell
+    hoveredCell,
+    onCellDrop,
+    onCellDragOver
 }: BoardProps) {
     // Local hover state (used when no external hoveredCell is provided)
     const [localHoveredCell, setLocalHoveredCell] = useState<Position | null>(null);
@@ -183,6 +187,8 @@ export default function Board({
                                 onClick={() => onCellClick(row, col)}
                                 disabled={disabled}
                                 showShip={isPlayerBoard || forceShowShips}
+                                onDrop={(e) => onCellDrop?.(row, col, e)}
+                                onDragOver={(e) => onCellDragOver?.(row, col, e)}
                             />
                         ))}
                     </ React.Fragment>

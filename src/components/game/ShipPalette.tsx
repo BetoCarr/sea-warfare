@@ -10,26 +10,29 @@ import { useShallow } from "zustand/react/shallow";
  * ShipPalette
  * ------------------------------------------------------------
  * Displays the available fleet configuration for the player to select.
- * Since player state starts with an empty ship list (only placed ships),
- * this component iterates over the static SHIPS_CONFIG to render the buttons.
  *
- * It checks against the `player.ships` store to determine if a ship
- * has already been placed (is disabled).
+ * REFACTOR UPDATE:
+ * Now renders "Visual Ship Segments" to represent the actual shape
+ * and size of the ship.
+ * - Subscribes to `orientation` to layout segments horizontally or vertically.
+ * - This provides WYSIWYG drag-and-drop feedback.
  */
 export const ShipPalette = () => {
-    const { placedShips, selectedShipId, selectShip } = useGameStore(
+    const { placedShips, selectedShipId, selectShip, orientation } = useGameStore(
         useShallow((state) => ({
             placedShips: state.player.ships,
             selectedShipId: state.selectedShipId,
             selectShip: state.selectShip,
+            orientation: state.orientation,
         }))
     );
 
+    const isHorizontal = orientation === "horizontal";
+
     // Generate flat list of ships from config
-    // We assume count=1 for MVP. logic can be expanded for multiple ships of same type
     const fleet = Object.entries(SHIPS_CONFIG).map(([type, config]) => {
         return {
-            id: `${type}-1`, // Deterministic ID: e.g. "carrier-1"
+            id: `${type}-1`,
             type: type as ShipType,
             name: config.name,
             size: config.size
@@ -37,34 +40,86 @@ export const ShipPalette = () => {
     });
 
     return (
-        <div className="flex flex-wrap gap-2 sm:flex-row mb-4 justify-center">
+        <div className="flex flex-wrap gap-6 justify-center items-center py-4 min-h-[160px]">
             {fleet.map((ship) => {
-                // Check if this specific ship ID is already on the board
                 const isPlaced = placedShips.some((s) => s.id === ship.id);
                 const isSelected = selectedShipId === ship.id;
 
+                const handleDragStart = (e: React.DragEvent) => {
+                    if (isPlaced) {
+                        e.preventDefault();
+                        return;
+                    }
+                    selectShip(ship.id);
+
+                    e.dataTransfer.setData(
+                        "application/json",
+                        JSON.stringify({
+                            id: ship.id,
+                            type: ship.type,
+                            size: ship.size
+                        })
+                    );
+                    e.dataTransfer.effectAllowed = "copy";
+                    
+                    // Optional: Custom ghost image could be set here, but
+                    // native behavior of dragging the visual element usually works well
+                    // if the element shape matches the target.
+                };
+
                 return (
-                    <button
+                    <div
                         key={ship.id}
-                        disabled={isPlaced}
-                        onClick={() => selectShip(ship.id)}
                         className={clsx(
-                            "flex items-center justify-center px-3 py-2 rounded transition-all border text-sm font-medium",
-                            isPlaced
-                                ? "bg-slate-800 text-slate-500 cursor-not-allowed border-transparent opacity-50"
-                                : isSelected
-                                ? "bg-[var(--color-primary)] text-white border-[var(--color-primary-hover)] shadow-[0_0_10px_rgba(37,99,235,0.5)] scale-105"
-                                : "bg-slate-700 hover:bg-slate-600 text-slate-200 border-slate-600 hover:border-slate-500"
+                            "relative flex flex-col items-center gap-1 transition-all duration-200",
+                            isPlaced ? "opacity-40 grayscale" : "hover:scale-105"
                         )}
-                        aria-label={`Select ${ship.name}, size ${ship.size}`}
-                        aria-pressed={isSelected}
-                        aria-disabled={isPlaced}
                     >
-                        <span>{ship.name}</span>
-                        <span className="ml-2 text-xs opacity-70 bg-black/20 px-1.5 py-0.5 rounded">
-                            {ship.size}
+                        {/* Container for the visual ship blocks */}
+                        <div
+                            role="button"
+                            tabIndex={isPlaced ? -1 : 0}
+                            draggable={!isPlaced}
+                            onDragStart={handleDragStart}
+                            onClick={() => !isPlaced && selectShip(ship.id)}
+                            onKeyDown={(e) => {
+                                if ((e.key === 'Enter' || e.key === ' ') && !isPlaced) {
+                                    selectShip(ship.id);
+                                }
+                            }}
+                            className={clsx(
+                                "flex gap-[2px] p-1 rounded cursor-pointer transition-all border-2",
+                                isHorizontal ? "flex-row" : "flex-col",
+                                isSelected
+                                    ? "border-yellow-400 bg-yellow-400/20 shadow-[0_0_15px_rgba(250,204,21,0.4)]"
+                                    : "border-transparent hover:bg-slate-700/50",
+                                isPlaced && "cursor-not-allowed border-transparent"
+                            )}
+                            aria-label={`Select ${ship.name}, size ${ship.size}`}
+                            aria-pressed={isSelected}
+                            aria-disabled={isPlaced}
+                        >
+                            {/* Render segments */}
+                            {Array.from({ length: ship.size }).map((_, idx) => (
+                                <div
+                                    key={idx}
+                                    className={clsx(
+                                        "w-8 h-8 rounded-sm shadow-sm transition-colors border",
+                                        isPlaced
+                                            ? "bg-slate-700 border-slate-600"
+                                            : isSelected
+                                            ? "bg-blue-500 border-blue-400"
+                                            : "bg-slate-600 border-slate-500"
+                                    )}
+                                />
+                            ))}
+                        </div>
+
+                        {/* Label below */}
+                        <span className="text-xs font-medium text-slate-400 select-none">
+                            {ship.name}
                         </span>
-                    </button>
+                    </div>
                 );
             })}
         </div>
