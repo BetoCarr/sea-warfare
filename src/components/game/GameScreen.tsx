@@ -7,6 +7,8 @@ import { useGameStore } from "@/lib/store/game-store";
 import { GamePhase } from "@/lib/store/game-types";
 import type { Ship, ShipType } from "@/lib/utils/types";
 import { SHIPS_CONFIG } from "@/lib/utils/constants";
+import { FeedbackMessage, FeedbackType } from "../hud/FeedbackMessage";
+import { useState, useRef } from "react";
 
 export function GameScreen() {
     const {
@@ -39,6 +41,16 @@ export function GameScreen() {
 
     const playerBoard = player.boardState.board; // CellState[][]
     const aiBoard = ai.boardState.board;
+
+    // Local feedback state for placement errors (e.g. "Invalid Position")
+    const [localFeedback, setLocalFeedback] = useState<{ msg: string, type: FeedbackType } | null>(null);
+    const feedbackTimeoutRef = useRef<number | null>(null);
+
+    const showFeedback = (msg: string, type: FeedbackType = 'error') => {
+        if (feedbackTimeoutRef.current) clearTimeout(feedbackTimeoutRef.current);
+        setLocalFeedback({ msg, type });
+        feedbackTimeoutRef.current = window.setTimeout(() => setLocalFeedback(null), 3000);
+    };
 
     // Handle game initialization if in setup phase
     const handleInitialize = () => {
@@ -96,7 +108,9 @@ export function GameScreen() {
             const result = placePlayerShip(newShip);
             if (!result.success) {
                 console.warn("Placement failed:", result.message);
-                // TODO: Show toast feedback
+                showFeedback(result.message || "Invalid placement", 'error');
+            } else {
+                showFeedback("Ship placed!", 'success');
             }
 
         } else if (phase === GamePhase.BATTLE && currentTurn === "player") {
@@ -138,7 +152,9 @@ export function GameScreen() {
             const result = placePlayerShip(newShip);
             if (!result.success) {
                 console.warn("Drag placement failed:", result.message);
-                // TODO: Show toast
+                showFeedback(result.message || "Cannot place ship there", 'error');
+            } else {
+                showFeedback(`${newShip.type} Deployed!`, 'success');
             }
         } catch (err) {
             console.error("Failed to parse drag data", err);
@@ -149,10 +165,18 @@ export function GameScreen() {
         <main className="min-h-screen w-full bg-slate-900 text-white flex justify-center py-8 px-4">
             <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-[1fr_0.6fr_1fr] gap-6">
                 {/* Player Board */}
-                <section className="bg-slate-800 rounded-xl p-2 shadow-lg flex flex-col items-center pr-4">
+                <section className="bg-slate-800 rounded-xl p-2 shadow-lg flex flex-col items-center pr-4 relative">
                     <h2 className="text-center mb-3 text-lg font-semibold text-sky-300">
                         Your Fleet
                     </h2>
+                     {/* Placement Feedback Overlay */}
+                    <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-sm px-4">
+                        <FeedbackMessage 
+                            message={localFeedback?.msg || null} 
+                            type={localFeedback?.type} 
+                            onDismiss={() => setLocalFeedback(null)}
+                        />
+                    </div>
                     <Board
                         size={10}
                         cells={playerBoard}

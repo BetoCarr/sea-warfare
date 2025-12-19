@@ -9,7 +9,7 @@ import { PhaseSection } from "./PhaseSection";
 import { ReadinessIndicators } from "./ReadinessIndicators";
 import { ShipsRemainingSection } from "./ShipsRemainingSection";
 import { TurnSection } from "./TurnSection";
-// import { FeedbackMessage } from "./FeedbackMessage";
+import { FeedbackMessage, FeedbackType } from "./FeedbackMessage";
 // import { StartBattleButton } from "./StartBattleButton";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -20,6 +20,7 @@ interface GameHUDProps {
 
 export function GameHUD({ onInitialize }: GameHUDProps) {
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [feedbackType, setFeedbackType] = useState<FeedbackType>('info');
   const timeoutRef = useRef<number | null>(null);
 
   const { phase, playerReady, aiReady, confirmPlacement } = useGameStore(
@@ -34,13 +35,14 @@ export function GameHUD({ onInitialize }: GameHUDProps) {
   const handleConfirm = () => {
     const result = confirmPlacement();
     console.log("[UI] confirmPlacement result:", result);
+    
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    setFeedback(
-      result.success
-        ? "Battle started! 🎮"
-        : result.message || "Cannot start game"
-    );
-    timeoutRef.current = window.setTimeout(() => setFeedback(null), 3000);
+    
+    setFeedback(result.message || (result.success ? "Battle started! 🎮" : "Cannot start game"));
+    setFeedbackType(result.success ? 'success' : 'error');
+    
+    // Auto-clear success messages, keep errors longer
+    timeoutRef.current = window.setTimeout(() => setFeedback(null), result.success ? 3000 : 5000);
   };
 
   return (
@@ -86,11 +88,12 @@ export function GameHUD({ onInitialize }: GameHUDProps) {
       )}
 
       {/* Feedback Message */}
-      {feedback && (
-        <div className="text-sm p-2 rounded bg-slate-800 text-center border border-slate-600">
-          {feedback}
-        </div>
-      )}
+      <FeedbackMessage 
+        message={feedback} 
+        type={feedbackType} 
+        onDismiss={() => setFeedback(null)}
+        className="mt-2"
+      />
     </Card>
   );
 }
