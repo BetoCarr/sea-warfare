@@ -57,12 +57,22 @@ export function GameScreen() {
         initializeGame({ boardSize: 10 });
     };
 
+    // Helper to handle placement result and feedback
+    const processPlacement = (ship: Ship) => {
+        const result = placePlayerShip(ship);
+        if (!result.success) {
+            console.warn("Placement failed:", result.message);
+            showFeedback(result.message || "Invalid placement", 'error');
+        } else {
+            showFeedback(`${ship.type} Deployed!`, 'success');
+        }
+    };
+
     // Callback para click en el tablero del jugador
     const handlePlayerCellClick = (row: number, col: number) => {
         if (phase === GamePhase.PLACEMENT) {
             
-            // Check if there is already a ship at this cell to remove it
-            // Logic: loop through placed ships and see if coordinates match
+            // 1. Check if clicking on an existing ship (Pick Up logic)
             const shipAtCell = player.ships.find(ship => {
                 if (!ship.position) return false;
                 const { row: sRow, col: sCol } = ship.position;
@@ -73,27 +83,24 @@ export function GameScreen() {
                 }
             });
 
-            if (shipAtCell) {
-                // If clicked a placed ship, remove it (Pick up)
-                removePlayerShip(shipAtCell.id);
-                selectShip(shipAtCell.id); // Select it so user can place it again immediately
-                return;
-            }
+            // if (shipAtCell) {
+            //     removePlayerShip(shipAtCell.id);
+            //     selectShip(shipAtCell.id);
+            //     // Optional: show info feedback
+            //     // showFeedback("Repositioning ship...", 'info'); 
+            //     return;
+            // }
 
-            // Normal Placement Logic
+            // 2. Place selected ship (Placement logic)
             if (!selectedShipId) {
-                console.warn("No ship selected");
+                showFeedback("Select a ship first", 'warning');
                 return;
             }
 
-            // Extract ship type from ID (e.g., "carrier-1" -> "carrier")
             const type = selectedShipId.split('-')[0] as ShipType;
             const config = SHIPS_CONFIG[type];
 
-            if (!config) {
-                console.error("Invalid ship type config:", type);
-                return;
-            }
+            if (!config) return;
 
             const newShip: Ship = {
                 id: selectedShipId,
@@ -101,21 +108,86 @@ export function GameScreen() {
                 size: config.size,
                 position: { row, col },
                 orientation: orientation,
-                hits: [], // will be initialized by state creator or logic if needed, but safe to init empty or pre-filled
+                hits: [],
                 isSunk: false
             };
 
-            const result = placePlayerShip(newShip);
-            if (!result.success) {
-                console.warn("Placement failed:", result.message);
-                showFeedback(result.message || "Invalid placement", 'error');
-            } else {
-                showFeedback("Ship placed!", 'success');
-            }
+            processPlacement(newShip);
 
         } else if (phase === GamePhase.BATTLE && currentTurn === "player") {
-            // Self-board interaction during battle? usually not, unless repairing or ability
             console.log("Player clicked self board in battle");
+        }
+    };
+
+    // Callback for Drag Start from Board (Drag-to-Move)
+    const handleBoardDragStart = (row: number, col: number, e: React.DragEvent) => {
+        if (phase !== GamePhase.PLACEMENT) {
+            e.preventDefault();
+            return;
+        }
+
+        const shipAtCell = player.ships.find(ship => {
+            if (!ship.position) return false;
+            const { row: sRow, col: sCol } = ship.position;
+            // Check based on current orientation of the ship
+            if (ship.orientation === 'horizontal') {
+                return row === sRow && col >= sCol && col < sCol + ship.size;
+            } else {
+                return col === sCol && row >= sRow && row < sRow + ship.size;
+            }
+        });
+
+        if (shipAtCell) {
+             const dragData = {
+                id: shipAtCell.id,
+                type: shipAtCell.type,
+                size: shipAtCell.size,
+                source: "board",
+                originalPosition: shipAtCell.position,
+                originalOrientation: shipAtCell.orientation
+            };
+            e.dataTransfer.setData("application/json", JSON.stringify(dragData));
+            e.dataTransfer.effectAllowed = "move";
+            selectShip(shipAtCell.id); 
+
+            // --- Custom Drag Ghost ---
+            // Create a temporary element to represent the full ship
+            const ghost = document.createElement("div");
+            ghost.style.position = "absolute";
+            ghost.style.top = "-1000px";
+            ghost.style.left = "-1000px";
+            ghost.style.display = "flex";
+            ghost.style.gap = "2px";
+            // Match palette styling (horizontal/vertical) based on ship orientation
+            ghost.style.flexDirection = shipAtCell.orientation === 'horizontal' ? 'row' : 'column';
+            ghost.style.opacity = "1"; // Browser handles drag ghost opacity automatically usually (0.5)
+            
+            // Create segments
+            for (let i = 0; i < shipAtCell.size; i++) {
+                const seg = document.createElement("div");
+                seg.style.width = "32px"; // Match UI (w-8)
+                seg.style.height = "32px"; // Match UI (h-8)
+                seg.style.backgroundColor = "#3b82f6"; // bg-blue-500
+                seg.style.border = "1px solid #60a5fa"; // border-blue-400
+                seg.style.borderRadius = "2px";
+                ghost.appendChild(seg);
+            }
+
+            document.body.appendChild(ghost);
+            
+            // offset so the cursor grabs the specific segment clicked?
+            // For simplicity, let's grab the top-left or try to calculate offset.
+            // If we drag from index 1, we should shift ghost.
+            // Let's just grab center or top-left for now to ensure visibility.
+            e.dataTransfer.setDragImage(ghost, 0, 0);
+
+            // Clean up DOM after a tick
+            setTimeout(() => {
+                document.body.removeChild(ghost);
+            }, 0);
+
+        } else {
+            e.preventDefault();
         }
     };
 
@@ -134,28 +206,49 @@ export function GameScreen() {
         if (!dataStr) return;
 
         try {
-            const data = JSON.parse(dataStr) as { id: string; type: ShipType; size: number };
-            const { id, type, size } = data;
+            const data = JSON.parse(dataStr) as { 
+                id: string; 
+                type: ShipType; 
+                size: number; 
+                source?: string;
+                originalPosition?: { row: number, col: number };
+                originalOrientation?: 'horizontal' | 'vertical';
+            };
+            const { id, type, size, source, originalPosition, originalOrientation } = data;
+
+            // If moving from board, temporarily remove old instance
+            if (source === "board") {
+                removePlayerShip(id);
+            }
 
             // Construct Ship object
             const newShip: Ship = {
-                id, // Use the ID from the palette (e.g. carrier-1)
+                id,
                 type,
                 size,
                 position: { row, col },
-                orientation: orientation,
+                orientation: orientation, // Use CURRENT global orientation, or keep original? UX choice. User usually rotates BEFORE drag or expects global. Let's use global.
                 hits: [],
                 isSunk: false
             };
             
-            // Attempt to place
             const result = placePlayerShip(newShip);
+            
             if (!result.success) {
                 console.warn("Drag placement failed:", result.message);
-                showFeedback(result.message || "Cannot place ship there", 'error');
+                
+                if (source === "board" && originalPosition && originalOrientation) {
+                    // REVERT: Put it back where it was
+                    showFeedback("Invalid move - Returning ship", 'warning');
+                    const originalShip = { ...newShip, position: originalPosition, orientation: originalOrientation };
+                    placePlayerShip(originalShip);
+                } else {
+                    showFeedback(result.message || "Cannot place ship there", 'error');
+                }
             } else {
                 showFeedback(`${newShip.type} Deployed!`, 'success');
             }
+            
         } catch (err) {
             console.error("Failed to parse drag data", err);
         }
@@ -184,6 +277,7 @@ export function GameScreen() {
                         onCellClick={handlePlayerCellClick}
                         onCellDrop={handleDrop}
                         onCellDragOver={handleDragOver}
+                        onCellDragStart={handleBoardDragStart}
                         ships={player.ships}
                         forceShowShips={true}
                         disabled={phase === GamePhase.GAME_OVER}

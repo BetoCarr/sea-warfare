@@ -18,16 +18,39 @@ import { useShallow } from "zustand/react/shallow";
  * - This provides WYSIWYG drag-and-drop feedback.
  */
 export const ShipPalette = () => {
-    const { placedShips, selectedShipId, selectShip, orientation } = useGameStore(
+    const { placedShips, selectedShipId, selectShip, orientation, removePlayerShip } = useGameStore(
         useShallow((state) => ({
             placedShips: state.player.ships,
             selectedShipId: state.selectedShipId,
             selectShip: state.selectShip,
             orientation: state.orientation,
+            removePlayerShip: state.removePlayerShip,
         }))
     );
 
     const isHorizontal = orientation === "horizontal";
+
+    const handlePaletteDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        const dataStr = e.dataTransfer.getData("application/json");
+        if (!dataStr) return;
+        
+        try {
+            const data = JSON.parse(dataStr) as { id: string; source?: string };
+            if (data.source === 'board') {
+                removePlayerShip(data.id);
+                // Optionally select it ready for placement again
+                selectShip(data.id);
+            }
+        } catch (err) {
+            console.error("Failed to parse drop on palette", err);
+        }
+    };
+
+    const handlePaletteDragOver = (e: React.DragEvent) => {
+        e.preventDefault(); // Enable drop
+        e.dataTransfer.dropEffect = "move";
+    };
 
     // Generate flat list of ships from config
     const fleet = Object.entries(SHIPS_CONFIG).map(([type, config]) => {
@@ -40,7 +63,11 @@ export const ShipPalette = () => {
     });
 
     return (
-        <div className="flex flex-wrap gap-6 justify-center items-center py-4 min-h-[160px]">
+        <div 
+            className="flex flex-wrap gap-6 justify-center items-center py-4 min-h-[160px] w-full rounded-md border-2 border-transparent transition-colors hover:border-slate-700/50"
+            onDrop={handlePaletteDrop}
+            onDragOver={handlePaletteDragOver}
+        >
             {fleet.map((ship) => {
                 const isPlaced = placedShips.some((s) => s.id === ship.id);
                 const isSelected = selectedShipId === ship.id;

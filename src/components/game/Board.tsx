@@ -18,6 +18,7 @@ interface BoardProps {
     hoveredCell?: Position | null;  // Externally controlled hovered cell
     onCellDrop?: (row: number, col: number, e: React.DragEvent) => void;
     onCellDragOver?: (row: number, col: number, e: React.DragEvent) => void;
+    onCellDragStart?: (row: number, col: number, e: React.DragEvent) => void;
 }
 
 /**
@@ -41,7 +42,8 @@ export default function Board({
     className,
     hoveredCell,
     onCellDrop,
-    onCellDragOver
+    onCellDragOver,
+    onCellDragStart
 }: BoardProps) {
     // Local hover state (used when no external hoveredCell is provided)
     const [localHoveredCell, setLocalHoveredCell] = useState<Position | null>(null);
@@ -189,6 +191,8 @@ export default function Board({
                                 showShip={isPlayerBoard || forceShowShips}
                                 onDrop={(e) => onCellDrop?.(row, col, e)}
                                 onDragOver={(e) => onCellDragOver?.(row, col, e)}
+                                onDragStart={(e) => onCellDragStart?.(row, col, e)}
+                                draggable={isPlayerBoard && cells[row][col] === 'ship'}
                             />
                         ))}
                     </ React.Fragment>

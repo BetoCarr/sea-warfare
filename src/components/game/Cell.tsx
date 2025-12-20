@@ -16,6 +16,8 @@ interface CellProps {
     onDragOver?: (e: React.DragEvent) => void;
     onDragEnter?: (e: React.DragEvent) => void;
     onDragLeave?: (e: React.DragEvent) => void;
+    onDragStart?: (e: React.DragEvent) => void;
+    draggable?: boolean;
 }
 
 /**
@@ -37,7 +39,9 @@ export default function Cell({
     onDrop,
     onDragOver,
     onDragEnter,
-    onDragLeave
+    onDragLeave,
+    onDragStart,
+    draggable
 }: CellProps) {
 
     // Local state used to trigger temporary animations (e.g., pulse on click)
@@ -163,6 +167,8 @@ export default function Cell({
             onDragOver={onDragOver}
             onDragEnter={onDragEnter}
             onDragLeave={onDragLeave}
+            onDragStart={onDragStart}
+            draggable={draggable}
         >
             <span className="pointer-events-none">
                 {getCellContent()}
