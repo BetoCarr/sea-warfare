@@ -68,7 +68,7 @@ export function GameScreen() {
         }
     };
 
-    // Callback para click en el tablero del jugador
+    // Callback onclick on player board
     const handlePlayerCellClick = (row: number, col: number) => {
         if (phase === GamePhase.PLACEMENT) {
             
@@ -82,14 +82,6 @@ export function GameScreen() {
                     return col === sCol && row >= sRow && row < sRow + ship.size;
                 }
             });
-
-            // if (shipAtCell) {
-            //     removePlayerShip(shipAtCell.id);
-            //     selectShip(shipAtCell.id);
-            //     // Optional: show info feedback
-            //     // showFeedback("Repositioning ship...", 'info'); 
-            //     return;
-            // }
 
             // 2. Place selected ship (Placement logic)
             if (!selectedShipId) {
@@ -138,7 +130,7 @@ export function GameScreen() {
         });
 
         if (shipAtCell) {
-             const dragData = {
+            const dragData = {
                 id: shipAtCell.id,
                 type: shipAtCell.type,
                 size: shipAtCell.size,
