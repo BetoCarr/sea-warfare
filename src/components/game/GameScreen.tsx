@@ -142,7 +142,6 @@ export function GameScreen() {
             e.dataTransfer.effectAllowed = "move";
             selectShip(shipAtCell.id); 
 
-            // --- Custom Drag Ghost ---
             // Create a temporary element to represent the full ship
             const ghost = document.createElement("div");
             ghost.style.position = "absolute";
