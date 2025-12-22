@@ -4,7 +4,7 @@ import Board from "./Board";
 import { GameHUD } from "../hud/GameHUD";
 import { useShallow } from "zustand/react/shallow";
 import { useGameStore } from "@/lib/store/game-store";
-import { GamePhase } from "@/lib/store/game-types";
+import { GamePhase, GameStatus } from "@/lib/store/game-types";
 import type { Ship, ShipType } from "@/lib/utils/types";
 import { SHIPS_CONFIG } from "@/lib/utils/constants";
 import { FeedbackMessage, FeedbackType } from "../hud/FeedbackMessage";
@@ -22,7 +22,9 @@ export function GameScreen() {
         selectShip,
         initializeGame,
         selectedShipId,
-        orientation
+        orientation,
+        status,
+        lastAttack
     } = useGameStore(
         useShallow((state) => ({
             player: state.player,
@@ -36,6 +38,8 @@ export function GameScreen() {
             initializeGame: state.initializeGame,
             selectedShipId: state.selectedShipId,
             orientation: state.orientation,
+            status: state.status,
+            lastAttack: state.lastAttack,
         }))
     );
 
@@ -106,8 +110,31 @@ export function GameScreen() {
 
             processPlacement(newShip);
 
-        } else if (phase === GamePhase.BATTLE && currentTurn === "player") {
-            console.log("Player clicked self board in battle");
+        } else if (phase === GamePhase.BATTLE) {
+            // In battle, clicking own board does nothing (unless we want to show ships)
+            showFeedback("Focus on the enemy board!", 'info');
+        }
+    };
+
+    // Callback for Enemy Board Click (Attack)
+    const handleEnemyCellClick = async (row: number, col: number) => {
+        if (phase !== GamePhase.BATTLE) return;
+        
+        if (currentTurn !== "player") {
+            showFeedback("Wait for your turn...", 'warning');
+            return;
+        }
+
+        const result = await playerAttack({ row, col });
+        
+        if (result.success) {
+            // Feedback is handled by store status updates or we can use the result here
+            const type = result.data?.type;
+            if (type === 'hit') showFeedback("HIT!", 'success');
+            else if (type === 'miss') showFeedback("Miss...", 'info');
+             // Sunk is usually handled globally or by a specific slice status
+        } else {
+            showFeedback(result.message || "Invalid attack", 'error');
         }
     };
 
@@ -245,6 +272,10 @@ export function GameScreen() {
         }
     };
 
+    // --- Derived UI State ---
+    const isBattle = phase === GamePhase.BATTLE || phase === GamePhase.GAME_OVER;
+
+
     return (
         <main className="min-h-screen w-full bg-slate-900 text-white flex justify-center py-8 px-4">
             <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-[1fr_0.6fr_1fr] gap-6">
@@ -275,17 +306,24 @@ export function GameScreen() {
                     />
                 </section>
 
-                {/* Sidebar */}
+                {/* Game HUD */}
                 <section className="bg-slate-800 rounded-xl p-2 shadow-lg flex flex-col gap-4 items-center">
                     <GameHUD onInitialize={handleInitialize} />
                 </section>
 
                 {/* AI Board */}
-                <section className="bg-slate-800 rounded-xl p-2 shadow-lg flex flex-col items-center">
-                    <h2 className="text-center mb-3 text-lg font-semibold text-red-300">
+                <section className={`bg-slate-800 rounded-xl p-2 shadow-lg flex flex-col items-center transition-opacity duration-500 ${isBattle ? 'opacity-100' : 'opacity-50 pointer-events-none'}`}>
+                    <h2 className="text-center mb-3 text-lg font-semibold text-red-300 flex items-center gap-2">
                         Enemy Waters
                     </h2>
-                    {/* AIBoard */}
+                    <Board
+                        size={10}
+                        cells={aiBoard}
+                        isPlayerBoard={true} // Hide ships
+                        onCellClick={handleEnemyCellClick}
+                        // Disable interactions if not battle or not player turn
+                        disabled={!isBattle || currentTurn !== 'player'}
+                    />
                 </section>
             </div>
         </main>

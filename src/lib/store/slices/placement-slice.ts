@@ -314,15 +314,18 @@ export const createPlacementSlice: StateCreator<
             "placement/confirmPlacement"
         );
 
+        // Try to start game (Lifecycle check will handle final validation)
+        const startGameResult = get().startGame();
+
         return {
             success: true,
-            message: state.ai.isReady
-                ? "Placement confirmed — battle begins!"
-                : "Placement confirmed — waiting for AI...",
+            message: startGameResult.success 
+                ? "Battle begins!" 
+                : "Placement confirmed — waiting for opponent...",
             data: {
                 playerReady: true,
                 aiReady: state.ai.isReady,
-                phase: state.ai.isReady ? GamePhase.BATTLE : GamePhase.PLACEMENT,
+                phase: startGameResult.success ? GamePhase.BATTLE : GamePhase.PLACEMENT,
             },
         };
     },
