@@ -104,7 +104,7 @@ export function GameScreen() {
                 size: config.size,
                 position: { row, col },
                 orientation: orientation,
-                hits: [],
+                hits: new Array(config.size).fill(false),
                 isSunk: false
             };
 
@@ -245,8 +245,8 @@ export function GameScreen() {
                 type,
                 size,
                 position: { row, col },
-                orientation: orientation, // Use CURRENT global orientation, or keep original? UX choice. User usually rotates BEFORE drag or expects global. Let's use global.
-                hits: [],
+                orientation: orientation, 
+                hits: new Array(size).fill(false),
                 isSunk: false
             };
             
@@ -319,7 +319,7 @@ export function GameScreen() {
                     <Board
                         size={10}
                         cells={aiBoard}
-                        isPlayerBoard={true} // Hide ships
+                        isPlayerBoard={false} // Hide ships
                         onCellClick={handleEnemyCellClick}
                         // Disable interactions if not battle or not player turn
                         disabled={!isBattle || currentTurn !== 'player'}

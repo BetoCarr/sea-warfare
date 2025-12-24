@@ -61,6 +61,7 @@ export const createBattleSlice: StateCreator<
 
         set((draft) => {
             draft.ai.boardState = boardState;
+            draft.ai.ships = boardState.ships; // SYNC: Keep top-level ships in sync with boardState
             draft.lastAttack = { by: "player", ...attackResult };
 
             if (attackResult.type !== "invalid") {
@@ -95,6 +96,7 @@ export const createBattleSlice: StateCreator<
             // --- Game over ---
             if (isGameOver) {
                 draft.status = GameStatus.FINISHED;
+                draft.phase = GamePhase.GAME_OVER;
                 draft.outcome = { winner: winner ?? "player" };
                 draft.endTime = new Date();
 
@@ -140,6 +142,7 @@ export const createBattleSlice: StateCreator<
 
         set((draft) => {
             draft.player.boardState = boardState;
+            draft.player.ships = boardState.ships; // SYNC: Keep top-level ships in sync
             draft.lastAttack = { by: "ai", ...attackResult };
 
             if (attackResult.type !== "invalid") {
@@ -172,6 +175,7 @@ export const createBattleSlice: StateCreator<
 
             if (isGameOver) {
                 draft.status = GameStatus.FINISHED;
+                draft.phase = GamePhase.GAME_OVER;
                 draft.outcome = { winner: winner ?? "ai" };
                 draft.endTime = new Date();
 

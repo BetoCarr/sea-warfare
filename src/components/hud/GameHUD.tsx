@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useGameStore } from "@/lib/store/game-store";
 import { GamePhase } from "@/lib/store/game-types";
 import { useShallow } from "zustand/react/shallow";
@@ -44,6 +44,35 @@ export function GameHUD({ onInitialize }: GameHUDProps) {
     // Auto-clear success messages, keep errors longer
     timeoutRef.current = window.setTimeout(() => setFeedback(null), result.success ? 3000 : 5000);
   };
+
+  // --- Feedback Effect for AI Attacks ---
+  const { lastAttack } = useGameStore(useShallow(s => ({ lastAttack: s.lastAttack })));
+
+  /*
+   * useEffect to react to new attacks.
+   * If AI attacked, show feedback. 
+   */
+  useEffect(() => {
+    if (lastAttack && lastAttack.by === 'ai') {
+        const msgs = {
+            'hit': "AI Hit your ship! 💥",
+            'sunk': "AI Sunk your ship! 💀",
+            'miss': "AI Missed... 🌊",
+            'invalid': ""
+        };
+        const msg = msgs[lastAttack.type];
+        if (msg) {
+            setFeedback(msg);
+            setFeedbackType(lastAttack.type === 'miss' ? 'info' : 'error'); // Hit/Sunk is bad for player -> error/warning style? Or just info/success inverse? 
+            // In FeedbackMessage: 'error' is red, 'success' is green. 
+            // AI Hit is bad for player (Red). AI Miss is good (Green... or Neutral).
+            // Let's use 'error' for HIT/SUNK (Danger), 'info' for MISS.
+            
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            timeoutRef.current = window.setTimeout(() => setFeedback(null), 3000);
+        }
+    }
+  }, [lastAttack]);
 
   return (
     <Card className="w-full md:w-64 bg-slate-900 text-white p-4 rounded-lg flex flex-col gap-4 border border-slate-700 shadow-lg">
