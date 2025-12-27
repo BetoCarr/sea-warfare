@@ -277,19 +277,24 @@ export function GameScreen() {
 
 
     return (
-        <main className="min-h-screen w-full bg-slate-900 text-white flex justify-center py-8 px-4">
-            <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-[1fr_0.6fr_1fr] gap-6">
+        <main className="min-h-screen w-full bg-slate-900 text-white flex flex-col items-center">
+            {/* Header HUD */}
+            <header className="w-full">
+                <GameHUD onInitialize={handleInitialize} />
+            </header>
+
+            {/* Game area: player and AI boards side by side */}
+            <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 px-4">
                 {/* Player Board */}
                 <section className="bg-slate-800 rounded-xl p-2 shadow-lg flex flex-col items-center pr-4 relative">
                     <h2 className="text-center mb-3 text-lg font-semibold text-sky-300">
                         Your Fleet
                     </h2>
-                     {/* Placement Feedback Overlay */}
                     <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-sm px-4">
-                        <FeedbackMessage 
-                            message={localFeedback?.msg || null} 
-                            type={localFeedback?.type} 
-                            onDismiss={() => setLocalFeedback(null)}
+                        <FeedbackMessage
+                        message={localFeedback?.msg || null}
+                        type={localFeedback?.type}
+                        onDismiss={() => setLocalFeedback(null)}
                         />
                     </div>
                     <Board
@@ -306,11 +311,6 @@ export function GameScreen() {
                     />
                 </section>
 
-                {/* Game HUD */}
-                <section className="bg-slate-800 rounded-xl p-2 shadow-lg flex flex-col gap-4 items-center">
-                    <GameHUD onInitialize={handleInitialize} />
-                </section>
-
                 {/* AI Board */}
                 <section className={`bg-slate-800 rounded-xl p-2 shadow-lg flex flex-col items-center transition-opacity duration-500 ${isBattle ? 'opacity-100' : 'opacity-50 pointer-events-none'}`}>
                     <h2 className="text-center mb-3 text-lg font-semibold text-red-300 flex items-center gap-2">
@@ -319,9 +319,8 @@ export function GameScreen() {
                     <Board
                         size={10}
                         cells={aiBoard}
-                        isPlayerBoard={false} // Hide ships
+                        isPlayerBoard={false}
                         onCellClick={handleEnemyCellClick}
-                        // Disable interactions if not battle or not player turn
                         disabled={!isBattle || currentTurn !== 'player'}
                     />
                 </section>

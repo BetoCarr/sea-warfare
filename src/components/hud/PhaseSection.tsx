@@ -20,15 +20,14 @@ export function PhaseSection() {
   // Map phase enum to a CSS variable based color class
   const phaseColorClass = `text-[var(--color-phase-${phase
     .toString()
-    .toLowerCase()}])`;
+    .toLowerCase()})]`;
 
   return (
-    <Card className="flex flex-col gap-1">
-      <Section title="Phase">
-        <Badge className={`text-lg font-semibold ${phaseColorClass}`}>
+    <div className="flex items-center gap-2">
+        <span className="text-slate-400 font-medium text-sm">Phase:</span>
+        <Badge className={`text-sm md:text-base font-semibold ${phaseColorClass} bg-slate-900/50 border border-slate-600`}>
           {getPhaseLabel(phase)}
         </Badge>
-      </Section>
-    </Card>
+    </div>
   );
 }

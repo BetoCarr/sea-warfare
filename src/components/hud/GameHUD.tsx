@@ -75,54 +75,65 @@ export function GameHUD({ onInitialize }: GameHUDProps) {
   }, [lastAttack]);
 
   return (
-    <Card className="w-full md:w-64 bg-slate-900 text-white p-4 rounded-lg flex flex-col gap-4 border border-slate-700 shadow-lg">
-      <h2 className="text-xl font-bold border-b border-slate-700 pb-2">
-        🎮 Game Info
-      </h2>
-      <PhaseSection />
-
-      {/* SETUP PHASE: Initialize Game */}
-      {phase === GamePhase.SETUP && (
-        <>
-          <Button variant="primary" onClick={onInitialize} className="mt-auto">
-            Initialize Game
+    <header className="w-full min-h-16 h-auto py-2 px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-white bg-slate-800 border-b border-slate-700 transition-all duration-300">
+      {/* LEFT: Branding & Phase */}
+      <div className="flex items-center gap-6 self-start md:self-auto">
+        <div className="flex items-center gap-2">
+          <span className="text-2xl">⚓</span>
+          <h1 className="font-bold text-xl tracking-tight hidden lg:block text-slate-100">SEA WARFARE</h1>
+        </div>
+        <div className="h-8 w-px bg-slate-600 hidden md:block" />
+        <PhaseSection />
+        {phase === GamePhase.SETUP && (
+          <Button variant="primary" onClick={onInitialize} className="ml-4 py-1 px-3 text-sm">
+            Initialize System
           </Button>
-        </>
-      )}
+        )}
+      </div>
 
-      {/* PLACEMENT PHASE: Ship Selection & Readiness */}
-      {phase === GamePhase.PLACEMENT && (
-        <>
-          <ShipPalette />
-          <OrientationToggle />
-          <ReadinessIndicators />
-          <Button
-            variant="primary"
-            disabled={!playerReady || !aiReady}
-            onClick={handleConfirm}
-            className="mt-auto"
-          >
-            Start Battle
-          </Button>
-        </>
-      )}
-
-      {/* BATTLE PHASE: Stats & Turn Info */}
-      {phase === GamePhase.BATTLE && (
-        <>
+      {/* CENTER: Turn or Placement Controls */}
+      <div className="flex-1 flex flex-wrap items-center justify-center gap-4 w-full md:w-auto">
+        {phase === GamePhase.BATTLE && (
           <TurnSection />
-          <ShipsRemainingSection />
-          <BoardStats />
-        </>
-      )}
+        )}
+        {phase === GamePhase.PLACEMENT && (
+          <div className="flex flex-col md:flex-row items-center gap-6 w-full md:w-auto p-2">
+            <ShipPalette />
+            <div className="h-px w-full md:w-px md:h-12 bg-slate-600" />
+            <div className="flex items-center gap-4">
+                <OrientationToggle />
+                <ReadinessIndicators />
+                <Button
+                variant="primary"
+                disabled={!playerReady || !aiReady}
+                onClick={handleConfirm}
+                className="whitespace-nowrap"
+                >
+                Start Battle
+                </Button>
+            </div>
+          </div>
+        )}
+      </div>
 
-      {/* Feedback Message */}
+      {/* RIGHT: Stats */}
+      <div className="flex items-center gap-4 self-end md:self-auto">
+        {phase === GamePhase.BATTLE && (
+          <>
+            <ShipsRemainingSection />
+            <div className="h-8 w-px bg-slate-600 hidden md:block" />
+            <BoardStats />
+          </>
+        )}
+      </div>
+
+      {/* Feedback Message (fixed position) */}
       <FeedbackMessage 
         message={feedback} 
         type={feedbackType} 
         onDismiss={() => setFeedback(null)}
-        className="mt-2"
+        className="absolute top-full left-1/2 -translate-x-1/2 z-[100] mt-4"
       />
-    </Card>
+    </header>
   );
 }
