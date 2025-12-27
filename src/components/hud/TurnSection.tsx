@@ -1,12 +1,6 @@
-"use client";
-
 import { useGameStore } from "@/lib/store/game-store";
 import { GamePhase } from "@/lib/store/game-types";
 import { useShallow } from "zustand/react/shallow";
-import { getTurnLabel } from "./hud.utils";
-import { Card } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
-import { Section } from "@/components/ui/layout/Section";
 
 /**
  * TurnSection
@@ -23,15 +17,17 @@ export function TurnSection() {
 
   if (phase !== GamePhase.BATTLE) return null;
 
-  const turnColorClass = `text-[var(--color-turn-${currentTurn})]`;
+  const isPlayerTurn = currentTurn === 'player';
+  // const turnColorClass = `text-[var(--color-turn-${currentTurn})]`;
 
   return (
-    <Card className="flex flex-col gap-1">
-      <Section title="Current Turn">
-        <Badge className={`text-lg font-semibold ${turnColorClass}`}>
-          {getTurnLabel(currentTurn)}
-        </Badge>
-      </Section>
-    </Card>
+    <div className="flex flex-col items-center justify-center gap-1 h-full">
+         <span className="text-[10px] bg-slate-900 border border-slate-700 px-2 py-0.5 rounded text-slate-400 uppercase tracking-widest">
+            BATTLE STATUS
+         </span>
+         <div className={`text-2xl font-black uppercase tracking-tight ${isPlayerTurn ? 'text-green-400 drop-shadow-[0_0_8px_rgba(74,222,128,0.5)]' : 'text-red-400 drop-shadow-[0_0_8px_rgba(248,113,113,0.5)]'}`}>
+            {isPlayerTurn ? "YOUR TURN" : "ENEMY TURN"}
+         </div>
+    </div>
   );
 }

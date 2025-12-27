@@ -10,9 +10,7 @@ import { ReadinessIndicators } from "./ReadinessIndicators";
 import { ShipsRemainingSection } from "./ShipsRemainingSection";
 import { TurnSection } from "./TurnSection";
 import { FeedbackMessage, FeedbackType } from "./FeedbackMessage";
-// import { StartBattleButton } from "./StartBattleButton";
 import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
 
 interface GameHUDProps {
   onInitialize?: () => void;
@@ -75,7 +73,7 @@ export function GameHUD({ onInitialize }: GameHUDProps) {
   }, [lastAttack]);
 
   return (
-    <header className="w-full min-h-16 h-auto py-2 px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-white bg-slate-800 border-b border-slate-700 transition-all duration-300">
+    <header className="w-full h-34 px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-white bg-slate-800 border-b border-slate-700 transition-all duration-300 shadow-sm z-20 relative">
       {/* LEFT: Branding & Phase */}
       <div className="flex items-center gap-6 self-start md:self-auto">
         <div className="flex items-center gap-2">

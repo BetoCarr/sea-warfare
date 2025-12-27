@@ -1,10 +1,5 @@
 "use client";
 
-import { Card } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
-import { Section } from "@/components/ui/layout/Section";
-import { Panel } from "@/components/ui/layout/Panel";
-import { StatRow } from "@/components/ui/layout/StatRow";
 import { useGameStore } from "@/lib/store/game-store";
 import { useShallow } from "zustand/react/shallow";
 
@@ -17,31 +12,16 @@ export function ShipsRemainingSection() {
   );
 
   return (
-    <Card className="flex flex-col gap-2">
-      <Section title="Ships Remaining">
-        <Panel>
-          <StatRow
-            label={
-              <Badge className="bg-slate-800 text-green-400">🧭 Player</Badge>
-            }
-            value={
-              <Badge className="bg-slate-800 text-green-400 font-bold">
-                {playerRemaining}
-              </Badge>
-            }
-          />
-          <StatRow
-            label={
-              <Badge className="bg-slate-800 text-orange-400">🤖 AI</Badge>
-            }
-            value={
-              <Badge className="bg-slate-800 text-orange-400 font-bold">
-                {aiRemaining}
-              </Badge>
-            }
-          />
-        </Panel>
-      </Section>
-    </Card>
+    <div className="flex flex-col gap-1 h-full justify-center min-w-[120px]">
+        <span className="text-[10px] uppercase font-bold text-slate-500 text-center mb-0.5">Ships Remaining</span>
+        <div className="flex justify-between items-center bg-slate-700/50 rounded px-2 py-0.5 border border-slate-600">
+            <span className="text-[10px] text-green-400 font-bold uppercase tracking-wider">Player</span>
+            <span className="text-sm font-bold text-white">{playerRemaining}</span>
+        </div>
+        <div className="flex justify-between items-center bg-slate-700/50 rounded px-2 py-0.5 border border-slate-600">
+            <span className="text-[10px] text-orange-400 font-bold uppercase tracking-wider">Enemy</span>
+            <span className="text-sm font-bold text-white">{aiRemaining}</span>
+        </div>
+    </div>
   );
 }

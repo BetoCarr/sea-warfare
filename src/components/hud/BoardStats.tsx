@@ -1,10 +1,6 @@
 "use client";
 import { useGameStore } from "@/lib/store/game-store";
 import { useShallow } from "zustand/react/shallow";
-import { Card } from "@/components/ui/Card";
-import { Section } from "@/components/ui/layout/Section";
-import { Panel } from "@/components/ui/layout/Panel";
-import { StatRow } from "@/components/ui/layout/StatRow";
 
 /**
  * BoardStats displays hit/miss statistics for both player and AI boards.
@@ -15,12 +11,6 @@ import { StatRow } from "@/components/ui/layout/StatRow";
  * - Purely presentational: no game logic, only derived state.
  */
 export function BoardStats() {
-  /**
-   * Select only the board statistics required for rendering.
-   *
-   * Using `useShallow` ensures the component only re-renders
-   * when one of these numeric values actually changes.
-   */
   const { playerHits, playerMisses, aiHits, aiMisses } = useGameStore(
     useShallow((state) => ({
       playerHits: state.player.boardState.hits.length,
@@ -31,50 +21,34 @@ export function BoardStats() {
   );
 
   return (
-    <Card className="flex flex-col gap-2">
-      <Section title="Board Stats">
-        <Panel>
-          {/* --- Player Board Stats --- */}
-          <StatRow
-            label={
-              <span className="text-sm font-semibold text-green-400">
-                Player Board
-              </span>
-            }
-            value=""
-          />
-          <StatRow
-            label="Hits"
-            value={<span className="font-bold">{playerHits}</span>}
-            labelClass="text-green-400"
-          />
-          <StatRow
-            label="Misses"
-            value={<span className="font-bold">{playerMisses}</span>}
-            labelClass="text-green-400"
-          />
+    <div className="flex gap-4 h-full items-center">
+        {/* Player Stats Column */}
+        <div className="flex flex-col gap-1 min-w-[80px]">
+            <span className="text-[10px] uppercase font-bold text-slate-500 text-center">Your Board</span>
+            <div className="flex justify-between text-xs bg-slate-900/30 px-2 py-0.5 rounded">
+                <span className="text-slate-400">Hits</span>
+                <span className="font-bold text-red-400">{playerHits}</span>
+            </div>
+            <div className="flex justify-between text-xs bg-slate-900/30 px-2 py-0.5 rounded">
+                <span className="text-slate-400">Miss</span>
+                <span className="font-bold text-slate-300">{playerMisses}</span>
+            </div>
+        </div>
 
-          {/* --- AI Board Stats --- */}
-          <StatRow
-            label={
-              <span className="text-sm font-semibold text-orange-400">
-                AI Board
-              </span>
-            }
-            value=""
-          />
-          <StatRow
-            label="Hits"
-            value={<span className="font-bold">{aiHits}</span>}
-            labelClass="text-orange-400"
-          />
-          <StatRow
-            label="Misses"
-            value={<span className="font-bold">{aiMisses}</span>}
-            labelClass="text-orange-400"
-          />
-        </Panel>
-      </Section>
-    </Card>
+        <div className="w-px h-12 bg-slate-700" />
+
+        {/* AI Stats Column */}
+        <div className="flex flex-col gap-1 min-w-[80px]">
+            <span className="text-[10px] uppercase font-bold text-emerald-500/70 text-center">Enemy Board</span>
+            <div className="flex justify-between text-xs bg-slate-900/30 px-2 py-0.5 rounded">
+                <span className="text-slate-400">Hits</span>
+                <span className="font-bold text-green-400">{aiHits}</span>
+            </div>
+            <div className="flex justify-between text-xs bg-slate-900/30 px-2 py-0.5 rounded">
+                <span className="text-slate-400">Miss</span>
+                <span className="font-bold text-slate-300">{aiMisses}</span>
+            </div>
+        </div>
+    </div>
   );
 }

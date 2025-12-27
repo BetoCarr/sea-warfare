@@ -28,7 +28,10 @@ export const ShipPalette = () => {
         }))
     );
 
-    const isHorizontal = orientation === "horizontal";
+    // UX Decision: Always display ships horizontally in the palette (Toolbar)
+    // to prevent the Header height from jumping when toggling orientation.
+    // The orientation setting controls the *placement* and *dragged ghost*, not the palette view.
+    const isHorizontal = true;
 
     const handlePaletteDrop = (e: React.DragEvent) => {
         e.preventDefault();
@@ -64,7 +67,7 @@ export const ShipPalette = () => {
 
     return (
         <div 
-            className="flex flex-wrap gap-6 justify-center items-center py-4 min-h-[160px] w-full rounded-md border-2 border-transparent transition-colors hover:border-slate-700/50"
+            className="flex flex-wrap gap-4 justify-center items-center py-1 w-full rounded-md border-2 border-transparent transition-colors hover:border-slate-700/50"
             onDrop={handlePaletteDrop}
             onDragOver={handlePaletteDragOver}
         >
@@ -115,10 +118,10 @@ export const ShipPalette = () => {
                                 }
                             }}
                             className={clsx(
-                                "flex gap-[2px] p-1 rounded cursor-pointer transition-all border-2",
+                                "flex gap-[1px] p-[2px] rounded cursor-pointer transition-all border",
                                 isHorizontal ? "flex-row" : "flex-col",
                                 isSelected
-                                    ? "border-yellow-400 bg-yellow-400/20 shadow-[0_0_15px_rgba(250,204,21,0.4)]"
+                                    ? "border-yellow-400 bg-yellow-400/20 shadow-[0_0_10px_rgba(250,204,21,0.3)]"
                                     : "border-transparent hover:bg-slate-700/50",
                                 isPlaced && "cursor-not-allowed border-transparent"
                             )}
@@ -131,7 +134,7 @@ export const ShipPalette = () => {
                                 <div
                                     key={idx}
                                     className={clsx(
-                                        "w-8 h-8 rounded-sm shadow-sm transition-colors border",
+                                        "w-5 h-5 rounded-sm shadow-sm transition-colors border",
                                         isPlaced
                                             ? "bg-slate-700 border-slate-600"
                                             : isSelected
@@ -143,7 +146,7 @@ export const ShipPalette = () => {
                         </div>
 
                         {/* Label below */}
-                        <span className="text-xs font-medium text-slate-400 select-none">
+                        <span className="text-[10px] font-medium text-slate-400 select-none">
                             {ship.name}
                         </span>
                     </div>
