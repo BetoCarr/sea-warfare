@@ -1,7 +1,7 @@
 import { clsx } from 'clsx';
 import { useEffect, useState } from 'react';
 
-export type FeedbackType = 'info' | 'success' | 'error' | 'warning';
+export type FeedbackType = 'info' | 'success' | 'error' | 'warning' | 'instruction';
 
 interface FeedbackMessageProps {
     message: string | null;
@@ -47,16 +47,18 @@ export const FeedbackMessage = ({
 
     const styles = {
         info: "bg-slate-800 border-slate-600 text-slate-200",
-        success: "bg-emerald-900/80 border-emerald-600 text-emerald-100",
-        error: "bg-red-900/80 border-red-600 text-red-100",
-        warning: "bg-amber-900/80 border-amber-600 text-amber-100"
+        success: "bg-emerald-900/90 border-emerald-600 text-emerald-100",
+        error: "bg-red-900/90 border-red-600 text-red-100",
+        warning: "bg-amber-900/90 border-amber-600 text-amber-100",
+        instruction: "bg-slate-800/80 border-slate-600/50 text-sky-200 backdrop-blur-sm"
     };
 
     const icons = {
         info: "ℹ️",
         success: "✅",
         error: "⚠️",
-        warning: "✋"
+        warning: "✋",
+        instruction: "💡"
     };
 
     return (

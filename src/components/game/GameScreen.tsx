@@ -104,7 +104,7 @@ export function GameScreen() {
                 size: config.size,
                 position: { row, col },
                 orientation: orientation,
-                hits: [],
+                hits: new Array(config.size).fill(false),
                 isSunk: false
             };
 

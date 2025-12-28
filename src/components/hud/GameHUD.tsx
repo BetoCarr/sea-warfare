@@ -21,12 +21,13 @@ export function GameHUD({ onInitialize }: GameHUDProps) {
   const [feedbackType, setFeedbackType] = useState<FeedbackType>('info');
   const timeoutRef = useRef<number | null>(null);
 
-  const { phase, playerReady, aiReady, confirmPlacement } = useGameStore(
+  const { phase, playerReady, aiReady, confirmPlacement, currentTurn } = useGameStore(
     useShallow((state) => ({
       phase: state.phase,
       playerReady: state.player.isReady,
       aiReady: state.ai.isReady,
       confirmPlacement: state.confirmPlacement,
+      currentTurn: state.currentTurn,
     }))
   );
 
@@ -72,6 +73,28 @@ export function GameHUD({ onInitialize }: GameHUDProps) {
     }
   }, [lastAttack]);
 
+  // --- Instructions Logic ---
+  const instruction = (() => {
+    switch (phase) {
+      case GamePhase.SETUP:
+        return "Initialize system to begin...";
+      case GamePhase.PLACEMENT:
+        if (playerReady && aiReady) return "Systems Ready! Initialize Combat Sequence 🚀";
+        return "Drag ships to grid ↔️ tap 'R' to rotate";
+      case GamePhase.BATTLE:
+        return (currentTurn === 'player') 
+          ? "Select target coordinates to fire! 🎯" 
+          : "Incoming enemy transmission... ⚠️";
+      case GamePhase.GAME_OVER:
+        return "Game Over - System Needs Reset";
+      default:
+        return null;
+    }
+  })();
+
+  const activeMessage = feedback || instruction;
+  const activeType = feedback ? feedbackType : 'instruction';
+
   return (
     <header className="w-full h-34 px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-white bg-slate-800 border-b border-slate-700 transition-all duration-300 shadow-sm z-20 relative">
       {/* LEFT: Branding & Phase */}
@@ -83,7 +106,7 @@ export function GameHUD({ onInitialize }: GameHUDProps) {
         <div className="h-8 w-px bg-slate-600 hidden md:block" />
         <PhaseSection />
         {phase === GamePhase.SETUP && (
-          <Button variant="primary" onClick={onInitialize} className="ml-4 py-1 px-3 text-sm">
+          <Button variant="primary" onClick={onInitialize} className="ml-4 py-1 px-3 text-sm animate-cta-pulse">
             Initialize System
           </Button>
         )}
@@ -105,7 +128,7 @@ export function GameHUD({ onInitialize }: GameHUDProps) {
                 variant="primary"
                 disabled={!playerReady || !aiReady}
                 onClick={handleConfirm}
-                className="whitespace-nowrap"
+                className={`whitespace-nowrap ${playerReady && aiReady ? 'animate-cta-pulse ring-2 ring-sky-400 ring-offset-2 ring-offset-slate-900' : ''}`}
                 >
                 Start Battle
                 </Button>
@@ -127,10 +150,10 @@ export function GameHUD({ onInitialize }: GameHUDProps) {
 
       {/* Feedback Message (fixed position) */}
       <FeedbackMessage 
-        message={feedback} 
-        type={feedbackType} 
+        message={activeMessage} 
+        type={activeType} 
         onDismiss={() => setFeedback(null)}
-        className="absolute top-full left-1/2 -translate-x-1/2 z-[100] mt-4"
+        className="absolute top-full left-1/2 -translate-x-1/2 z-[100] mt-4 shadow-xl whitespace-nowrap"
       />
     </header>
   );
