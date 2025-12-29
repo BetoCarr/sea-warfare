@@ -11,6 +11,8 @@ import { ShipsRemainingSection } from "./ShipsRemainingSection";
 import { TurnSection } from "./TurnSection";
 import { FeedbackMessage, FeedbackType } from "./FeedbackMessage";
 import { Button } from "@/components/ui/Button";
+import { GameOverSection } from "./GameOverSection";
+import { FinalStats } from "./FinalStats";
 
 interface GameHUDProps {
   onInitialize?: () => void;
@@ -102,7 +104,7 @@ export function GameHUD({ onInitialize }: GameHUDProps) {
           ? "Select target coordinates to fire! 🎯" 
           : "Incoming enemy transmission... ⚠️";
       case GamePhase.GAME_OVER:
-        return "Game Over - System Needs Reset";
+        return "";
       default:
         return null;
     }
@@ -138,18 +140,21 @@ export function GameHUD({ onInitialize }: GameHUDProps) {
             <ShipPalette />
             <div className="h-px w-full md:w-px md:h-12 bg-slate-600" />
             <div className="flex items-center gap-4">
-                <OrientationToggle />
-                <ReadinessIndicators />
-                <Button
-                  variant="primary"
-                  disabled={!playerReady || !aiReady}
-                  onClick={handleConfirm}
-                  className={`whitespace-nowrap ${playerReady && aiReady ? 'animate-cta-pulse ring-2 ring-sky-400 ring-offset-2 ring-offset-slate-900' : ''}`}
-                >
-                  Start Battle
-                </Button>
+              <OrientationToggle />
+              <ReadinessIndicators />
+              <Button
+                variant="primary"
+                disabled={!playerReady || !aiReady}
+                onClick={handleConfirm}
+                className={`whitespace-nowrap ${playerReady && aiReady ? 'animate-cta-pulse ring-2 ring-sky-400 ring-offset-2 ring-offset-slate-900' : ''}`}
+              >
+                Start Battle
+              </Button>
             </div>
           </div>
+        )}
+        {phase === GamePhase.GAME_OVER && (
+          <GameOverSection />
         )}
       </div>
 
@@ -161,6 +166,9 @@ export function GameHUD({ onInitialize }: GameHUDProps) {
             <div className="h-8 w-px bg-slate-600 hidden md:block" />
             <BoardStats />
           </>
+        )}
+        {phase === GamePhase.GAME_OVER && (
+          <FinalStats />
         )}
       </div>
 
