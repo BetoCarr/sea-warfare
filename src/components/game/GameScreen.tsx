@@ -46,33 +46,7 @@ export function GameScreen() {
     const playerBoard = player.boardState.board; // CellState[][]
     const aiBoard = ai.boardState.board;
 
-    // Local feedback state for placement errors (e.g. "Invalid Position")
-    const [localFeedback, setLocalFeedback] = useState<{ msg: string, type: FeedbackType } | null>(null);
-    const feedbackTimeoutRef = useRef<number | null>(null);
-
-    const showFeedback = (msg: string, type: FeedbackType = 'error') => {
-        if (feedbackTimeoutRef.current) clearTimeout(feedbackTimeoutRef.current);
-        setLocalFeedback({ msg, type });
-        feedbackTimeoutRef.current = window.setTimeout(() => setLocalFeedback(null), 3000);
-    };
-
-    // Handle game initialization if in setup phase
-    const handleInitialize = () => {
-        initializeGame({ boardSize: 10 });
-    };
-
-    // Helper to handle placement result and feedback
-    const processPlacement = (ship: Ship) => {
-        const result = placePlayerShip(ship);
-        if (!result.success) {
-            console.warn("Placement failed:", result.message);
-            showFeedback(result.message || "Invalid placement", 'error');
-        } else {
-            showFeedback(`${ship.type} Deployed!`, 'success');
-        }
-    };
-
-    // Callback onclick on player board
+    // Callback onclick on player board (restored)
     const handlePlayerCellClick = (row: number, col: number) => {
         if (phase === GamePhase.PLACEMENT) {
             
@@ -89,7 +63,7 @@ export function GameScreen() {
 
             // 2. Place selected ship (Placement logic)
             if (!selectedShipId) {
-                showFeedback("Select a ship first", 'warning');
+                // Warning handled by HUD instructions or validation
                 return;
             }
 
@@ -111,31 +85,18 @@ export function GameScreen() {
             processPlacement(newShip);
 
         } else if (phase === GamePhase.BATTLE) {
-            // In battle, clicking own board does nothing (unless we want to show ships)
-            showFeedback("Focus on the enemy board!", 'info');
+            // No action on click own board
         }
     };
-
-    // Callback for Enemy Board Click (Attack)
     const handleEnemyCellClick = async (row: number, col: number) => {
         if (phase !== GamePhase.BATTLE) return;
         
         if (currentTurn !== "player") {
-            showFeedback("Wait for your turn...", 'warning');
+            // Optional: Store could emit a transient error in global state if we want strict feedback here
             return;
         }
 
-        const result = await playerAttack({ row, col });
-        
-        if (result.success) {
-            // Feedback is handled by store status updates or we can use the result here
-            const type = result.data?.type;
-            if (type === 'hit') showFeedback("HIT!", 'success');
-            else if (type === 'miss') showFeedback("Miss...", 'info');
-             // Sunk is usually handled globally or by a specific slice status
-        } else {
-            showFeedback(result.message || "Invalid attack", 'error');
-        }
+        await playerAttack({ row, col });
     };
 
     // Callback for Drag Start from Board (Drag-to-Move)
@@ -257,18 +218,26 @@ export function GameScreen() {
                 
                 if (source === "board" && originalPosition && originalOrientation) {
                     // REVERT: Put it back where it was
-                    showFeedback("Invalid move - Returning ship", 'warning');
                     const originalShip = { ...newShip, position: originalPosition, orientation: originalOrientation };
                     placePlayerShip(originalShip);
-                } else {
-                    showFeedback(result.message || "Cannot place ship there", 'error');
-                }
-            } else {
-                showFeedback(`${newShip.type} Deployed!`, 'success');
+                } 
             }
             
         } catch (err) {
             console.error("Failed to parse drag data", err);
+        }
+    };
+
+    // Handle game initialization if in setup phase
+    const handleInitialize = () => {
+        initializeGame({ boardSize: 10 });
+    };
+
+    // Helper to handle placement result - but feedback now handled by HUD or console
+    const processPlacement = (ship: Ship) => {
+        const result = placePlayerShip(ship);
+        if (!result.success) {
+            console.warn("Placement failed:", result.message);
         }
     };
 
@@ -279,9 +248,7 @@ export function GameScreen() {
     return (
         <main className="min-h-screen w-full bg-slate-900 text-white flex flex-col items-center">
             {/* Header HUD */}
-            <header className="w-full">
-                <GameHUD onInitialize={handleInitialize} />
-            </header>
+            <GameHUD onInitialize={handleInitialize} />
 
             {/* Game area: player and AI boards side by side */}
             <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 px-4">
@@ -290,13 +257,6 @@ export function GameScreen() {
                     <h2 className="text-center mb-3 text-lg font-semibold text-sky-300">
                         Your Fleet
                     </h2>
-                    <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-sm px-4">
-                        <FeedbackMessage
-                        message={localFeedback?.msg || null}
-                        type={localFeedback?.type}
-                        onDismiss={() => setLocalFeedback(null)}
-                        />
-                    </div>
                     <Board
                         size={10}
                         cells={playerBoard}

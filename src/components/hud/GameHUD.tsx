@@ -49,23 +49,39 @@ export function GameHUD({ onInitialize }: GameHUDProps) {
 
   /*
    * useEffect to react to new attacks.
-   * If AI attacked, show feedback. 
+   * Handles visual feedback for both Player and AI attacks.
    */
   useEffect(() => {
-    if (lastAttack && lastAttack.by === 'ai') {
-        const msgs = {
-            'hit': "AI Hit your ship! 💥",
-            'sunk': "AI Sunk your ship! 💀",
-            'miss': "AI Missed... 🌊",
-            'invalid': ""
-        };
-        const msg = msgs[lastAttack.type];
+    if (lastAttack) {
+        let msg = "";
+        let type: FeedbackType = 'info';
+
+        if (lastAttack.by === 'ai') {
+             // AI Attacking Player
+            const msgs = {
+              'hit': "AI Hit your ship! 💥",
+              'sunk': "AI Sunk your ship! 💀",
+              'miss': "AI Missed... 🌊",
+              'invalid': ""
+            };
+            msg = msgs[lastAttack.type] || "";
+            type = (lastAttack.type === 'hit' || lastAttack.type === 'sunk') ? 'error' : 'warning';
+
+        } else {
+            // Player Attacking AI
+            const msgs = {
+              'hit': "Direct Hit! 🎯",
+              'sunk': "Enemy Ship Sunk! 🎆",
+              'miss': "Missed target... 💨",
+              'invalid': "Invalid Coordinates 🚫"
+            };
+            msg = msgs[lastAttack.type] || "";
+            type = (lastAttack.type === 'hit' || lastAttack.type === 'sunk') ? 'success' : 'warning';
+        }
+
         if (msg) {
             setFeedback(msg);
-            setFeedbackType(lastAttack.type === 'miss' ? 'info' : 'error'); // Hit/Sunk is bad for player -> error/warning style? Or just info/success inverse? 
-            // In FeedbackMessage: 'error' is red, 'success' is green. 
-            // AI Hit is bad for player (Red). AI Miss is good (Green... or Neutral).
-            // Let's use 'error' for HIT/SUNK (Danger), 'info' for MISS.
+            setFeedbackType(type);
             
             if (timeoutRef.current) clearTimeout(timeoutRef.current);
             timeoutRef.current = window.setTimeout(() => setFeedback(null), 3000);
@@ -125,12 +141,12 @@ export function GameHUD({ onInitialize }: GameHUDProps) {
                 <OrientationToggle />
                 <ReadinessIndicators />
                 <Button
-                variant="primary"
-                disabled={!playerReady || !aiReady}
-                onClick={handleConfirm}
-                className={`whitespace-nowrap ${playerReady && aiReady ? 'animate-cta-pulse ring-2 ring-sky-400 ring-offset-2 ring-offset-slate-900' : ''}`}
+                  variant="primary"
+                  disabled={!playerReady || !aiReady}
+                  onClick={handleConfirm}
+                  className={`whitespace-nowrap ${playerReady && aiReady ? 'animate-cta-pulse ring-2 ring-sky-400 ring-offset-2 ring-offset-slate-900' : ''}`}
                 >
-                Start Battle
+                  Start Battle
                 </Button>
             </div>
           </div>
