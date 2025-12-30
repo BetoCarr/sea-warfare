@@ -55,39 +55,38 @@ export function GameHUD({ onInitialize }: GameHUDProps) {
    */
   useEffect(() => {
     if (lastAttack) {
-        let msg = "";
-        let type: FeedbackType = 'info';
+      let msg = "";
+      let type: FeedbackType = 'info';
 
-        if (lastAttack.by === 'ai') {
-             // AI Attacking Player
-            const msgs = {
-              'hit': "AI Hit your ship! 💥",
-              'sunk': "AI Sunk your ship! 💀",
-              'miss': "AI Missed... 🌊",
-              'invalid': ""
-            };
-            msg = msgs[lastAttack.type] || "";
-            type = (lastAttack.type === 'hit' || lastAttack.type === 'sunk') ? 'error' : 'warning';
+      if (lastAttack.by === 'ai') {
+        // AI Attacking Player
+        const msgs = {
+          'hit': "AI Hit your ship! 💥",
+          'sunk': "AI Sunk your ship! 💀",
+          'miss': "AI Missed... 🌊",
+          'invalid': ""
+        };
+        msg = msgs[lastAttack.type] || "";
+        type = (lastAttack.type === 'hit' || lastAttack.type === 'sunk') ? 'error' : 'warning';
+      } else {
+        // Player Attacking AI
+        const msgs = {
+          'hit': "Direct Hit! 🎯",
+          'sunk': "Enemy Ship Sunk! 🎆",
+          'miss': "Missed target... 💨",
+          'invalid': "Invalid Coordinates 🚫"
+        };
+        msg = msgs[lastAttack.type] || "";
+        type = (lastAttack.type === 'hit' || lastAttack.type === 'sunk') ? 'success' : 'warning';
+      }
 
-        } else {
-            // Player Attacking AI
-            const msgs = {
-              'hit': "Direct Hit! 🎯",
-              'sunk': "Enemy Ship Sunk! 🎆",
-              'miss': "Missed target... 💨",
-              'invalid': "Invalid Coordinates 🚫"
-            };
-            msg = msgs[lastAttack.type] || "";
-            type = (lastAttack.type === 'hit' || lastAttack.type === 'sunk') ? 'success' : 'warning';
-        }
-
-        if (msg) {
-            setFeedback(msg);
-            setFeedbackType(type);
-            
-            if (timeoutRef.current) clearTimeout(timeoutRef.current);
-            timeoutRef.current = window.setTimeout(() => setFeedback(null), 3000);
-        }
+      if (msg) {
+        setFeedback(msg);
+        setFeedbackType(type);
+        
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        timeoutRef.current = window.setTimeout(() => setFeedback(null), 3000);
+      }
     }
   }, [lastAttack]);
 

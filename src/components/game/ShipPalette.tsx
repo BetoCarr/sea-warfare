@@ -92,9 +92,35 @@ export const ShipPalette = () => {
                     );
                     e.dataTransfer.effectAllowed = "copy";
                     
-                    // Optional: Custom ghost image could be set here, but
-                    // native behavior of dragging the visual element usually works well
-                    // if the element shape matches the target.
+                    // --- Custom Ghost Logic ---
+                    // Create a temporary element to represent the ship with CURRENT orientation
+                    const ghost = document.createElement("div");
+                    ghost.style.position = "absolute";
+                    ghost.style.top = "-1000px";
+                    ghost.style.left = "-1000px";
+                    ghost.style.display = "flex";
+                    ghost.style.gap = "1px"; // Match palette gap
+                    ghost.style.padding = "2px";
+                    
+                    // Critical: Use the global orientation state for the ghost
+                    ghost.style.flexDirection = orientation === 'horizontal' ? 'row' : 'column';
+                    
+                    // Match the visual style of segments
+                    for (let i = 0; i < ship.size; i++) {
+                        const seg = document.createElement("div");
+                        seg.style.width = "20px"; // Match palette w-5
+                        seg.style.height = "20px"; // Match palette h-5
+                        seg.style.backgroundColor = "#3b82f6"; // bg-blue-500 (active color)
+                        seg.style.border = "1px solid #60a5fa"; // border-blue-400
+                        seg.style.borderRadius = "2px";
+                        ghost.appendChild(seg);
+                    }
+
+                    document.body.appendChild(ghost);
+                    e.dataTransfer.setDragImage(ghost, 0, 0);
+
+                    // Clean up immediately
+                    setTimeout(() => document.body.removeChild(ghost), 0);
                 };
 
                 return (
