@@ -30,7 +30,6 @@ export interface GameAttackState {
     boardState: BoardState;
     attackResult: AttackResult;
     isGameOver: boolean;
-    winner?: 'player' | 'ai';            
 }
 
 /**
@@ -170,7 +169,6 @@ export function processAttack(
         boardState: newBoardState,
         attackResult,
         isGameOver,
-        winner: isGameOver ? 'player' : undefined 
     };
 }
 

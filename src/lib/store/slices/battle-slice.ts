@@ -57,7 +57,7 @@ export const createBattleSlice: StateCreator<
         // --- Execute attack ---
         const result = processAttack(state.ai.boardState, position);
 
-        const { boardState, attackResult, isGameOver, winner } = result;
+        const { boardState, attackResult, isGameOver } = result;
 
         set((draft) => {
             draft.ai.boardState = boardState;
@@ -97,7 +97,7 @@ export const createBattleSlice: StateCreator<
             if (isGameOver) {
                 draft.status = GameStatus.FINISHED;
                 draft.phase = GamePhase.GAME_OVER;
-                draft.outcome = { winner: winner ?? "player" };
+                draft.outcome = { winner: "player" };
                 draft.endTime = new Date();
 
                 console.log("[Battle] ✅ Player wins");
@@ -138,7 +138,7 @@ export const createBattleSlice: StateCreator<
 
         const result = processAttack(state.player.boardState, position);
 
-        const { boardState, attackResult, isGameOver, winner } = result;
+        const { boardState, attackResult, isGameOver } = result;
 
         set((draft) => {
             draft.player.boardState = boardState;
@@ -176,7 +176,7 @@ export const createBattleSlice: StateCreator<
             if (isGameOver) {
                 draft.status = GameStatus.FINISHED;
                 draft.phase = GamePhase.GAME_OVER;
-                draft.outcome = { winner: winner ?? "ai" };
+                draft.outcome = { winner: "ai" };
                 draft.endTime = new Date();
 
                 console.log("[Battle] ❌ AI wins");
