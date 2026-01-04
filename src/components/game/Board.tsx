@@ -150,12 +150,20 @@ export default function Board({
     }, [cells, getCellInfo, showShips]);
 
     return (
-        <div className="w-full mx-auto max-w-[min(90vw,550px)]">
+        <div
+            className={cn(
+                "mx-auto w-full",
+                "max-w-[85vw]",
+                "sm:max-w-[70vw]",
+                "md:max-w-[520px]",
+                "max-h-[70vh] sm:max-h-none",
+                className
+            )}
+        >
             <div
                 className="grid"
                 style={{
                     gridTemplateColumns: `auto repeat(${size}, minmax(0, 1fr))`,
-                    gap: "2px",
                 }}
             >
                 {/* --- Row 0: empty corner + column labels --- */}
@@ -163,7 +171,7 @@ export default function Board({
                 {Array.from({ length: size }).map((_, i) => (
                     <div
                         key={`col-${i}`}
-                        className="text-sm text-slate-300 text-center"
+                        className="text-[10px] sm:text-xs md:text-sm text-slate-400 text-center px-1"
                     >
                         {String.fromCharCode(65 + i)}
                     </div>
@@ -175,7 +183,7 @@ export default function Board({
                         {/* Row number label */}
                         <div
                             key={`row-${row}`}
-                            className="text-sm text-slate-300 text-center flex items-center justify-center"
+                            className="text-[10px] sm:text-xs md:text-sm text-slate-400 text-center px-1"
                         >
                             {row + 1}
                         </div>

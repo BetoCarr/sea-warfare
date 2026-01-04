@@ -249,6 +249,18 @@ export function GameScreen() {
     return (
         <div className="h-screen w-screen overflow-hidden bg-slate-900 text-slate-100">
             <GameHUD onInitialize={handleInitialize} />
+            <Board
+                size={10}
+                cells={playerBoard}
+                isPlayerBoard={true}
+                onCellClick={handlePlayerCellClick}
+                onCellDrop={handleDrop}
+                onCellDragOver={handleDragOver}
+                onCellDragStart={handleBoardDragStart}
+                ships={player.ships}
+                forceShowShips={true}
+                disabled={phase === GamePhase.GAME_OVER}
+            />
         </div>
 
         // <main className="h-[100dvh] w-full bg-slate-900 text-white flex flex-col overflow-hidden">

@@ -69,19 +69,13 @@ export default function Cell({
      * based on its current state, hover state, and animation.
      */
     const getCellStyles = () => {
-        // const baseStyles =
-        //     "w-full aspect-square border transition-all duration-200 flex items-center justify-center text-sm font-bold select-none";
         const baseStyles =
-            "w-full aspect-square border flex items-center justify-center " +
+            "w-full aspect-square flex items-center justify-center " +
+            "border " +
+            "m-[1px] sm:m-[1.5px] md:m-[2px] " +
             "transition-all duration-150 select-none text-sm font-bold";
-        
+
         const stateStyles: Record<CellState, string> = {
-            // empty: "bg-blue-100 hover:bg-blue-200 border-slate-400 text-slate-800",
-            // ship: showShip ? "bg-gray-600 hover:bg-gray-700 border-slate-600 text-white"
-            //             : "bg-blue-100 hover:bg-blue-200 border-slate-400 text-slate-800",
-            // hit: "bg-red-500 text-white border-red-600",
-            // miss: "bg-blue-300 text-slate-600 border-sky-400",
-            // sunk: "bg-red-700 text-white border-red-800",
             empty:
                 "bg-slate-700 hover:bg-slate-600 border-slate-500 text-slate-300",
             
