@@ -247,20 +247,24 @@ export function GameScreen() {
     const [activeTab, setActiveTab] = useState<'player' | 'enemy'>('player');
 
     return (
-        <div className="h-screen w-screen overflow-hidden bg-slate-900 text-slate-100">
+        <div className="h-screen w-screen bg-slate-900 text-slate-100 flex flex-col overflow-hidden">
             <GameHUD onInitialize={handleInitialize} />
-            <Board
-                size={10}
-                cells={playerBoard}
-                isPlayerBoard={true}
-                onCellClick={handlePlayerCellClick}
-                onCellDrop={handleDrop}
-                onCellDragOver={handleDragOver}
-                onCellDragStart={handleBoardDragStart}
-                ships={player.ships}
-                forceShowShips={true}
-                disabled={phase === GamePhase.GAME_OVER}
-            />
+            {/* GAME STAGE */}
+            <main className="flex-1 overflow-hidden flex items-center justify-center">
+                {/* aquí vive el layout de tableros */}
+                <Board
+                    size={10}
+                    cells={playerBoard}
+                    isPlayerBoard={true}
+                    onCellClick={handlePlayerCellClick}
+                    onCellDrop={handleDrop}
+                    onCellDragOver={handleDragOver}
+                    onCellDragStart={handleBoardDragStart}
+                    ships={player.ships}
+                    forceShowShips={true}
+                    disabled={phase === GamePhase.GAME_OVER}
+                />
+            </main>
         </div>
 
         // <main className="h-[100dvh] w-full bg-slate-900 text-white flex flex-col overflow-hidden">
