@@ -132,6 +132,7 @@ export function GameHUD({ onInitialize }: GameHUDProps) {
               <Button 
                 variant="success"
                 onClick={onInitialize}
+                pulse={true}
               >
                 <span className="hidden sm:inline">START</span>
                 <span className="sm:hidden">⚔️</span>

@@ -20,16 +20,15 @@ export const Button: React.FC<ButtonProps> = ({
 }) => {
   const baseClasses =
     'inline-flex items-center justify-center rounded-md font-semibold ' +
-    'transition-colors duration-150 ' +
+    'transition-all duration-200 ' +
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ' +
-    'disabled:opacity-50 disabled:pointer-events-none';
-  
+    'disabled:opacity-50 disabled:cursor-not-allowed';
 
   const variantClasses = {
     primary:
-      'bg-blue-600 text-white hover:bg-blue-500 focus-visible:ring-blue-500',
+      'bg-blue-600 text-white hover:bg-blue-500 focus-visible:ring-blue-500 shadow-sm',
     success:
-      'bg-green-600 text-white hover:bg-green-500 focus-visible:ring-green-500',
+      'bg-green-600 text-white hover:bg-green-500 focus-visible:ring-green-500 shadow-sm',
     secondary:
       'bg-slate-700 text-slate-100 hover:bg-slate-600 focus-visible:ring-slate-500',
     ghost:
@@ -39,9 +38,9 @@ export const Button: React.FC<ButtonProps> = ({
   }[variant];
 
   const sizeClasses = {
-    default: 'h-9 px-4 text-sm',   // ideal para header h-14
-    sm: 'h-7 px-3 text-xs',
-    icon: 'h-8 w-8 p-0',
+    default: 'py-2.5 px-5 text-sm',
+    sm: 'py-1.5 px-3 text-xs',
+    icon: 'p-2 aspect-square',
   }[size];
 
   const widthClass = fullWidth ? 'w-full' : 'w-auto';
