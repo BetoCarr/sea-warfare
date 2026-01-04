@@ -64,14 +64,26 @@ export const FeedbackMessage = ({
     return (
         <div
             className={clsx(
-                "flex items-center gap-3 px-4 py-3 rounded-md border text-sm shadow-md transition-all duration-300",
+                // Base (mobile portrait)
+                "flex items-center gap-2 px-2 py-2 rounded-md border shadow-md",
+                "text-xs leading-snug max-w-[90vw]",
+                "transition-all duration-300 ease-out",
+
+                // Visibility animation
+                isVisible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-2 pointer-events-none",
+
+                // Responsive scaling
+                "sm:gap-3 sm:px-4 sm:py-3 sm:text-sm sm:max-w-md",
+                "md:text-base md:max-w-lg",
+
                 styles[type],
-                isVisible ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-2 pointer-events-none",
                 className
             )}
             role="alert"
         >
-            <span className="text-base select-none">{icons[type]}</span>
+            <span className="text-sm sm:text-base md:text-xl select-none">{icons[type]}</span>
             <span className="font-medium">{message}</span>
         </div>
     );

@@ -38,8 +38,8 @@ export const Button: React.FC<ButtonProps> = ({
   }[variant];
 
   const sizeClasses = {
-    default: 'py-2.5 px-5 text-sm',
-    sm: 'py-1.5 px-3 text-xs',
+    default: 'py-1 px-4 text-sm',
+    sm: 'py-1 px-3 text-xs',
     icon: 'p-2 aspect-square',
   }[size];
 

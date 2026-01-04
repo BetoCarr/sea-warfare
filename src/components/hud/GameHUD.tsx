@@ -205,12 +205,12 @@ export function GameHUD({ onInitialize }: GameHUDProps) {
       */}
 
       {/* Feedback Message Toast */}
-      {/* <FeedbackMessage 
+      <FeedbackMessage 
         message={activeMessage} 
         type={activeType} 
         onDismiss={() => setFeedback(null)}
         className="absolute top-full left-1/2 -translate-x-1/2 mt-2 shadow-xl whitespace-nowrap text-sm"
-      /> */}
+      />
     </header>
   );
 }
