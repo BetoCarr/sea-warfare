@@ -1,18 +1,12 @@
+
 import { useRef, useState, useEffect } from "react";
 import { useGameStore } from "@/lib/store/game-store";
 import { GamePhase } from "@/lib/store/game-types";
 import { useShallow } from "zustand/react/shallow";
-import { ShipPalette } from "../game/ShipPalette";
-import { OrientationToggle } from "@/components/game/OrientationToggle";
-import { BoardStats } from "./BoardStats";
-import { PhaseSection } from "./PhaseSection";
 import { ReadinessIndicators } from "./ReadinessIndicators";
-import { ShipsRemainingSection } from "./ShipsRemainingSection";
 import { TurnSection } from "./TurnSection";
 import { FeedbackMessage, FeedbackType } from "./FeedbackMessage";
 import { Button } from "@/components/ui/Button";
-import { GameOverSection } from "./GameOverSection";
-import { FinalStats } from "./FinalStats";
 
 interface GameHUDProps {
   onInitialize?: () => void;
@@ -112,72 +106,111 @@ export function GameHUD({ onInitialize }: GameHUDProps) {
   const activeMessage = feedback || instruction;
   const activeType = feedback ? feedbackType : 'instruction';
 
-  return (
-    <header className="w-full h-34 px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-white bg-slate-800 border-b border-slate-700 transition-all duration-300 shadow-sm z-20 relative">
-      {/* LEFT: Branding & Phase */}
-      <div className="flex items-center gap-6 self-start md:self-auto">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">⚓</span>
-          <h1 className="font-bold text-xl tracking-tight hidden lg:block text-slate-100">SEA WARFARE</h1>
-        </div>
-        <div className="h-8 w-px bg-slate-600 hidden md:block" />
-        <PhaseSection />
-        {phase === GamePhase.SETUP && (
-          <Button variant="primary" onClick={onInitialize} className="ml-4 py-1 px-3 text-sm animate-cta-pulse">
-            Initialize System
-          </Button>
-        )}
-      </div>
+  // --- Dynamic Content Selectors ---
+  const renderCenterContent = () => {
+    switch (phase) {
+        case GamePhase.PLACEMENT:
+            return (
+              <div className="hidden md:flex items-center gap-4">
+                <span className="text-xs text-slate-400">Setup your fleet</span>
+                <ReadinessIndicators />
+              </div>
+            );
+        case GamePhase.BATTLE:
+            return <TurnSection />;
+        case GamePhase.GAME_OVER:
+            return <span className="text-xs font-bold text-yellow-400">MATCH ENDED</span>;
+        default:
+            return null;
+    }
+  };
 
-      {/* CENTER: Turn or Placement Controls */}
-      <div className="flex-1 flex flex-wrap items-center justify-center gap-4 w-full md:w-auto">
-        {phase === GamePhase.BATTLE && (
-          <TurnSection />
-        )}
-        {phase === GamePhase.PLACEMENT && (
-          <div className="flex flex-col md:flex-row items-center gap-6 w-full md:w-auto p-2">
-            <ShipPalette />
-            <div className="h-px w-full md:w-px md:h-12 bg-slate-600" />
-            <div className="flex items-center gap-4">
-              <OrientationToggle />
-              <ReadinessIndicators />
-              <Button
-                variant="primary"
-                disabled={!playerReady || !aiReady}
-                onClick={handleConfirm}
-                className={`whitespace-nowrap ${playerReady && aiReady ? 'animate-cta-pulse ring-2 ring-sky-400 ring-offset-2 ring-offset-slate-900' : ''}`}
+  const renderAction = () => {
+    switch (phase) {
+        case GamePhase.SETUP:
+            return (
+              <Button 
+                variant="success"
+                onClick={onInitialize}
               >
-                Start Battle
+                <span className="hidden sm:inline">START</span>
+                <span className="sm:hidden">⚔️</span>
               </Button>
-            </div>
-          </div>
-        )}
-        {phase === GamePhase.GAME_OVER && (
-          <GameOverSection />
-        )}
+            );
+        case GamePhase.PLACEMENT:
+            return (
+                <Button 
+                  variant="success"
+                  onClick={handleConfirm}
+                  disabled={!playerReady || !aiReady}
+                  pulse={playerReady && aiReady}
+                >
+                  <span className="sm:hidden">START</span>
+                  <span className="hidden sm:inline">START BATTLE</span>
+                </Button>
+            );
+        case GamePhase.GAME_OVER:
+            return (
+              <Button 
+                variant="secondary"
+                onClick={() => window.location.reload()} 
+              >
+                REMATCH
+              </Button>
+            );
+        default:
+            return null;
+    }
+  };
+
+  // Phase Display Name
+  const phaseLabel = {
+      [GamePhase.SETUP]: "SYSTEM BOOT",
+      [GamePhase.PLACEMENT]: "DEPLOYMENT",
+      [GamePhase.BATTLE]: "COMBAT",
+      [GamePhase.GAME_OVER]: "DEBRIEF"
+  }[phase];
+
+  return (
+    <header className="h-14 flex items-center justify-between px-3 md:px-6 border-b border-slate-700 bg-slate-800/80 backdrop-blur-md shadow-sm relative z-50">
+      
+      {/* LEFT: Identity */}
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <span className="text-lg">⚓</span>
+          <span className="text-sm font-bold tracking-wider text-slate-100 hidden sm:block">
+            SEA WARFARE
+          </span>
+        </div>
+        <div className="h-4 w-px bg-slate-600 mx-1" />
+        <span className="text-[10px] sm:text-xs font-mono text-cyan-400 bg-cyan-950/30 px-2 py-0.5 rounded border border-cyan-900/50">
+          {phaseLabel}
+        </span>
       </div>
 
-      {/* RIGHT: Stats */}
-      <div className="flex items-center gap-4 self-end md:self-auto">
-        {phase === GamePhase.BATTLE && (
-          <>
-            <ShipsRemainingSection />
-            <div className="h-8 w-px bg-slate-600 hidden md:block" />
-            <BoardStats />
-          </>
-        )}
-        {phase === GamePhase.GAME_OVER && (
-          <FinalStats />
-        )}
+      {/* CENTER: Dynamic Context (Hidden on very small screens if crowded) */}
+      <div className="flex-1 flex justify-center mx-4">
+        {renderCenterContent()}
       </div>
 
-      {/* Feedback Message (fixed position) */}
-      <FeedbackMessage 
+      {/* RIGHT: Primary Action */}
+      <div>
+        {renderAction()}
+      </div>
+
+      {/* Stats Overlay/HIdden handling: For now keeping it cleaner as requested. 
+          Board stats could be integrated into the center or a sub-header if really needed, 
+          but for h-14 we prioritize the main loop flow. 
+      */}
+
+      {/* Feedback Message Toast */}
+      {/* <FeedbackMessage 
         message={activeMessage} 
         type={activeType} 
         onDismiss={() => setFeedback(null)}
-        className="absolute top-full left-1/2 -translate-x-1/2 z-[100] mt-4 shadow-xl whitespace-nowrap"
-      />
+        className="absolute top-full left-1/2 -translate-x-1/2 mt-2 shadow-xl whitespace-nowrap text-sm"
+      /> */}
     </header>
   );
 }
+
