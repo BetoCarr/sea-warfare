@@ -1,17 +1,22 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
+import { useGameStore } from "@/lib/store/game-store";
+import { GamePhase } from "@/lib/store/game-types";
+import type { Ship, ShipType } from "@/lib/utils/types";
+import { SHIPS_CONFIG } from "@/lib/utils/constants";
+import { cn } from "@/lib/utils/utils";
 import Board from "./Board";
 import { ShipPalette } from "./ShipPalette";
 import { GameHUD } from "../hud/GameHUD";
-import { useShallow } from "zustand/react/shallow";
-import { useGameStore } from "@/lib/store/game-store";
-import { GamePhase, GameStatus } from "@/lib/store/game-types";
-import type { Ship, ShipType } from "@/lib/utils/types";
-import { SHIPS_CONFIG } from "@/lib/utils/constants";
 import { FeedbackMessage, FeedbackType } from "../hud/FeedbackMessage";
-import { useState, useRef } from "react";
 
 export function GameScreen() {
+    const [feedback, setFeedback] = useState<string | null>(null);
+    const [feedbackType, setFeedbackType] = useState<FeedbackType>('info');
+    const timeoutRef = useRef<number | null>(null);
+
     const {
         player,
         ai,
@@ -22,6 +27,7 @@ export function GameScreen() {
         removePlayerShip,
         selectShip,
         initializeGame,
+        confirmPlacement,
         selectedShipId,
         orientation,
         status,
@@ -37,12 +43,80 @@ export function GameScreen() {
             removePlayerShip: state.removePlayerShip,
             selectShip: state.selectShip,
             initializeGame: state.initializeGame,
+            confirmPlacement: state.confirmPlacement,
             selectedShipId: state.selectedShipId,
             orientation: state.orientation,
             status: state.status,
             lastAttack: state.lastAttack,
         }))
     );
+
+    const playerReady = player.isReady;
+    const aiReady = ai.isReady;
+
+    // --- Feedback Logic (Moved from HUD) ---
+    useEffect(() => {
+        if (lastAttack) {
+            let msg = "";
+            let type: FeedbackType = 'info';
+
+            if (lastAttack.by === 'ai') {
+                const msgs = {
+                    'hit': "AI Hit your ship! 💥",
+                    'sunk': "AI Sunk your ship! 💀",
+                    'miss': "AI Missed... 🌊",
+                    'invalid': ""
+                };
+                msg = msgs[lastAttack.type] || "";
+                type = (lastAttack.type === 'hit' || lastAttack.type === 'sunk') ? 'error' : 'warning';
+            } else {
+                const msgs = {
+                    'hit': "Direct Hit! 🎯",
+                    'sunk': "Enemy Ship Sunk! 🎆",
+                    'miss': "Missed target... 💨",
+                    'invalid': "Invalid Coordinates 🚫"
+                };
+                msg = msgs[lastAttack.type] || "";
+                type = (lastAttack.type === 'hit' || lastAttack.type === 'sunk') ? 'success' : 'warning';
+            }
+
+            if (msg) {
+                setFeedback(msg);
+                setFeedbackType(type);
+                if (timeoutRef.current) clearTimeout(timeoutRef.current);
+                timeoutRef.current = window.setTimeout(() => setFeedback(null), 3000);
+            }
+        }
+    }, [lastAttack]);
+
+    const handleConfirm = () => {
+        const result = confirmPlacement();
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        
+        setFeedback(result.message || (result.success ? "Battle phase initiated! ⚔️" : "Placement incomplete"));
+        setFeedbackType(result.success ? 'success' : 'error');
+        timeoutRef.current = window.setTimeout(() => setFeedback(null), result.success ? 3000 : 5000);
+        return result;
+    };
+
+    const instruction = (() => {
+        switch (phase) {
+            case GamePhase.SETUP:
+                return "Initialize combat protocols...";
+            case GamePhase.PLACEMENT:
+                if (playerReady && aiReady) return "Systems optimal. Ready for engagement!";
+                return "Distribute your fleet across the sector";
+            case GamePhase.BATTLE:
+                return (currentTurn === 'player') 
+                    ? "Targeting systems active. Select coordinates." 
+                    : "Enemy turn... awaiting impact.";
+            default:
+                return null;
+        }
+    })();
+
+    const activeMessage = feedback || instruction;
+    const activeType = feedback ? feedbackType : 'instruction';
 
     const playerBoard = player.boardState.board; // CellState[][]
     const aiBoard = ai.boardState.board;
@@ -247,11 +321,28 @@ export function GameScreen() {
     const [activeTab, setActiveTab] = useState<'player' | 'enemy'>('player');
 
     return (
-        <div className="h-screen w-screen bg-slate-900 text-slate-100 flex flex-col overflow-hidden">
-            <GameHUD onInitialize={handleInitialize} />
+        <div className="h-screen w-screen bg-slate-900 text-slate-100 flex flex-col overflow-hidden relative">
+            <GameHUD 
+                onInitialize={handleInitialize} 
+                onConfirm={handleConfirm}
+            />
+
+            {/* Instruction/Feedback Overlay */}
+            <div className="absolute top-16 left-1/2 -translate-x-1/2 z-[70] pointer-events-none w-full max-w-lg flex justify-center px-4">
+                <FeedbackMessage 
+                    message={activeMessage} 
+                    type={activeType} 
+                    onDismiss={() => setFeedback(null)}
+                    className="pointer-events-auto shadow-2xl backdrop-blur-md ring-1 ring-white/10"
+                />
+            </div>
+
             {/* GAME STAGE */}
-            <main className="flex-1 overflow-hidden flex items-center justify-center">
-                {/* aquí vive el layout de tableros */}
+            <main className={cn(
+                "flex-1 overflow-hidden flex flex-col items-center justify-center p-4 md:p-8 relative",
+                "transition-all duration-500 ease-in-out",
+                phase === GamePhase.PLACEMENT && "justify-between sm:justify-center md:pr-[280px]"
+            )}>
                 <Board
                     size={10}
                     cells={playerBoard}
@@ -264,107 +355,10 @@ export function GameScreen() {
                     forceShowShips={true}
                     disabled={phase === GamePhase.GAME_OVER}
                 />
+
+                {/* CONTEXTUAL SHIP PALETTE (Placement Phase Only) */}
+                {phase === GamePhase.PLACEMENT && <ShipPalette />}
             </main>
         </div>
-
-        // <main className="h-[100dvh] w-full bg-slate-900 text-white flex flex-col overflow-hidden">
-        //     {/* Header HUD - Flex none to prevent shrinking */}
-        //     <div className="flex-none z-30 relative">
-        //         <GameHUD onInitialize={handleInitialize} />
-        //     </div>
-
-        //     {/* Mobile Tab Navigation (Visible only on mobile) */}
-        //     <div className="flex-none flex md:hidden border-b border-slate-700 bg-slate-800/50 backdrop-blur-md z-20">
-        //         <button 
-        //             onClick={() => setActiveTab('player')}
-        //             className={`flex-1 py-3 text-xs font-bold tracking-wider transition-colors duration-200 ${
-        //                 activeTab === 'player' 
-        //                     ? 'text-sky-400 border-b-2 border-sky-400 bg-slate-800/80' 
-        //                     : 'text-slate-500 hover:text-slate-300'
-        //             }`}
-        //         >
-        //             YOUR FLEET
-        //         </button>
-        //         <button 
-        //             onClick={() => setActiveTab('enemy')}
-        //             className={`flex-1 py-3 text-xs font-bold tracking-wider transition-colors duration-200 ${
-        //                 activeTab === 'enemy' 
-        //                     ? 'text-red-400 border-b-2 border-red-400 bg-slate-800/80' 
-        //                     : 'text-slate-500 hover:text-slate-300'
-        //             }`}
-        //         >
-        //             ENEMY WATERS
-        //         </button>
-        //     </div>
-
-        //     {/* Main Game Area */}
-        //     <div className="flex-1 relative overflow-y-auto overflow-x-hidden p-2 md:p-4 lg:p-6">
-        //         <div className="h-full w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 transition-all">
-                    
-        //             {/* Player Board Section */}
-        //             <section className={`
-        //                 ${activeTab === 'player' ? 'flex' : 'hidden'} 
-        //                 md:flex flex-col items-center flex-1
-        //                 bg-slate-800/40 rounded-xl p-2 md:p-4 
-        //                 border border-white/5 shadow-xl
-        //                 transition-all duration-300
-        //             `}>
-        //                 <h2 className="text-center mb-3 text-lg font-semibold text-sky-300 tracking-wide">
-        //                     Your Fleet
-        //                 </h2>
-        //                 <div className="w-full max-w-[400px] aspect-square">
-        //                     <Board
-        //                         size={10}
-        //                         cells={playerBoard}
-        //                         isPlayerBoard={true}
-        //                         onCellClick={handlePlayerCellClick}
-        //                         onCellDrop={handleDrop}
-        //                         onCellDragOver={handleDragOver}
-        //                         onCellDragStart={handleBoardDragStart}
-        //                         ships={player.ships}
-        //                         forceShowShips={true}
-        //                         disabled={phase === GamePhase.GAME_OVER}
-        //                     />
-        //                 </div>
-        //             </section>
-
-        //             {/* AI Board Section */}
-        //             <section className={`
-        //                 ${activeTab === 'enemy' ? 'flex' : 'hidden'} 
-        //                 md:flex flex-col items-center flex-1
-        //                 bg-slate-800/40 rounded-xl p-2 md:p-4 
-        //                 border border-white/5 shadow-xl
-        //                 transition-all duration-300
-        //                 ${isBattle ? 'opacity-100' : 'md:opacity-50 md:pointer-events-none'}
-        //             `}>
-        //                 <h2 className="text-center mb-3 text-lg font-semibold text-red-300 flex items-center gap-2 tracking-wide">
-        //                     Enemy Waters
-        //                 </h2>
-        //                 <div className="w-full max-w-[400px] aspect-square">
-        //                     <Board
-        //                         size={10}
-        //                         cells={aiBoard}
-        //                         isPlayerBoard={false}
-        //                         onCellClick={handleEnemyCellClick}
-        //                         disabled={!isBattle || currentTurn !== 'player'}
-        //                     />
-        //                 </div>
-        //             </section>
-        //         </div>
-        //     </div>
-
-        //     {/* Ship Palette Overlay (Placement Phase Only) */}
-        //     {phase === GamePhase.PLACEMENT && (
-        //         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-50 w-full max-w-lg px-4">
-        //             <div className="bg-slate-800/95 backdrop-blur-sm border border-slate-600 shadow-2xl rounded-xl p-3 flex flex-col gap-2 animate-slide-up">
-        //                 <div className="flex justify-between items-center border-b border-slate-700 pb-2 mb-1">
-        //                     <span className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Fleet Command</span>
-        //                     <span className="text-[10px] text-slate-500">Drag ships to board</span>
-        //                 </div>
-        //                 <ShipPalette />
-        //             </div>
-        //         </div>
-        //     )}
-        // </main>
     );
 }
