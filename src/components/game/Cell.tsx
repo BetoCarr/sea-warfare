@@ -72,7 +72,7 @@ export default function Cell({
         const baseStyles =
             "w-full aspect-square flex items-center justify-center " +
             "border " +
-            "m-[2.5px] sm:m-[2px] md:m-[1.5px] " +
+            "m-0 " +
             "transition-all duration-150 select-none text-sm font-bold";
 
         const stateStyles: Record<CellState, string> = {

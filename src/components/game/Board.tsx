@@ -156,13 +156,15 @@ export default function Board({
                 "max-w-[340px]",
                 "sm:max-w-[420px]",
                 "md:max-w-[280px]",
-                // "md:max-w-[480px]",
                 "max-h-[80vh]",
                 className
             )}
         >
             <div
-                className="grid"
+                className={cn(
+                    "grid",
+                    "gap-[6px] sm:gap-[4px] md:gap-[3px]"
+                )}
                 style={{
                     gridTemplateColumns: `auto repeat(${size}, minmax(0, 1fr))`,
                 }}
@@ -172,7 +174,7 @@ export default function Board({
                 {Array.from({ length: size }).map((_, i) => (
                     <div
                         key={`col-${i}`}
-                        className="text-[10px] sm:text-xs md:text-sm text-slate-400 text-center px-1"
+                        className="text-[10px] sm:text-xs md:text-sm text-slate-400 text-center"
                     >
                         {String.fromCharCode(65 + i)}
                     </div>
@@ -184,7 +186,7 @@ export default function Board({
                         {/* Row number label */}
                         <div
                             key={`row-${row}`}
-                            className="text-[10px] sm:text-xs md:text-sm text-slate-400 text-center px-1"
+                            className="text-[10px] sm:text-xs md:text-sm text-slate-400 text-center"
                         >
                             {row + 1}
                         </div>
