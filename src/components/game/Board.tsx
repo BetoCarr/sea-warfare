@@ -152,10 +152,10 @@ export default function Board({
     return (
         <div
             className={cn(
-                "mx-auto w-[92vw] aspect-square",
-                "max-w-[340px] max-h-[45vh]",
-                "sm:max-w-[400px] sm:max-h-[50vh]",
-                "md:max-w-[450px] md:max-h-[70vh]",
+                "mx-auto w-[90vw] aspect-square",
+                "max-w-[320px] max-h-[40vh]",
+                "sm:max-w-[380px] sm:max-h-[45vh]",
+                "md:max-w-[450px] md:max-h-[65vh]",
                 className
             )}
         >

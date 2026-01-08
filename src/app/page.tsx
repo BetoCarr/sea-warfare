@@ -1,9 +1,5 @@
 'use client';
 import { GameScreen } from "@/components/game/GameScreen";
 export default function Home() {
-    return (
-        <main>
-            <GameScreen />
-        </main>
-    );
+    return <GameScreen />;
 }

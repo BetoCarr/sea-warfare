@@ -327,37 +327,47 @@ export function GameScreen() {
                 onConfirm={handleConfirm}
             />
 
-            {/* Instruction/Feedback Overlay */}
-            <div className="absolute top-16 left-1/2 -translate-x-1/2 z-[70] pointer-events-none w-full max-w-lg flex justify-center px-4">
-                <FeedbackMessage 
-                    message={activeMessage} 
-                    type={activeType} 
-                    onDismiss={() => setFeedback(null)}
-                    className="pointer-events-auto shadow-2xl backdrop-blur-md ring-1 ring-white/10"
-                />
-            </div>
-
-            {/* GAME STAGE */}
+            {/* GAME STAGE - Balanced 3-tier layout for stability */}
             <main className={cn(
-                "flex-1 overflow-hidden flex flex-col items-center justify-center p-4 md:p-8 relative",
-                "transition-all duration-500 ease-in-out",
-                phase === GamePhase.PLACEMENT && "justify-between sm:justify-center md:pr-[280px]"
+                "flex-1 overflow-hidden flex flex-col items-stretch relative px-4 md:px-8",
+                "transition-all duration-700 ease-in-out",
+                phase === GamePhase.PLACEMENT && "md:pr-[280px]"
             )}>
-                <Board
-                    size={10}
-                    cells={playerBoard}
-                    isPlayerBoard={true}
-                    onCellClick={handlePlayerCellClick}
-                    onCellDrop={handleDrop}
-                    onCellDragOver={handleDragOver}
-                    onCellDragStart={handleBoardDragStart}
-                    ships={player.ships}
-                    forceShowShips={true}
-                    disabled={phase === GamePhase.GAME_OVER}
-                />
+                {/* 1. TOP SLOT: Feedback / Instructions (Stable Height) */}
+                <div className="h-20 sm:h-24 flex items-center justify-center flex-none z-20 pointer-events-none">
+                    <FeedbackMessage 
+                        message={activeMessage} 
+                        type={activeType} 
+                        onDismiss={() => setFeedback(null)}
+                        className="pointer-events-auto shadow-xl backdrop-blur-md ring-1 ring-white/10"
+                    />
+                </div>
 
-                {/* CONTEXTUAL SHIP PALETTE (Placement Phase Only) */}
-                {phase === GamePhase.PLACEMENT && <ShipPalette />}
+                {/* 2. CENTER SLOT: The Main Engagement Area (Board) */}
+                <div className="flex-1 flex items-center justify-center min-h-0 py-2 sm:py-4">
+                    <div className="w-full max-w-full flex items-center justify-center transition-transform duration-500">
+                        <Board
+                            size={10}
+                            cells={playerBoard}
+                            isPlayerBoard={true}
+                            onCellClick={handlePlayerCellClick}
+                            onCellDrop={handleDrop}
+                            onCellDragOver={handleDragOver}
+                            onCellDragStart={handleBoardDragStart}
+                            ships={player.ships}
+                            forceShowShips={true}
+                            disabled={phase === GamePhase.GAME_OVER}
+                        />
+                    </div>
+                </div>
+
+                {/* 3. BOTTOM SLOT: Contextual Controls (Palette) */}
+                <div className={cn(
+                    "flex-none h-auto md:h-0 transition-all duration-500 ease-in-out z-30",
+                    phase === GamePhase.PLACEMENT ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none h-0"
+                )}>
+                    {phase === GamePhase.PLACEMENT && <ShipPalette />}
+                </div>
             </main>
         </div>
     );
