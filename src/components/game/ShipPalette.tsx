@@ -69,9 +69,8 @@ export const ShipPalette = ({
     return (
         <div 
             className={cn(
-                "transition-all duration-500 ease-in-out flex-none",
                 // Mobile: Flex Flow (Bottom area)
-                "relative w-full p-4 bg-slate-900 border-t border-slate-700/30",
+                "relative w-full p-4",
                 "pb-[max(1rem,env(safe-area-inset-bottom))]",
                 // Desktop/Tablet: Floating Sidebar Overlay (md+)
                 "md:fixed md:z-50 md:bottom-auto md:top-1/2 md:left-auto md:right-8 md:-translate-y-1/2",

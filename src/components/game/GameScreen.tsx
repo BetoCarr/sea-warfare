@@ -6,11 +6,11 @@ import { useGameStore } from "@/lib/store/game-store";
 import { GamePhase } from "@/lib/store/game-types";
 import type { Ship, ShipType } from "@/lib/utils/types";
 import { SHIPS_CONFIG } from "@/lib/utils/constants";
-import { cn } from "@/lib/utils/utils";
-import Board from "./Board";
-import { ShipPalette } from "./ShipPalette";
 import { GameHUD } from "../hud/GameHUD";
-import { FeedbackMessage, FeedbackType } from "../hud/FeedbackMessage";
+import { FeedbackType } from "../hud/FeedbackMessage";
+import { GameStage } from "./GameStage";
+import { ShipPalette } from "./ShipPalette";
+import { GameFooter } from "../hud/GameFooter";
 
 export function GameScreen() {
     const [feedback, setFeedback] = useState<string | null>(null);
@@ -30,7 +30,6 @@ export function GameScreen() {
         confirmPlacement,
         selectedShipId,
         orientation,
-        status,
         lastAttack
     } = useGameStore(
         useShallow((state) => ({
@@ -46,7 +45,6 @@ export function GameScreen() {
             confirmPlacement: state.confirmPlacement,
             selectedShipId: state.selectedShipId,
             orientation: state.orientation,
-            status: state.status,
             lastAttack: state.lastAttack,
         }))
     );
@@ -54,7 +52,7 @@ export function GameScreen() {
     const playerReady = player.isReady;
     const aiReady = ai.isReady;
 
-    // --- Feedback Logic (Moved from HUD) ---
+    // --- Feedback Logic ---
     useEffect(() => {
         if (lastAttack) {
             let msg = "";
@@ -118,33 +116,13 @@ export function GameScreen() {
     const activeMessage = feedback || instruction;
     const activeType = feedback ? feedbackType : 'instruction';
 
-    const playerBoard = player.boardState.board; // CellState[][]
-    const aiBoard = ai.boardState.board;
-
-    // Callback onclick on player board (restored)
+    // --- Board Handlers ---
     const handlePlayerCellClick = (row: number, col: number) => {
         if (phase === GamePhase.PLACEMENT) {
-            
-            // 1. Check if clicking on an existing ship (Pick Up logic)
-            const shipAtCell = player.ships.find(ship => {
-                if (!ship.position) return false;
-                const { row: sRow, col: sCol } = ship.position;
-                if (ship.orientation === 'horizontal') {
-                    return row === sRow && col >= sCol && col < sCol + ship.size;
-                } else {
-                    return col === sCol && row >= sRow && row < sRow + ship.size;
-                }
-            });
-
-            // 2. Place selected ship (Placement logic)
-            if (!selectedShipId) {
-                // Warning handled by HUD instructions or validation
-                return;
-            }
+            if (!selectedShipId) return;
 
             const type = selectedShipId.split('-')[0] as ShipType;
             const config = SHIPS_CONFIG[type];
-
             if (!config) return;
 
             const newShip: Ship = {
@@ -157,24 +135,12 @@ export function GameScreen() {
                 isSunk: false
             };
 
-            processPlacement(newShip);
+            const result = placePlayerShip(newShip);
+            if (!result.success) console.warn("Placement failed:", result.message);
 
-        } else if (phase === GamePhase.BATTLE) {
-            // No action on click own board
         }
     };
-    const handleEnemyCellClick = async (row: number, col: number) => {
-        if (phase !== GamePhase.BATTLE) return;
-        
-        if (currentTurn !== "player") {
-            // Optional: Store could emit a transient error in global state if we want strict feedback here
-            return;
-        }
 
-        await playerAttack({ row, col });
-    };
-
-    // Callback for Drag Start from Board (Drag-to-Move)
     const handleBoardDragStart = (row: number, col: number, e: React.DragEvent) => {
         if (phase !== GamePhase.PLACEMENT) {
             e.preventDefault();
@@ -184,7 +150,6 @@ export function GameScreen() {
         const shipAtCell = player.ships.find(ship => {
             if (!ship.position) return false;
             const { row: sRow, col: sCol } = ship.position;
-            // Check based on current orientation of the ship
             if (ship.orientation === 'horizontal') {
                 return row === sRow && col >= sCol && col < sCol + ship.size;
             } else {
@@ -205,51 +170,35 @@ export function GameScreen() {
             e.dataTransfer.effectAllowed = "move";
             selectShip(shipAtCell.id); 
 
-            // Create a temporary element to represent the full ship
+            // Create temporary ghost element for drag image
             const ghost = document.createElement("div");
             ghost.style.position = "absolute";
             ghost.style.top = "-1000px";
             ghost.style.left = "-1000px";
             ghost.style.display = "flex";
             ghost.style.gap = "2px";
-            // Match palette styling (horizontal/vertical) based on ship orientation
             ghost.style.flexDirection = shipAtCell.orientation === 'horizontal' ? 'row' : 'column';
-            ghost.style.opacity = "1"; // Browser handles drag ghost opacity automatically usually (0.5)
             
-            // Create segments
             for (let i = 0; i < shipAtCell.size; i++) {
                 const seg = document.createElement("div");
-                seg.style.width = "32px"; // Match UI (w-8)
-                seg.style.height = "32px"; // Match UI (h-8)
-                seg.style.backgroundColor = "#3b82f6"; // bg-blue-500
-                seg.style.border = "1px solid #60a5fa"; // border-blue-400
+                seg.style.width = "32px";
+                seg.style.height = "32px";
+                seg.style.backgroundColor = "#3b82f6";
+                seg.style.border = "1px solid #60a5fa";
                 seg.style.borderRadius = "2px";
                 ghost.appendChild(seg);
             }
 
             document.body.appendChild(ghost);
-            
-            // offset so the cursor grabs the specific segment clicked?
-            // For simplicity, let's grab the top-left or try to calculate offset.
-            // If we drag from index 1, we should shift ghost.
-            // Let's just grab center or top-left for now to ensure visibility.
             e.dataTransfer.setDragImage(ghost, 0, 0);
-
-            // Clean up DOM after a tick
-            setTimeout(() => {
-                document.body.removeChild(ghost);
-            }, 0);
-
+            setTimeout(() => document.body.removeChild(ghost), 0);
         } else {
             e.preventDefault();
         }
     };
 
-    // Handler for Drag and Drop placement
     const handleDragOver = (row: number, col: number, e: React.DragEvent) => {
-        if (phase === GamePhase.PLACEMENT) {
-            e.preventDefault(); // Allows the drop
-        }
+        if (phase === GamePhase.PLACEMENT) e.preventDefault();
     };
 
     const handleDrop = (row: number, col: number, e: React.DragEvent) => {
@@ -260,22 +209,11 @@ export function GameScreen() {
         if (!dataStr) return;
 
         try {
-            const data = JSON.parse(dataStr) as { 
-                id: string; 
-                type: ShipType; 
-                size: number; 
-                source?: string;
-                originalPosition?: { row: number, col: number };
-                originalOrientation?: 'horizontal' | 'vertical';
-            };
+            const data = JSON.parse(dataStr);
             const { id, type, size, source, originalPosition, originalOrientation } = data;
 
-            // If moving from board, temporarily remove old instance
-            if (source === "board") {
-                removePlayerShip(id);
-            }
+            if (source === "board") removePlayerShip(id);
 
-            // Construct Ship object
             const newShip: Ship = {
                 id,
                 type,
@@ -287,38 +225,15 @@ export function GameScreen() {
             };
             
             const result = placePlayerShip(newShip);
-            
-            if (!result.success) {
-                console.warn("Drag placement failed:", result.message);
-                
-                if (source === "board" && originalPosition && originalOrientation) {
-                    // REVERT: Put it back where it was
-                    const originalShip = { ...newShip, position: originalPosition, orientation: originalOrientation };
-                    placePlayerShip(originalShip);
-                } 
+            if (!result.success && source === "board" && originalPosition && originalOrientation) {
+                placePlayerShip({ ...newShip, position: originalPosition, orientation: originalOrientation });
             }
-            
         } catch (err) {
             console.error("Failed to parse drag data", err);
         }
     };
 
-    // Handle game initialization if in setup phase
-    const handleInitialize = () => {
-        initializeGame({ boardSize: 10 });
-    };
-
-    // Helper to handle placement result - but feedback now handled by HUD or console
-    const processPlacement = (ship: Ship) => {
-        const result = placePlayerShip(ship);
-        if (!result.success) {
-            console.warn("Placement failed:", result.message);
-        }
-    };
-
-    // --- Derived UI State ---
-    const isBattle = phase === GamePhase.BATTLE || phase === GamePhase.GAME_OVER;
-    const [activeTab, setActiveTab] = useState<'player' | 'enemy'>('player');
+    const handleInitialize = () => initializeGame({ boardSize: 10 });
 
     return (
         <div className="h-screen w-screen bg-slate-900 text-slate-100 flex flex-col overflow-hidden relative">
@@ -327,48 +242,28 @@ export function GameScreen() {
                 onConfirm={handleConfirm}
             />
 
-            {/* GAME STAGE - Balanced 3-tier layout for stability */}
-            <main className={cn(
-                "flex-1 overflow-hidden flex flex-col items-stretch relative px-4 md:px-8",
-                "transition-all duration-700 ease-in-out",
-                phase === GamePhase.PLACEMENT && "md:pr-[280px]"
-            )}>
-                {/* 1. TOP SLOT: Feedback / Instructions (Stable Height) */}
-                <div className="h-20 sm:h-24 flex items-center justify-center flex-none z-20 pointer-events-none">
-                    <FeedbackMessage 
-                        message={activeMessage} 
-                        type={activeType} 
-                        onDismiss={() => setFeedback(null)}
-                        className="pointer-events-auto shadow-xl backdrop-blur-md ring-1 ring-white/10"
-                    />
-                </div>
+            <GameStage 
+                activeMessage={activeMessage}
+                activeType={activeType}
+                onDismissFeedback={() => setFeedback(null)}
+                onPlayerCellClick={handlePlayerCellClick}
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+                onBoardDragStart={handleBoardDragStart}
+            />
 
-                {/* 2. CENTER SLOT: The Main Engagement Area (Board) */}
-                <div className="flex-1 flex items-center justify-center min-h-0 py-2 sm:py-4">
-                    <div className="w-full max-w-full flex items-center justify-center transition-transform duration-500">
-                        <Board
-                            size={10}
-                            cells={playerBoard}
-                            isPlayerBoard={true}
-                            onCellClick={handlePlayerCellClick}
-                            onCellDrop={handleDrop}
-                            onCellDragOver={handleDragOver}
-                            onCellDragStart={handleBoardDragStart}
-                            ships={player.ships}
-                            forceShowShips={true}
-                            disabled={phase === GamePhase.GAME_OVER}
-                        />
+            <GameFooter>
+                {phase === GamePhase.PLACEMENT ? (
+                    <ShipPalette />
+                ) : (
+                    <div className="w-full flex justify-center items-center py-2 px-6">
+                        <div className="flex items-center gap-3 text-slate-500 font-mono text-[10px] tracking-widest uppercase opacity-50">
+                            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                            {phase === GamePhase.BATTLE ? "Tactical Systems Online" : "Awaiting Command"}
+                        </div>
                     </div>
-                </div>
-
-                {/* 3. BOTTOM SLOT: Contextual Controls (Palette) */}
-                <div className={cn(
-                    "flex-none h-auto md:h-0 transition-all duration-500 ease-in-out z-30",
-                    phase === GamePhase.PLACEMENT ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none h-0"
-                )}>
-                    {phase === GamePhase.PLACEMENT && <ShipPalette />}
-                </div>
-            </main>
+                )}
+            </GameFooter>
         </div>
     );
 }
