@@ -69,35 +69,25 @@ export const ShipPalette = ({
     return (
         <div 
             className={cn(
-                // Mobile: Flex Flow (Bottom area)
-                "relative w-full p-4",
-                "pb-[max(1rem,env(safe-area-inset-bottom))]",
-                // Desktop/Tablet: Floating Sidebar Overlay (md+)
-                "md:fixed md:z-50 md:bottom-auto md:top-1/2 md:left-auto md:right-8 md:-translate-y-1/2",
-                "md:w-64 md:p-6 md:rounded-[2rem] md:border md:border-slate-700/40 md:bg-slate-900/60 md:backdrop-blur-xl md:shadow-2xl",
+                "w-full h-full min-h-0 min-w-0 flex flex-col gap-4",
                 className
             )}
             onDrop={handlePaletteDrop}
             onDragOver={handlePaletteDragOver}
         >
-            {/* Visual Handle - Hidden on Desktop, subtle on Mobile */}
-            <div className="w-8 h-1 bg-slate-800 rounded-full mx-auto mb-4 md:hidden" />
-            
-            <div className="flex flex-col gap-4">
-                {/* Header Information */}
+            <div className="flex flex-col gap-2 sm:gap-4">
+                {/* Header Information - Optional internal label */}
                 <div className="flex justify-between items-center px-1">
-                    <h3 className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">Fleet Command</h3>
-                    <div className="flex items-center gap-2 text-[9px] text-slate-600 font-mono">
-                        <span className="bg-slate-800/50 px-1 rounded border border-slate-700/30">R</span>
-                        <span className="italic hidden sm:inline">ROTATE</span>
+                    <div className="flex items-center gap-2 text-[8px] sm:text-[9px] text-slate-500/80 font-mono">
+                        <span className="bg-slate-800/50 px-1 rounded border border-slate-700/30 text-slate-400 font-bold">R</span>
+                        <span className="italic uppercase tracking-wider">Rotate</span>
                     </div>
                 </div>
 
                 {/* Internal Ship List */}
                 <div className={cn(
-                    "flex",
-                    "flex-row overflow-x-auto no-scrollbar justify-start sm:justify-center items-center gap-6 px-4 py-2 w-full",
-                    "md:flex-col md:items-stretch md:gap-5 md:px-0 md:py-0 md:overflow-visible"
+                    "flex flex-row overflow-x-auto no-scrollbar justify-start sm:justify-center items-center gap-5 sm:gap-6 px-1 py-1 w-full",
+                    "md:grid md:grid-cols-1 md:gap-4 md:overflow-visible"
                 )}>
                     {fleet.map((ship) => {
                         const isPlaced = placedShips.some((s) => s.id === ship.id);
@@ -151,7 +141,7 @@ export const ShipPalette = ({
                                 key={ship.id}
                                 className={cn(
                                     "relative flex items-center transition-all duration-200 shrink-0",
-                                    "flex-col gap-2 md:flex-row md:w-full md:justify-between md:gap-3 md:px-2",
+                                    "flex-col gap-1.5 md:flex-row md:w-full md:justify-between md:gap-3 md:px-2",
                                     isPlaced ? "opacity-20 grayscale cursor-not-allowed scale-95" : "hover:scale-105"
                                 )}
                             >
@@ -177,7 +167,7 @@ export const ShipPalette = ({
                                         <div
                                             key={idx}
                                             className={cn(
-                                                "w-3 h-3 sm:w-4 sm:h-4 rounded-[1px] transition-colors border-[0.5px]",
+                                                "w-2.5 h-2.5 sm:w-4 sm:h-4 rounded-[1px] transition-colors border-[0.5px]",
                                                 isPlaced
                                                     ? "bg-slate-800 border-slate-700"
                                                     : isSelected
@@ -189,13 +179,14 @@ export const ShipPalette = ({
                                 </div>
 
                                 <span className={cn(
-                                    "text-[9px] sm:text-[10px] font-bold uppercase tracking-widest select-none shrink-0",
+                                    "text-[8px] sm:text-[10px] font-bold uppercase tracking-wider select-none shrink-0",
                                     isSelected ? "text-yellow-400" : "text-slate-500",
                                     isPlaced && "text-slate-700"
                                 )}>
                                     {ship.name}
                                 </span>
                             </div>
+
                         );
                     })}
                 </div>

@@ -46,7 +46,7 @@ export const GameStage = ({
 
     return (
         <main className={cn(
-            "flex-1 overflow-hidden flex flex-col items-stretch relative px-4 md:px-8",
+            "flex-1 min-h-0 overflow-hidden flex flex-col items-stretch relative px-4 md:px-8",
             "transition-all duration-700 ease-in-out",
             phase === GamePhase.PLACEMENT && "md:pr-[280px]"
         )}>

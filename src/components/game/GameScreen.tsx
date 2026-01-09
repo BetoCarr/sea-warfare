@@ -9,7 +9,6 @@ import { SHIPS_CONFIG } from "@/lib/utils/constants";
 import { GameHUD } from "../hud/GameHUD";
 import { FeedbackType } from "../hud/FeedbackMessage";
 import { GameStage } from "./GameStage";
-import { ShipPalette } from "./ShipPalette";
 import { GameFooter } from "../hud/GameFooter";
 
 export function GameScreen() {
@@ -236,7 +235,7 @@ export function GameScreen() {
     const handleInitialize = () => initializeGame({ boardSize: 10 });
 
     return (
-        <div className="h-screen w-screen bg-slate-900 text-slate-100 flex flex-col overflow-hidden relative">
+        <div className="min-h-[100dvh] w-full bg-slate-900 text-slate-100 flex flex-col overflow-hidden relative">
             <GameHUD 
                 onInitialize={handleInitialize} 
                 onConfirm={handleConfirm}
@@ -252,18 +251,7 @@ export function GameScreen() {
                 onBoardDragStart={handleBoardDragStart}
             />
 
-            <GameFooter>
-                {phase === GamePhase.PLACEMENT ? (
-                    <ShipPalette />
-                ) : (
-                    <div className="w-full flex justify-center items-center py-2 px-6">
-                        <div className="flex items-center gap-3 text-slate-500 font-mono text-[10px] tracking-widest uppercase opacity-50">
-                            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                            {phase === GamePhase.BATTLE ? "Tactical Systems Online" : "Awaiting Command"}
-                        </div>
-                    </div>
-                )}
-            </GameFooter>
+            <GameFooter />
         </div>
     );
 }
