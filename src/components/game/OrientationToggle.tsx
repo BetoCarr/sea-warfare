@@ -31,32 +31,17 @@ export const OrientationToggle = () => {
     }, [toggleOrientation]);
 
     return (
-        <div className="flex flex-col items-center justify-center gap-1 mb-2">
-            <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold">
-                    Rotation
-                </span>
-                <span className="text-[10px] text-slate-500">
-                    ('R')
-                </span>
-            </div>
-            
-            <Button
-                variant="secondary"
-                onClick={toggleOrientation}
-                className="flex items-center gap-2 w-full justify-center px-2 py-1 h-9 text-sm"
-                aria-label={`Current orientation: ${orientation}. Click to toggle.`}
-            >
-                {isHorizontal ? (
-                    <>
-                        <span className="text-lg">↔</span> Horizontal
-                    </>
-                ) : (
-                    <>
-                        <span className="text-lg">↕</span> Vertical
-                    </>
-                )}
-            </Button>
-        </div>
+        <button 
+            onClick={toggleOrientation}
+            className="group flex items-center gap-2 text-[8px] sm:text-[9px] text-slate-500/80 font-mono transition-colors hover:text-slate-300"
+            aria-label={`Toggle orientation. Current: ${orientation}`}
+        >
+            <span className="bg-slate-800/50 px-1 rounded border border-slate-700/30 text-slate-400 font-bold transition-all group-hover:border-slate-500/50">
+                R
+            </span>
+            <span className="italic uppercase tracking-wider">
+                Rotate
+            </span>
+        </button>
     );
 };

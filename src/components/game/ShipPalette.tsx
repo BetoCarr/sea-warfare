@@ -5,6 +5,7 @@ import { SHIPS_CONFIG } from "@/lib/utils/constants";
 import { ShipType } from "@/lib/utils/types";
 import { cn } from "@/lib/utils/utils";
 import { useShallow } from "zustand/react/shallow";
+import { OrientationToggle } from "./OrientationToggle";
 
 /**
  * ShipPalette
@@ -75,13 +76,10 @@ export const ShipPalette = ({
             onDrop={handlePaletteDrop}
             onDragOver={handlePaletteDragOver}
         >
-            <div className="flex flex-col gap-2 sm:gap-4">
-                {/* Header Information - Optional internal label */}
+            <div className="relative flex flex-col gap-2 sm:gap-4">
+                {/* Interactive Orientation Control */}
                 <div className="flex justify-between items-center px-1">
-                    <div className="flex items-center gap-2 text-[8px] sm:text-[9px] text-slate-500/80 font-mono">
-                        <span className="bg-slate-800/50 px-1 rounded border border-slate-700/30 text-slate-400 font-bold">R</span>
-                        <span className="italic uppercase tracking-wider">Rotate</span>
-                    </div>
+                    <OrientationToggle />
                 </div>
 
                 {/* Internal Ship List */}
@@ -190,6 +188,9 @@ export const ShipPalette = ({
                         );
                     })}
                 </div>
+                {/* Scroll shadows for mobile hint */}
+                <div className="md:hidden pointer-events-none absolute bottom-0 right-0 h-12 w-20 bg-gradient-to-l from-slate-950 via-slate-900/80 to-transparent z-10" />
+                <div className="md:hidden pointer-events-none absolute bottom-0 left-0 h-12 w-8 bg-gradient-to-r from-slate-950/50 to-transparent z-10" />
             </div>
         </div>
     );
