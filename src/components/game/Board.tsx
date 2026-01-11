@@ -7,30 +7,23 @@ import { BOARD_SIZE } from '@/lib/utils/constants';
 import type { CellState, Position, Ship } from '@/lib/utils/types';
 
 interface BoardProps {
-    size?: number;                  // Board size (default 10x10)
-    cells: CellState[][];           // Current state of all cells
-    isPlayerBoard: boolean;         // Determines if ships should be visible
-    onCellClick: (row: number, col: number) => void; // Callback for cell clicks
-    ships?: Ship[];                 // List of placed ships
-    forceShowShips?: boolean;       // Forces ships to be visible (debug or game over)
-    disabled?: boolean;             // Prevents interaction
-    className?: string;             // Custom style overrides
-    hoveredCell?: Position | null;  // Externally controlled hovered cell
-    onCellDrop?: (row: number, col: number, e: React.DragEvent) => void;
-    onCellDragOver?: (row: number, col: number, e: React.DragEvent) => void;
-    onCellDragStart?: (row: number, col: number, e: React.DragEvent) => void;
+    size?: number;                  
+    cells: CellState[][];           
+    isPlayerBoard: boolean;         
+    onCellClick: (row: number, col: number) => void; 
+    ships?: Ship[];                 
+    forceShowShips?: boolean;       
+    disabled?: boolean;            
+    className?: string;             
+    hoveredCell?: Position | null; 
+    onCellInteract?: (type: 'start' | 'commit' | 'hover' | 'cancel', row: number, col: number, e: any) => void;
+    draggingShipId?: string | null;
 }
 
 /**
  * Board component represents the full game grid with coordinates,
  * cells, ships, and hover interactions.
- * 
- * - Responsible for rendering Cell components with correct state.
- * - Handles hover effects across rows/columns.
- * - Displays ships depending on `isPlayerBoard` and `forceShowShips`.
- * - Includes coordinate labels for usability and testing.
  */
-
 export default function Board({
     size = BOARD_SIZE,
     cells,
@@ -41,10 +34,10 @@ export default function Board({
     disabled = false,
     className,
     hoveredCell,
-    onCellDrop,
-    onCellDragOver,
-    onCellDragStart
+    onCellInteract,
+    draggingShipId
 }: BoardProps) {
+    // ... (logic remains same)
     // Local hover state (used when no external hoveredCell is provided)
     const [localHoveredCell, setLocalHoveredCell] = useState<Position | null>(null);
 
@@ -196,13 +189,12 @@ export default function Board({
                                 key={`${row}-${col}`}
                                 state={cells[row][col]}
                                 position={{ row, col }}
-                                onClick={() => onCellClick(row, col)}
+                                // onClick={() => onCellClick(row, col)}
                                 disabled={disabled}
                                 showShip={isPlayerBoard || forceShowShips}
-                                onDrop={(e) => onCellDrop?.(row, col, e)}
-                                onDragOver={(e) => onCellDragOver?.(row, col, e)}
-                                onDragStart={(e) => onCellDragStart?.(row, col, e)}
+                                // onInteract={(type, pos, e) => onCellInteract?.(type, pos.row, pos.col, e)}
                                 draggable={isPlayerBoard && cells[row][col] === 'ship'}
+                                isGhost={getCellInfo(row, col).ship?.id === draggingShipId}
                             />
                         ))}
                     </ React.Fragment>

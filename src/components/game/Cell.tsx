@@ -7,17 +7,15 @@ import type { CellState, Position } from '@/lib/utils/types';
 interface CellProps {
     state: CellState;           // Current state of the cell (determines style & content)
     position: Position;         // Grid coordinates (row/col) for accessibility & testing
-    onClick: () => void;        // Callback triggered when the cell is clicked
+    onPress?: (position: Position) => void;
+    onHover?: (position: Position) => void;
+    onDrop?: (position: Position) => void;
     disabled?: boolean;         // Prevents interaction if true
     showShip?: boolean;         // Controls whether ships are visible to the player
     isHovered?: boolean;        // Used to highlight a cell during targeting/placement
     className?: string;         // Optional custom className for style overrides
-    onDrop?: (e: React.DragEvent) => void;
-    onDragOver?: (e: React.DragEvent) => void;
-    onDragEnter?: (e: React.DragEvent) => void;
-    onDragLeave?: (e: React.DragEvent) => void;
-    onDragStart?: (e: React.DragEvent) => void;
     draggable?: boolean;
+    isGhost?: boolean;
 }
 
 /**
@@ -31,17 +29,14 @@ interface CellProps {
 export default function Cell({
     state,
     position,
-    onClick,
+    onPress,
+    onHover,
+    onDrop,
     disabled = false,
     showShip = false,
     isHovered = false,
     className,
-    onDrop,
-    onDragOver,
-    onDragEnter,
-    onDragLeave,
-    onDragStart,
-    draggable
+    isGhost
 }: CellProps) {
 
     // Local state used to trigger temporary animations (e.g., pulse on click)
@@ -54,15 +49,17 @@ export default function Cell({
      */
     const handleClick = () => {
         if (disabled) return;
-        
-        // Trigger animation for hits/misses
+
+        // Animación local (UI concern)
         if (state === 'empty' || state === 'ship') {
             setIsAnimating(true);
             setTimeout(() => setIsAnimating(false), 300);
         }
-        
-        onClick();  
+
+        // Emitir intención (domain-agnostic)
+        onPress?.(position);
     };
+
 
     /**
      * Returns the appropriate Tailwind CSS classNames for the cell
@@ -108,6 +105,7 @@ export default function Cell({
             disabledStyles,
             hoverStyles,
             animationStyles,
+            isGhost && "opacity-40 grayscale-[0.5]",
             className ?? ""
         );
     };
@@ -152,17 +150,13 @@ export default function Cell({
         <button
             className={getCellStyles()}
             onClick={handleClick}
+            onMouseEnter={() => onHover?.(position)}
+            onDrop={() => onDrop?.(position)}
             disabled={disabled}
             aria-label={getCellAriaLabel()}
             data-testid={`cell-${position.row}-${position.col}`}
             data-state={state}
             title={`${String.fromCharCode(65 + position.col)}${position.row + 1}`}
-            onDrop={onDrop}
-            onDragOver={onDragOver}
-            onDragEnter={onDragEnter}
-            onDragLeave={onDragLeave}
-            onDragStart={onDragStart}
-            draggable={draggable}
         >
             <span className="pointer-events-none">
                 {getCellContent()}

@@ -13,9 +13,8 @@ interface GameStageProps {
     activeType: FeedbackType;
     onDismissFeedback: () => void;
     onPlayerCellClick: (row: number, col: number) => void;
-    onDrop: (row: number, col: number, e: React.DragEvent) => void;
-    onDragOver: (row: number, col: number, e: React.DragEvent) => void;
-    onBoardDragStart: (row: number, col: number, e: React.DragEvent) => void;
+    onCellInteract: (type: 'start' | 'commit' | 'hover' | 'cancel', row: number, col: number, e: any) => void;
+    draggingShipId?: string | null;
 }
 
 /**
@@ -31,9 +30,8 @@ export const GameStage = ({
     activeType,
     onDismissFeedback,
     onPlayerCellClick,
-    onDrop,
-    onDragOver,
-    onBoardDragStart
+    onCellInteract,
+    draggingShipId
 }: GameStageProps) => {
     const { phase, player } = useGameStore(
         useShallow((state) => ({
@@ -68,12 +66,11 @@ export const GameStage = ({
                         cells={playerBoard}
                         isPlayerBoard={true}
                         onCellClick={onPlayerCellClick}
-                        onCellDrop={onDrop}
-                        onCellDragOver={onDragOver}
-                        onCellDragStart={onBoardDragStart}
+                        onCellInteract={onCellInteract}
                         ships={player.ships}
                         forceShowShips={true}
                         disabled={phase === GamePhase.GAME_OVER}
+                        draggingShipId={draggingShipId}
                     />
                 </div>
             </div>

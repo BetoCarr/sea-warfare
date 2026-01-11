@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useReducer } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { useGameStore } from '@/lib/store/game-store';
 import { GamePhase } from '@/lib/store/game-types';
@@ -8,6 +8,8 @@ import { cn } from '@/lib/utils/utils';
 import { FooterPanel } from './FooterPanel';
 import { ShipPalette } from '../game/ShipPalette';
 import { ReadinessIndicators } from './ReadinessIndicators';
+import { useShipPlacement, useShipPlacementMobileBridge } from '@/hooks/useShipPlacement';
+import { useShipPlacementBridge } from '@/hooks/useShipPlacement';
 
 interface GameFooterProps {
     children?: React.ReactNode;
@@ -21,11 +23,15 @@ interface GameFooterProps {
  * Automatically handles phase-based content (ShipPalette, Status, etc).
  */
 export const GameFooter = ({ children, className }: GameFooterProps) => {
-    const { phase } = useGameStore(
+    const { phase, player } = useGameStore(
         useShallow((state) => ({
             phase: state.phase,
+            player: state.player,
         }))
     );
+
+    const placementCore = useShipPlacement();
+    const placementMobileBridge = useShipPlacementMobileBridge(placementCore);
 
     const renderContent = () => {
         if (children) return children;
@@ -35,7 +41,11 @@ export const GameFooter = ({ children, className }: GameFooterProps) => {
                 return (
                     <>
                         <FooterPanel className="flex-1" title="Fleet Command">
-                            <ShipPalette />
+                            <ShipPalette
+                                placedShips={player.ships.filter(s => s.position)}
+                                selectedShipId={placementCore.state.selectedShipId}
+                                onShipSelect={placementMobileBridge.mobileHandlers.onShipTap}
+                            />
                         </FooterPanel>
                         <FooterPanel className="md:w-72" title="Deployment Status">
                             <ReadinessIndicators />
