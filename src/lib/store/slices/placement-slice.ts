@@ -9,6 +9,7 @@ import type { GameActionResult } from "../game-types";
 // --- Result Types ---
 export interface PlaceShipResult {
     ship: Ship;
+    dryRun?: boolean;
 }
 
 export interface RemoveShipResult {
@@ -31,7 +32,7 @@ export interface PlacementSlice {
     // Actions
     selectShip: (shipId: string | null) => void;
     toggleOrientation: () => void;
-    placePlayerShip: (ship: Ship) => GameActionResult<PlaceShipResult>;
+    placePlayerShip: (ship: Ship, options?: { dryRun?: boolean }) => GameActionResult<PlaceShipResult>;
     removePlayerShip: (shipId: string) => GameActionResult<RemoveShipResult>;
     confirmPlacement: () => GameActionResult<ConfirmPlacementResult>;
 }
@@ -86,9 +87,12 @@ export const createPlacementSlice: StateCreator<
      * - Uses placeShip() helper for placement rules & collision checking
      * - Updates ships and board state
      */
-    placePlayerShip: (ship) => {
+    placePlayerShip: (
+        ship,
+        options?: { dryRun?: boolean }
+    ) => {    
+        const { dryRun = false } = options ?? {};
         const state = get();
-
         // --- Validate phase ---
         if (state.phase !== GamePhase.PLACEMENT) {
             return {
@@ -129,6 +133,14 @@ export const createPlacementSlice: StateCreator<
                 player.ships
             );
 
+            // 🚨 NUEVO: si es dryRun, terminamos aquí
+            if (dryRun) {
+                return {
+                    success: true,
+                    message: "Valid placement.",
+                    data: { ship: placedShip },
+                };
+            }
             // --- Update state ---
             set(
                 (draft) => {

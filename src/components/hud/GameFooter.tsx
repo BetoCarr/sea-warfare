@@ -9,7 +9,6 @@ import { FooterPanel } from './FooterPanel';
 import { ShipPalette } from '../game/ShipPalette';
 import { ReadinessIndicators } from './ReadinessIndicators';
 import { useShipPlacement, useShipPlacementMobileBridge } from '@/hooks/useShipPlacement';
-import { useShipPlacementBridge } from '@/hooks/useShipPlacement';
 
 interface GameFooterProps {
     children?: React.ReactNode;

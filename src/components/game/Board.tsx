@@ -3,8 +3,10 @@ import React from 'react';
 import { useState, useCallback, useMemo } from 'react';
 import Cell from './Cell';
 import { cn } from '@/lib/utils/utils'; // Utility to combine class names dynamically
-import { BOARD_SIZE } from '@/lib/utils/constants';
-import type { CellState, Position, Ship } from '@/lib/utils/types';
+import { BOARD_SIZE, SHIPS_CONFIG } from '@/lib/utils/constants';
+import type { CellState, Position, Ship, ShipType } from '@/lib/utils/types';
+import { useShipPlacement, useShipPlacementMobileBridge } from '@/hooks/useShipPlacement';
+import { useGameStore } from '@/lib/store/game-store';
 
 interface BoardProps {
     size?: number;                  
@@ -37,9 +39,11 @@ export default function Board({
     onCellInteract,
     draggingShipId
 }: BoardProps) {
-    // ... (logic remains same)
     // Local hover state (used when no external hoveredCell is provided)
     const [localHoveredCell, setLocalHoveredCell] = useState<Position | null>(null);
+
+    const placementCore = useShipPlacement();
+    const placementMobileBridge = useShipPlacementMobileBridge(placementCore);
 
     // Decide if ships should be displayed
     const showShips = isPlayerBoard || forceShowShips;
@@ -122,9 +126,64 @@ export default function Board({
         };
     }, [ships]);
 
+    // GhostCellFunction
+    const ghostPreview = useMemo(() => {
+        if (!placementMobileBridge.mobileState.pendingCell) return null;
+        if (!placementCore.state.selectedShipId) return null;
+
+        const shipId = placementCore.state.selectedShipId;
+        const shipType = shipId.split('-')[0] as ShipType;
+        const config = SHIPS_CONFIG[shipType];
+        if (!config) return null;
+
+        const { row, col } = placementMobileBridge.mobileState.pendingCell;
+
+        const ship: Ship = {
+            id: shipId,
+            type: shipType,
+            size: config.size,
+            position: { row, col },
+            orientation: placementCore.state.orientation,
+            hits: [],
+            isSunk: false,
+        };
+
+        const result = useGameStore
+            .getState()
+            .placePlayerShip(ship, { dryRun: true });
+
+        const cells = Array.from({ length: config.size }).map((_, i) => ({
+            row: ship.orientation === 'horizontal' ? row : row + i,
+            col: ship.orientation === 'horizontal' ? col + i : col,
+        }));
+
+        return {
+            cells,
+            isValid: result.success,
+        };
+    }, [
+        placementMobileBridge.mobileState.pendingCell,
+        placementCore.state.selectedShipId,
+        placementCore.state.orientation,
+    ]);
+
+    const isGhostCell = (row: number, col: number) => {
+        // Mobile preview
+        if (
+            ghostPreview?.cells.some(
+                (g) => g.row === row && g.col === col
+            )
+        ) {
+            return true;
+        }
+
+        // Desktop drag (existing behavior)
+        return getCellInfo(row, col).ship?.id === draggingShipId;
+    };
+
     /**
      * Decide what visual state a cell should display:
-     * - Priority to explicit states (hit, miss, sunk).
+     * - Priority to explicit states (hit, miss, sunk). 
      * - Otherwise, show ship if present and visible.
      * - Defaults to empty.
      */
@@ -189,12 +248,13 @@ export default function Board({
                                 key={`${row}-${col}`}
                                 state={cells[row][col]}
                                 position={{ row, col }}
-                                // onClick={() => onCellClick(row, col)}
+                                onPress={(pos) =>
+                                    placementMobileBridge.mobileHandlers.onCellTap(pos.row, pos.col)
+                                }
                                 disabled={disabled}
                                 showShip={isPlayerBoard || forceShowShips}
-                                // onInteract={(type, pos, e) => onCellInteract?.(type, pos.row, pos.col, e)}
                                 draggable={isPlayerBoard && cells[row][col] === 'ship'}
-                                isGhost={getCellInfo(row, col).ship?.id === draggingShipId}
+                                isGhost={isGhostCell(row, col)}
                             />
                         ))}
                     </ React.Fragment>

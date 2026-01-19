@@ -6,6 +6,7 @@ import { useGameStore } from "@/lib/store/game-store";
 import { GamePhase } from "@/lib/store/game-types";
 import { ShipType, Ship, Position } from "@/lib/utils/types";
 import { SHIPS_CONFIG } from "@/lib/utils/constants";
+import css from "styled-jsx/css";
 
 /**
  * useShipPlacement
@@ -67,6 +68,29 @@ export const useShipPlacement = () => {
         }
         return null;
     }, [phase, player.ships, selectShip]);
+
+    const canPlaceShip = useCallback(
+        (row: number, col: number) => {
+            if (!selectedShipId) return false;
+
+            const shipType = selectedShipId.split('-')[0] as ShipType;
+            const shipConfig = SHIPS_CONFIG[shipType];
+            if (!shipConfig) return false;
+
+            const ship: Ship = {
+                id: selectedShipId,
+                type: shipType,
+                size: shipConfig.size,
+                position: { row, col },
+                orientation,
+                hits: [],
+                isSunk: false
+            };
+
+            return placePlayerShip(ship, { dryRun: true }).success;
+        },
+        [selectedShipId, orientation, placePlayerShip]
+    );
 
     const commitMove = useCallback((row: number, col: number) => {
         if (phase !== GamePhase.PLACEMENT) return;
@@ -137,7 +161,8 @@ export const useShipPlacement = () => {
             commitMove,
             cancelMove,
             selectShip,
-            removeShip
+            removeShip,
+            canPlaceShip
         }
     };
 };
@@ -259,15 +284,22 @@ export const useShipPlacementMobileBridge = (core: ReturnType<typeof useShipPlac
         onCellTap: (row: number, col: number) => {
             if (core.state.phase !== GamePhase.PLACEMENT) return;
 
-            // If no ship selected, try selecting one from the board
+            if (!core.actions.canPlaceShip(row, col)) {
+                console.log('No se puede colocar el barco en esta posición');
+                return; // o feedback visual
+            }
+
+            // No hay barco seleccionado → intentar seleccionar desde el board
             if (!core.state.selectedShipId) {
                 core.actions.startMove(row, col);
                 return;
             }
 
-            // Ship selected -> store pending placement
+            // Hay barco seleccionado → solo guardar destino
             setPendingCell({ row, col });
+            console.log('Pending cell:', row, col);
         },
+
 
         /** Tap on a ship in the palette */
         onShipTap: (shipId: string) => {
