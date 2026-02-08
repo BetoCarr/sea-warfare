@@ -26,6 +26,10 @@ export const useShipPlacement = () => {
     const [draggingShipId, setDraggingShipId] = useState<string | null>(null);
     const [originalPosition, setOriginalPosition] = useState<Position | null>(null);
     const [originalOrientation, setOriginalOrientation] = useState<Ship['orientation'] | null>(null);
+    const [hoverPreview, setHoverPreview] = useState<{
+        items: Position[]; // Occupied cells
+        isValid: boolean;
+    } | null>(null);
 
     const {
         phase,
@@ -92,6 +96,50 @@ export const useShipPlacement = () => {
         [selectedShipId, orientation, placePlayerShip]
     );
 
+    const updateGhost = useCallback((row: number, col: number) => {
+        if (!selectedShipId) {
+            setHoverPreview(null);
+            return;
+        }
+
+        const shipType = selectedShipId.split('-')[0] as ShipType;
+        const shipConfig = SHIPS_CONFIG[shipType];
+        if (!shipConfig) return;
+
+        // Use core store logic for dry run
+        // We could use previewPlacement here if we had access to board ships, 
+        // but placePlayerShip({ dryRun: true }) is also a valid valid approach given the hook structure
+        // However, user specifically asked to use "previewPlacement" or suggested domain logic.
+        // Let's stick to using the existing store action for dryRun as it creates the 'ghost' concept effectively
+        
+        const ship: Ship = {
+            id: selectedShipId,
+            type: shipType,
+            size: shipConfig.size,
+            position: { row, col },
+            orientation,
+            hits: [],
+            isSunk: false
+        };
+
+        const result = placePlayerShip(ship, { dryRun: true });
+        
+        // Calculate cells for the ghost
+        const items: Position[] = [];
+        for (let i = 0; i < ship.size; i++) {
+            if (orientation === 'horizontal') {
+                items.push({ row, col: col + i });
+            } else {
+                items.push({ row: row + i, col });
+            }
+        }
+
+        setHoverPreview({
+            items,
+            isValid: result.success
+        });
+    }, [selectedShipId, orientation, placePlayerShip]);
+
     const commitMove = useCallback((row: number, col: number) => {
         if (phase !== GamePhase.PLACEMENT) return;
         if (!selectedShipId) return;
@@ -140,6 +188,7 @@ export const useShipPlacement = () => {
         setDraggingShipId(null);
         setOriginalPosition(null);
         setOriginalOrientation(null);
+        setHoverPreview(null);
     }, []);
 
     const removeShip = useCallback((id: string) => {
@@ -154,7 +203,8 @@ export const useShipPlacement = () => {
             draggingShipId,
             selectedShipId,
             orientation,
-            phase
+            phase,
+            hoverPreview
         },
         actions: {
             startMove,
@@ -162,7 +212,8 @@ export const useShipPlacement = () => {
             cancelMove,
             selectShip,
             removeShip,
-            canPlaceShip
+            canPlaceShip,
+            updateGhost
         }
     };
 };
@@ -206,7 +257,10 @@ export const useShipPlacementBridge = (core: ReturnType<typeof useShipPlacement>
             core.actions.commitMove(row, col);
         },
         onDragOver: (row: number, col: number, e: React.DragEvent) => {
-            if (core.state.phase === GamePhase.PLACEMENT) e.preventDefault();
+            if (core.state.phase === GamePhase.PLACEMENT) {
+                e.preventDefault();
+                core.actions.updateGhost(row, col);
+            }
         },
         onDragEnd: () => core.actions.cancelMove()
     };

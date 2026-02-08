@@ -1,5 +1,4 @@
 import type { Position, Ship } from "@/lib/utils/types";
-// import { getShipCoordinates, canPlaceShipAt } from "../ship-plaement";
 import { getShipCoordinates, canPlaceShipAt } from "../ships/ship-placement";
 import type { PlacementIntent, PlacementPreview } from "./placement-types";
 
@@ -9,20 +8,18 @@ export function previewPlacement(
     existingShips: Ship[]
 ): PlacementPreview {
     
-    const tempShip: Ship = {
+    // Minimal object required for placement logic
+    const placementInfo = {
         id: intent.ship.id,
-        type: intent.ship.type,
         size: intent.ship.size,
         position: intent.position,
         orientation: intent.orientation,
-        hits: [],
-        isSunk: false,
     };
 
-    const occupiedCells: Position[] = getShipCoordinates(tempShip);
+    const occupiedCells: Position[] = getShipCoordinates(placementInfo);
 
     const isValid = canPlaceShipAt(
-        tempShip,
+        placementInfo,
         intent.position,
         intent.orientation,
         boardSize,

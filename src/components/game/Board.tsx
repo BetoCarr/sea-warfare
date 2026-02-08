@@ -128,6 +128,15 @@ export default function Board({
 
     // GhostCellFunction
     const ghostPreview = useMemo(() => {
+        // 1. Priority: Core Hover/Drag Preview (calculated in hook)
+        if (placementCore.state.hoverPreview) {
+            return {
+                cells: placementCore.state.hoverPreview.items,
+                isValid: placementCore.state.hoverPreview.isValid,
+            };
+        }
+
+        // 2. Fallback: Mobile Pending Cell
         if (!placementMobileBridge.mobileState.pendingCell) return null;
         if (!placementCore.state.selectedShipId) return null;
 
@@ -165,6 +174,7 @@ export default function Board({
         placementMobileBridge.mobileState.pendingCell,
         placementCore.state.selectedShipId,
         placementCore.state.orientation,
+        placementCore.state.hoverPreview
     ]);
 
     const isGhostCell = (row: number, col: number) => {

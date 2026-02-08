@@ -13,13 +13,17 @@ export interface Position {
     col: number;  // Column index (0-based)
 }
 
+// Interface for placement logic (decoupled from game state)
+export interface ShipPlacementInfo {
+    id: string;               // Unique identifier (for overlap checks)
+    size: number;             // Length of the ship
+    position?: Position;      // Current position
+    orientation: Orientation; // Current orientation
+}
+
 // Represents a ship in the game
-export interface Ship {
-    id: string;                // Unique identifier
+export interface Ship extends ShipPlacementInfo {
     type: ShipType;            // Ship type
-    size: number;              // Number of cells the ship occupies
-    position?: Position;       // Top-left position on the board (optional until placed)
-    orientation: Orientation;  // Horizontal or vertical
     hits: boolean[];           // Array tracking which segments are hit
     isSunk: boolean;           // True if the ship is completely sunk
 }

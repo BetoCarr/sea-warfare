@@ -1,4 +1,4 @@
-import type { Ship, Position, Orientation } from '@/lib/utils/types';
+import type { Ship, Position, Orientation, ShipPlacementInfo } from '@/lib/utils/types';
 import { createBoardState } from '../board/board-sync';
 import { BOARD_SIZE } from '@/lib/utils/constants';
 /**
@@ -15,7 +15,7 @@ import { BOARD_SIZE } from '@/lib/utils/constants';
 /**
  * Returns all coordinates occupied by a ship based on its position and orientation
  */
-export function getShipCoordinates(ship: Ship): Position[] {
+export function getShipCoordinates(ship: ShipPlacementInfo): Position[] {
     if (!ship.position) return [];
     
     const coordinates: Position[] = [];
@@ -38,14 +38,14 @@ export function getShipCoordinates(ship: Ship): Position[] {
  * - Ensures no overlap with existing ships
  */
 export function canPlaceShipAt(
-    ship: Ship,
+    ship: ShipPlacementInfo,
     position: Position,
     orientation: Orientation,
     boardSize: number = BOARD_SIZE,
-    existingShips: Ship[] = []
+    existingShips: ShipPlacementInfo[] = []
 ): boolean {
     // Temporary ship object for validation
-    const tempShip: Ship = {
+    const tempShip: ShipPlacementInfo = {
         ...ship,
         position,
         orientation
@@ -107,10 +107,10 @@ export function placeShip(
  * - If the ship has no position, simply toggles orientation
  */
 export function rotateShip(
-    ship: Ship,
+    ship: ShipPlacementInfo & { orientation: Orientation },
     boardSize: number = BOARD_SIZE,
-    existingShips: Ship[] = []
-): Ship {
+    existingShips: ShipPlacementInfo[] = []
+): ShipPlacementInfo {
     if (!ship.position) {
         // No position yet, just toggle orientation
         return {
