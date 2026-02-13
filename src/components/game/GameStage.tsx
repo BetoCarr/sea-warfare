@@ -7,6 +7,9 @@ import { GamePhase } from '@/lib/store/game-types';
 import { cn } from '@/lib/utils/utils';
 import Board from './Board';
 import { FeedbackMessage, FeedbackType } from '../hud/FeedbackMessage';
+import { useShipPlacement } from '@/application/placement/useShipPlacement';
+import { PlacementPreview } from '@/lib/game-logic/placement/placement-types';
+import { useShipPlacementMobileBridge } from '@/application/placement/mobile/useShipPlacementMobileBridge';
 
 interface GameStageProps {
     activeMessage: string | null;
@@ -15,6 +18,7 @@ interface GameStageProps {
     onPlayerCellClick: (row: number, col: number) => void;
     onCellInteract: (type: 'start' | 'commit' | 'hover' | 'cancel', row: number, col: number, e: any) => void;
     draggingShipId?: string | null;
+    preview?: PlacementPreview | null;
 }
 
 /**
@@ -31,7 +35,8 @@ export const GameStage = ({
     onDismissFeedback,
     onPlayerCellClick,
     onCellInteract,
-    draggingShipId
+    draggingShipId,
+    preview
 }: GameStageProps) => {
     const { phase, player } = useGameStore(
         useShallow((state) => ({
@@ -40,6 +45,17 @@ export const GameStage = ({
         }))
     );
 
+    // --- Placement Core ---
+    const placementCore = useShipPlacement();
+
+    // --- Preview (UI only) ---
+    const placementPreview = PlacementPreview();
+
+    // --- Mobile Bridge ---
+    const placementBridge = useShipPlacementMobileBridge(
+        placementCore,
+        placementPreview
+    );
     const playerBoard = player.boardState.board;
 
     return (
@@ -71,6 +87,7 @@ export const GameStage = ({
                         forceShowShips={true}
                         disabled={phase === GamePhase.GAME_OVER}
                         draggingShipId={draggingShipId}
+                        preview={preview}
                     />
                 </div>
             </div>

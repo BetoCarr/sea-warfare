@@ -16,6 +16,7 @@ interface CellProps {
     className?: string;         // Optional custom className for style overrides
     draggable?: boolean;
     isGhost?: boolean;
+    isValidPreview?: boolean;
 }
 
 /**
@@ -36,7 +37,8 @@ export default function Cell({
     showShip = false,
     isHovered = false,
     className,
-    isGhost
+    isGhost,
+    isValidPreview
 }: CellProps) {
 
     // Local state used to trigger temporary animations (e.g., pulse on click)
@@ -105,7 +107,7 @@ export default function Cell({
             disabledStyles,
             hoverStyles,
             animationStyles,
-            isGhost && "opacity-40 grayscale-[0.5]",
+            isGhost && (isValidPreview ? "bg-emerald-500/50 border-emerald-400" : "bg-red-500/50 border-red-400"),
             className ?? ""
         );
     };

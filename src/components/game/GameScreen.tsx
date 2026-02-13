@@ -11,7 +11,7 @@ import { FeedbackType } from "../hud/FeedbackMessage";
 import { GameStage } from "./GameStage";
 import { GameFooter } from "../hud/GameFooter";
 import { ShipPalette } from "./ShipPalette";
-import { useShipPlacement, useShipPlacementBridge } from "@/hooks/useShipPlacement";
+import { useShipPlacement } from "@/application/placement/useShipPlacement";
 
 export function GameScreen() {
     const [feedback, setFeedback] = useState<string | null>(null);
@@ -107,7 +107,7 @@ export function GameScreen() {
 
     // --- Placement Hook (Decoupled Architecture) ---
     const placementCore = useShipPlacement();
-    const placementBridge = useShipPlacementBridge(placementCore);
+    // const placementBridge = useShipPlacementBridge(placementCore);
 
     const activeMessage = feedback || instruction;
     const activeType = feedback ? feedbackType : 'instruction';
@@ -117,14 +117,14 @@ export function GameScreen() {
     /**
      * Master Bridge: Connects Board intents to the Bridge handlers.
      */
-    const handleBoardInteract = (type: 'start' | 'commit' | 'hover' | 'cancel', row: number, col: number, e: any) => {
-        switch (type) {
-            case 'start': placementBridge.dragHandlers.onDragStart(row, col, e); break;
-            case 'commit': placementBridge.dragHandlers.onDrop(row, col, e); break;
-            case 'hover': placementBridge.dragHandlers.onDragOver(row, col, e); break;
-            case 'cancel': placementBridge.dragHandlers.onDragEnd(); break;
-        }
-    };
+    // const handleBoardInteract = (type: 'start' | 'commit' | 'hover' | 'cancel', row: number, col: number, e: any) => {
+    //     switch (type) {
+    //         case 'start': placementBridge.dragHandlers.onDragStart(row, col, e); break;
+    //         case 'commit': placementBridge.dragHandlers.onDrop(row, col, e); break;
+    //         case 'hover': placementBridge.dragHandlers.onDragOver(row, col, e); break;
+    //         case 'cancel': placementBridge.dragHandlers.onDragEnd(); break;
+    //     }
+    // };
 
     return (
         <div className="min-h-[100dvh] w-full bg-slate-900 text-slate-100 flex flex-col overflow-hidden relative">
@@ -146,6 +146,7 @@ export function GameScreen() {
                 }}
                 onCellInteract={handleBoardInteract}
                 draggingShipId={placementCore.state.draggingShipId}
+                preview={placementCore.state.preview}
             />
 
             <GameFooter />
