@@ -19,11 +19,11 @@ export interface ShipPlacementInfo {
     size: number;             // Length of the ship
     position?: Position;      // Current position
     orientation: Orientation; // Current orientation
+    type: ShipType;            // Ship type
 }
 
 // Represents a ship in the game
 export interface Ship extends ShipPlacementInfo {
-    type: ShipType;            // Ship type
     hits: boolean[];           // Array tracking which segments are hit
     isSunk: boolean;           // True if the ship is completely sunk
 }

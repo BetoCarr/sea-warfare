@@ -8,7 +8,8 @@ import { cn } from '@/lib/utils/utils';
 import { FooterPanel } from './FooterPanel';
 import { ShipPalette } from '../game/ShipPalette';
 import { ReadinessIndicators } from './ReadinessIndicators';
-import { useShipPlacement, useShipPlacementMobileBridge } from '@/application/placement/useShipPlacement';
+import { useShipPlacement } from '@/application/placement/useShipPlacement';
+import { useShipPlacementMobileBridge } from '@/application/placement/mobile/useShipPlacementMobileBridge';
 
 interface GameFooterProps {
     children?: React.ReactNode;
@@ -30,7 +31,7 @@ export const GameFooter = ({ children, className }: GameFooterProps) => {
     );
 
     const placementCore = useShipPlacement();
-    const placementMobileBridge = useShipPlacementMobileBridge(placementCore);
+    // const placementMobileBridge = useShipPlacementMobileBridge(placementCore);
 
     const renderContent = () => {
         if (children) return children;
@@ -39,7 +40,14 @@ export const GameFooter = ({ children, className }: GameFooterProps) => {
             case GamePhase.PLACEMENT:
                 return (
                     <>
-                        <FooterPanel className="flex-1" title="Fleet Command">
+
+                        <FooterPanel className="w-full" title="Combat Operations">
+                            <div className="flex items-center gap-3 text-slate-400 font-mono text-[10px] tracking-widest uppercase py-1">
+                                <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+                                Tactical Systems Online • Monitoring Sector
+                            </div>
+                        </FooterPanel>
+                        {/* <FooterPanel className="flex-1" title="Fleet Command">
                             <ShipPalette
                                 placedShips={player.ships.filter(s => s.position)}
                                 selectedShipId={placementCore.state.selectedShipId}
@@ -48,7 +56,7 @@ export const GameFooter = ({ children, className }: GameFooterProps) => {
                         </FooterPanel>
                         <FooterPanel className="md:w-72" title="Deployment Status">
                             <ReadinessIndicators />
-                        </FooterPanel>
+                        </FooterPanel> */}
                     </>
                 );
             case GamePhase.BATTLE:

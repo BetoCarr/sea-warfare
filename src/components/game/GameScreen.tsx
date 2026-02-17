@@ -4,14 +4,11 @@ import { useState, useRef, useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useGameStore } from "@/lib/store/game-store";
 import { GamePhase } from "@/lib/store/game-types";
-import type { Ship, ShipType } from "@/lib/utils/types";
 import { BOARD_SIZE, SHIPS_CONFIG } from "@/lib/utils/constants";
 import { GameHUD } from "../hud/GameHUD";
 import { FeedbackType } from "../hud/FeedbackMessage";
 import { GameStage } from "./GameStage";
 import { GameFooter } from "../hud/GameFooter";
-import { ShipPalette } from "./ShipPalette";
-import { useShipPlacement } from "@/application/placement/useShipPlacement";
 
 export function GameScreen() {
     const [feedback, setFeedback] = useState<string | null>(null);
@@ -25,7 +22,6 @@ export function GameScreen() {
         currentTurn,
         playerAttack,
         initializeGame,
-        confirmPlacement,
         lastAttack
     } = useGameStore(
         useShallow((state) => ({
@@ -35,7 +31,6 @@ export function GameScreen() {
             currentTurn: state.currentTurn,
             playerAttack: state.playerAttack,
             initializeGame: state.initializeGame,
-            confirmPlacement: state.confirmPlacement,
             lastAttack: state.lastAttack,
         }))
     );
@@ -79,16 +74,6 @@ export function GameScreen() {
         }
     }, [lastAttack]);
 
-    const handleConfirm = () => {
-        const result = confirmPlacement();
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-        
-        setFeedback(result.message || (result.success ? "Battle phase initiated! ⚔️" : "Placement incomplete"));
-        setFeedbackType(result.success ? 'success' : 'error');
-        timeoutRef.current = window.setTimeout(() => setFeedback(null), result.success ? 3000 : 5000);
-        return result;
-    };
-
     const instruction = (() => {
         switch (phase) {
             case GamePhase.SETUP:
@@ -105,32 +90,18 @@ export function GameScreen() {
         }
     })();
 
-    // --- Placement Hook (Decoupled Architecture) ---
-    const placementCore = useShipPlacement();
-    // const placementBridge = useShipPlacementBridge(placementCore);
+
 
     const activeMessage = feedback || instruction;
     const activeType = feedback ? feedbackType : 'instruction';
 
     const handleInitialize = () => initializeGame({ boardSize: BOARD_SIZE });
 
-    /**
-     * Master Bridge: Connects Board intents to the Bridge handlers.
-     */
-    // const handleBoardInteract = (type: 'start' | 'commit' | 'hover' | 'cancel', row: number, col: number, e: any) => {
-    //     switch (type) {
-    //         case 'start': placementBridge.dragHandlers.onDragStart(row, col, e); break;
-    //         case 'commit': placementBridge.dragHandlers.onDrop(row, col, e); break;
-    //         case 'hover': placementBridge.dragHandlers.onDragOver(row, col, e); break;
-    //         case 'cancel': placementBridge.dragHandlers.onDragEnd(); break;
-    //     }
-    // };
-
     return (
         <div className="min-h-[100dvh] w-full bg-slate-900 text-slate-100 flex flex-col overflow-hidden relative">
             <GameHUD 
                 onInitialize={handleInitialize} 
-                onConfirm={handleConfirm}
+                // onConfirm={handleConfirm}
             />
 
             <GameStage 
@@ -139,14 +110,14 @@ export function GameScreen() {
                 onDismissFeedback={() => setFeedback(null)}
                 onPlayerCellClick={(r, c) => {
                     if (phase === GamePhase.PLACEMENT) {
-                        placementBridge.interactionHandlers.onClick(r, c);
+                        console.log('placement');
                     } else if (phase === GamePhase.BATTLE && currentTurn === 'player') {
                         playerAttack({ row: r, col: c });
                     }
                 }}
-                onCellInteract={handleBoardInteract}
-                draggingShipId={placementCore.state.draggingShipId}
-                preview={placementCore.state.preview}
+                onCellInteract={() => {console.log('cell interact')}}
+                // draggingShipId={() => {console.log('dragging ship id')}}
+                // preview={() => {console.log('preview')}}
             />
 
             <GameFooter />

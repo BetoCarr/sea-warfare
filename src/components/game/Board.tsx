@@ -212,8 +212,8 @@ export default function Board({
                                 disabled={disabled}
                                 showShip={isPlayerBoard || forceShowShips}
                                 draggable={isPlayerBoard && cells[row][col] === 'ship'}
-                                isGhost={isGhostCell(row, col)}
-                                isValidPreview={preview?.result === 'valid'}
+                                // isGhost={isGhostCell(row, col)}
+                                // isValidPreview={preview?.result === 'valid'}
                             />
                         ))}
                     </ React.Fragment>

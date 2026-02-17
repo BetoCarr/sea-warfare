@@ -1,15 +1,16 @@
 "use client";
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { useGameStore } from '@/lib/store/game-store';
 import { GamePhase } from '@/lib/store/game-types';
 import { cn } from '@/lib/utils/utils';
 import Board from './Board';
+import { ShipPalette } from './ShipPalette';
 import { FeedbackMessage, FeedbackType } from '../hud/FeedbackMessage';
-import { useShipPlacement } from '@/application/placement/useShipPlacement';
 import { PlacementPreview } from '@/lib/game-logic/placement/placement-types';
 import { useShipPlacementMobileBridge } from '@/application/placement/mobile/useShipPlacementMobileBridge';
+import { createFleet } from '@/lib/game-logic/ships/ship-factory';
 
 interface GameStageProps {
     activeMessage: string | null;
@@ -38,25 +39,20 @@ export const GameStage = ({
     draggingShipId,
     preview
 }: GameStageProps) => {
-    const { phase, player } = useGameStore(
-        useShallow((state) => ({
-            phase: state.phase,
-            player: state.player,
-        }))
+
+    const ships = useMemo(()=> createFleet(), [])
+
+    const phase = useGameStore(s => s.phase);
+    const playerBoard = useGameStore(s => s.player.boardState.board);
+    const playerShips = useGameStore(s => s.player.ships);
+
+    const placedShipIds = useMemo(
+        () => playerShips.map(ship => ship.id),
+        [playerShips]
     );
-
-    // --- Placement Core ---
-    const placementCore = useShipPlacement();
-
-    // --- Preview (UI only) ---
-    const placementPreview = PlacementPreview();
 
     // --- Mobile Bridge ---
-    const placementBridge = useShipPlacementMobileBridge(
-        placementCore,
-        placementPreview
-    );
-    const playerBoard = player.boardState.board;
+    const placement = useShipPlacementMobileBridge();
 
     return (
         <main className={cn(
@@ -83,7 +79,7 @@ export const GameStage = ({
                         isPlayerBoard={true}
                         onCellClick={onPlayerCellClick}
                         onCellInteract={onCellInteract}
-                        ships={player.ships}
+                        ships={ships}
                         forceShowShips={true}
                         disabled={phase === GamePhase.GAME_OVER}
                         draggingShipId={draggingShipId}
@@ -91,6 +87,14 @@ export const GameStage = ({
                     />
                 </div>
             </div>
+            <ShipPalette
+                ships={ships}
+                placedShipIds={placedShipIds}
+                selectedShipId={placement.selectedShipId}
+                orientation={placement.orientation}
+                onShipSelect={placement.selectShip}
+                onRotate={placement.rotate}
+            /> 
         </main>
     );
 };

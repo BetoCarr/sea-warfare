@@ -64,6 +64,7 @@ export function useShipPlacementMobileBridge() {
     uiState,
     preview,
     orientation,
+    selectedShipId: selectedShip?.id ?? null,
     selectShip,
     tapCell,
     rotate,

@@ -1,7 +1,8 @@
 "use client";
 
 import { SHIPS_CONFIG } from "@/lib/utils/constants";
-import { ShipType, Ship } from "@/lib/utils/types";
+import { ShipSpec } from "@/lib/game-logic/ships/ship-spec";
+import { Orientation } from "@/lib/utils/types";
 import { cn } from "@/lib/utils/utils";
 import { OrientationToggle } from "./OrientationToggle";
 
@@ -17,40 +18,28 @@ import { OrientationToggle } from "./OrientationToggle";
  * - This provides WYSIWYG drag-and-drop feedback.
  */
 interface ShipPaletteProps {
-    className?: string;                 
-    placedShips: Ship[];
+    ships: ShipSpec[];
     selectedShipId: string | null;
-    onShipSelect: (id: string) => void;
-    onShipDragStart?: (id: string) => void;
-    onPaletteDrop?: () => void;
+    placedShipIds: string[];
+    orientation: Orientation;
+    onShipSelect: (ship: ShipSpec) => void;
+    onRotate: () => void;
 }
 
 export const ShipPalette = ({ 
-    className,
-    placedShips,
+    ships,
     selectedShipId,
+    placedShipIds,
+    orientation,
     onShipSelect,
-    onShipDragStart,
-    onPaletteDrop,
+    onRotate
 }: ShipPaletteProps) => {
-
-    // Generate flat list of ships from config
-    const fleet = Object.entries(SHIPS_CONFIG).map(([type, config]) => {
-        return {
-            id: `${type}-1`,
-            type: type as ShipType,
-            name: config.name,
-            size: config.size
-        };
-    });
 
     return (
         <div 
             className={cn(
                 "w-full h-full min-h-0 min-w-0 flex flex-col gap-4",
-                className
             )}
-            onDrop={onPaletteDrop}
         >
             <div className="relative flex flex-col gap-2 sm:gap-4">
                 {/* Interactive Orientation Control */}
@@ -59,78 +48,28 @@ export const ShipPalette = ({
                 </div>
 
                 {/* Internal Ship List */}
-                <div className={cn(
-                    "flex flex-row overflow-x-auto no-scrollbar justify-start sm:justify-center items-center gap-5 sm:gap-6 px-1 py-1 w-full",
-                    "md:grid md:grid-cols-1 md:gap-4 md:overflow-visible"
-                )}>
-                    {fleet.map((ship) => {
-                        const isPlaced = placedShips.some((s) => s.id === ship.id);
-                        const isSelected = selectedShipId === ship.id;
-                        
-                        const handleClick = () => {
-                            if (isPlaced) return;
-                            onShipSelect(ship.id);
-                        };
+                <div>
+                    <OrientationToggle
+                        orientation={orientation}
+                        onRotate={onRotate}
+                    />
 
-                        const handleDragStart = () => {
-                            if (isPlaced) return;
-                            onShipDragStart?.(ship.id);
-                        };
+                    {ships.map(ship => {
+                        const isPlaced = placedShipIds.includes(ship.id);
+                        const isSelected = selectedShipId === ship.id;
 
                         return (
-                            <div
+                            <button
                                 key={ship.id}
-                                className={cn(
-                                    "relative flex items-center transition-all duration-200 shrink-0",
-                                    "flex-col gap-1.5 md:flex-row md:w-full md:justify-between md:gap-3 md:px-2",
-                                    isPlaced ? "opacity-20 grayscale cursor-not-allowed scale-95" : "hover:scale-105"
-                                )}
+                                disabled={isPlaced}
+                                onClick={() => onShipSelect(ship)}
                             >
-                                <div
-                                    role="button"
-                                    tabIndex={isPlaced ? -1 : 0}
-                                    draggable={!isPlaced && Boolean(onShipDragStart)}
-                                    onDragStart={handleDragStart}
-                                    onClick={handleClick}
-                                    className={cn(
-                                        "flex gap-[1px] p-[1.5px] rounded-sm cursor-pointer transition-all border shrink-0",
-                                        "flex-row",
-                                        isSelected
-                                            ? "border-yellow-400 bg-yellow-400/20 shadow-md ring-1 ring-yellow-400/50"
-                                            : "border-slate-700 bg-slate-800/40 hover:border-slate-500",
-                                        isPlaced && "border-transparent bg-transparent"
-                                    )}
-                                    aria-label={`Select ${ship.name}, size ${ship.size}`}
-                                    aria-pressed={isSelected}
-                                    aria-disabled={isPlaced}
-                                >
-                                    {Array.from({ length: ship.size }).map((_, idx) => (
-                                        <div
-                                            key={idx}
-                                            className={cn(
-                                                "w-2.5 h-2.5 sm:w-4 sm:h-4 rounded-[1px] transition-colors border-[0.5px]",
-                                                isPlaced
-                                                    ? "bg-slate-800 border-slate-700"
-                                                    : isSelected
-                                                    ? "bg-blue-500 border-blue-300"
-                                                    : "bg-slate-600 border-slate-500"
-                                            )}
-                                        />
-                                    ))}
-                                </div>
-
-                                <span className={cn(
-                                    "text-[8px] sm:text-[10px] font-bold uppercase tracking-wider select-none shrink-0",
-                                    isSelected ? "text-yellow-400" : "text-slate-500",
-                                    isPlaced && "text-slate-700"
-                                )}>
-                                    {ship.name}
-                                </span>
-                            </div>
-
+                                {ship.type}
+                            </button>
                         );
                     })}
                 </div>
+
                 {/* Scroll shadows for mobile hint */}
                 <div className="md:hidden pointer-events-none absolute bottom-0 right-0 h-12 w-20 bg-gradient-to-l from-slate-950 via-slate-900/80 to-transparent z-10" />
                 <div className="md:hidden pointer-events-none absolute bottom-0 left-0 h-12 w-8 bg-gradient-to-r from-slate-950/50 to-transparent z-10" />
