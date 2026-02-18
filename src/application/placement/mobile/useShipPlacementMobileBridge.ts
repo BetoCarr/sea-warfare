@@ -18,6 +18,7 @@ export function useShipPlacementMobileBridge() {
     const selectShip = useCallback((ship: ShipSpec) => {
         setSelectedShip(ship);
         setUIState("ship-selected");
+        console.log("Selected ship:", ship);
     }, []);
 
   const rotate = useCallback(() => {

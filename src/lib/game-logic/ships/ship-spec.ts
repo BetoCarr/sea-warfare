@@ -1,7 +1,3 @@
-import type { ShipType } from '@/lib/utils/types';
+import { BaseShip } from "@/lib/utils/types";
 
-export type ShipSpec = {
-    id: string;
-    type: ShipType;
-    size: number;
-};
+export type ShipSpec = BaseShip;

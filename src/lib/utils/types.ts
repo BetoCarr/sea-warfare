@@ -13,13 +13,16 @@ export interface Position {
     col: number;  // Column index (0-based)
 }
 
+export interface BaseShip {
+    id: string;
+    type: ShipType;
+    size: number;
+}
+
 // Interface for placement logic (decoupled from game state)
-export interface ShipPlacementInfo {
-    id: string;               // Unique identifier (for overlap checks)
-    size: number;             // Length of the ship
-    position?: Position;      // Current position
-    orientation: Orientation; // Current orientation
-    type: ShipType;            // Ship type
+export interface ShipPlacementInfo extends BaseShip {
+    position: Position;
+    orientation: Orientation;
 }
 
 // Represents a ship in the game
