@@ -1,5 +1,5 @@
 import { SHIPS_CONFIG } from '@/lib/utils/constants';;
-import { Position, Ship, ShipType } from '@/lib/utils/types';
+import { Position, Ship, ShipType, ShipPlacementInfo, BaseShip } from '@/lib/utils/types';
 import { getShipCoordinates } from './ship-placement';
 import { getShipHealthStatus, getShipDamagePercentage } from './ship-damage';
 import { validateShipConfig } from './ship-factory';
@@ -20,7 +20,7 @@ import { validateShipConfig } from './ship-factory';
 /**
  * Checks whether a coordinate belongs to a specific ship
  */
-export function isCoordinateInShip(ship: Ship, position: Position): boolean {
+export function isCoordinateInShip(ship: ShipPlacementInfo, position: Position): boolean {
     if (!ship.position) return false;
     
     const coordinates = getShipCoordinates(ship);
@@ -32,14 +32,14 @@ export function isCoordinateInShip(ship: Ship, position: Position): boolean {
 /**
  * Finds a ship located at a specific position within a fleet
  */
-export function findShipAtPosition(ships: Ship[], position: Position): Ship | undefined {
+export function findShipAtPosition<T extends ShipPlacementInfo>(ships: T[], position: Position): T | undefined {
     return ships.find(ship => isCoordinateInShip(ship, position));
 }
 
 /**
  * Calculates the minimum Euclidean distance between two ships
  */
-export function getDistanceBetweenShips(ship1: Ship, ship2: Ship): number {
+export function getDistanceBetweenShips(ship1: ShipPlacementInfo, ship2: ShipPlacementInfo): number {
     if (!ship1.position || !ship2.position) return Infinity;
     
     const coords1 = getShipCoordinates(ship1);
@@ -63,7 +63,7 @@ export function getDistanceBetweenShips(ship1: Ship, ship2: Ship): number {
 /**
  * Returns all ships of a specific type
  */
-export function getShipsByType(ships: Ship[], type: ShipType): Ship[] {
+export function getShipsByType<T extends BaseShip>(ships: T[], type: ShipType): T[] {
     return ships.filter(ship => ship.type === type);
 }
 

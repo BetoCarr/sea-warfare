@@ -1,5 +1,5 @@
 import { SHIPS_CONFIG, BOARD_SIZE } from '@/lib/utils/constants';
-import type { Ship, Position, Orientation, ShipType } from '@/lib/utils/types';
+import type { Ship, Position, Orientation, ShipType, ShipPlacementInfo, BaseShip } from '@/lib/utils/types';
 import { getShipCoordinates } from './ship-placement';
 import { getDistanceBetweenShips } from './ship-queries';
 import { getShipsByType } from './ship-queries';
@@ -58,7 +58,7 @@ export function validateFleet(ships: Ship[]): {
 /**
  * Checks if two ships overlap on the board
  */
-export function shipsOverlap(ship1: Ship, ship2: Ship): boolean {
+export function shipsOverlap(ship1: ShipPlacementInfo, ship2: ShipPlacementInfo): boolean {
     if (!ship1.position || !ship2.position) return false;
 
     const coords1 = getShipCoordinates(ship1);
@@ -75,7 +75,7 @@ export function shipsOverlap(ship1: Ship, ship2: Ship): boolean {
  * Validates that ships respect the minimum separation rule (optional)
  */
 export function validateShipSeparation(
-    ships: Ship[], 
+    ships: ShipPlacementInfo[], 
     minDistance: number = 1
 ): {
     isValid: boolean;
@@ -143,9 +143,9 @@ export function validateShipIntegrity(ship: Ship): {
  * Gets all valid placements for a ship on the board
  */
 export function getValidPlacements(
-    ship: Ship,
+    ship: BaseShip,
     boardSize: number = BOARD_SIZE,
-    existingShips: Ship[] = []
+    existingShips: ShipPlacementInfo[] = []
 ): Array<{ position: Position; orientation: Orientation }> {
     const validPlacements: Array<{ position: Position; orientation: Orientation }> = [];
 

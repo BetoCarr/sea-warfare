@@ -1,4 +1,4 @@
-import type { Ship, Position, Orientation, ShipPlacementInfo } from '@/lib/utils/types';
+import type { Position, Orientation, ShipPlacementInfo, BaseShip } from '@/lib/utils/types';
 import { createBoardState } from '../board/board-sync';
 import { BOARD_SIZE } from '@/lib/utils/constants';
 /**
@@ -38,7 +38,7 @@ export function getShipCoordinates(ship: ShipPlacementInfo): Position[] {
  * - Ensures no overlap with existing ships
  */
 export function canPlaceShipAt(
-    ship: ShipPlacementInfo,
+    ship: BaseShip,
     position: Position,
     orientation: Orientation,
     boardSize: number = BOARD_SIZE,
@@ -82,13 +82,13 @@ export function canPlaceShipAt(
  * Places a ship at a specific position and orientation on the board
  * - Throws an error if placement is invalid
  */
-export function placeShip(
-    ship: Ship,
+export function placeShip<T extends BaseShip>(
+    ship: T,
     position: Position,
     orientation: Orientation,
     boardSize: number = BOARD_SIZE,    
-    existingShips: Ship[],
-): Ship {
+    existingShips: ShipPlacementInfo[],
+): T & ShipPlacementInfo {
     if (!canPlaceShipAt(ship, position, orientation, boardSize, existingShips)) {
         throw new Error(`Cannot place ${ship.type} at the specified position`);
     }
@@ -106,11 +106,11 @@ export function placeShip(
  * - Ensures rotation does not violate board boundaries or overlap existing ships
  * - If the ship has no position, simply toggles orientation
  */
-export function rotateShip(
-    ship: ShipPlacementInfo & { orientation: Orientation },
+export function rotateShip<T extends ShipPlacementInfo>(
+    ship: T,
     boardSize: number = BOARD_SIZE,
     existingShips: ShipPlacementInfo[] = []
-): ShipPlacementInfo {
+): T {
     if (!ship.position) {
         // No position yet, just toggle orientation
         return {
@@ -136,7 +136,7 @@ export function rotateShip(
 /**
  * Removes a ship from the board by clearing its position
  */
-export function removeShipFromBoard(ship: Ship): Ship {
+export function removeShipFromBoard<T extends ShipPlacementInfo>(ship: T): T & { position: undefined } {
     return {
         ...ship,
         position: undefined
