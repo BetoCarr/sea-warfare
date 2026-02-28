@@ -2,8 +2,7 @@ import { SHIPS_CONFIG } from '@/lib/utils/constants';;
 import { Position, Ship, ShipType, ShipPlacementInfo, BaseShip } from '@/lib/utils/types';
 import { getShipCoordinates } from './ship-placement';
 import { getShipHealthStatus, getShipDamagePercentage } from './ship-damage';
-import { validateShipConfig } from './ship-factory';
-
+import { validateShip } from './ship-entity';
 /**
  * RESPONSIBILITY 4: QUERIES AND UTILITIES
  * 
@@ -96,7 +95,7 @@ export function serializeShip(ship: Ship): string {
 export function deserializeShip(shipData: string): Ship {
     const parsed = JSON.parse(shipData);
     
-    if (!validateShipConfig(parsed)) {
+    if (!validateShip(parsed)) {
         throw new Error('Invalid ship data');
     }
 

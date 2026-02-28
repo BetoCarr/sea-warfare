@@ -3,7 +3,7 @@ import type { Ship, Position, Orientation, ShipType, ShipPlacementInfo, BaseShip
 import { getShipCoordinates } from './ship-placement';
 import { getDistanceBetweenShips } from './ship-queries';
 import { getShipsByType } from './ship-queries';
-import { validateShipConfig } from './ship-factory';
+import { validateShip } from './ship-entity';
 import { canPlaceShipAt } from './ship-placement';
 /**
  * RESPONSIBILITY 5: ADVANCED VALIDATIONS
@@ -112,7 +112,7 @@ export function validateShipIntegrity(ship: Ship): {
     const errors: string[] = [];
     
     // Validate basic configuration
-    if (!validateShipConfig(ship)) {
+    if (!validateShip(ship)) {
         errors.push('Invalid basic configuration');
     }
 

@@ -10,7 +10,7 @@ import { ShipPalette } from './ShipPalette';
 import { FeedbackMessage, FeedbackType } from '../hud/FeedbackMessage';
 import { PlacementPreview } from '@/lib/game-logic/placement/placement-types';
 import { useShipPlacementMobileBridge } from '@/application/placement/mobile/useShipPlacementMobileBridge';
-import { createFleet } from '@/lib/game-logic/ships/ship-factory';
+import { createFleet } from '@/lib/game-logic/ships/ship-catalog';
 import { OrientationToggle } from './OrientationToggle';
 
 interface GameStageProps {
@@ -91,7 +91,7 @@ export const GameStage = ({
                         isPlayerBoard={true}
                         onCellClick={onPlayerCellClick}
                         onCellInteract={onCellInteract}
-                        ships={ships}
+                        ships={ships as any} // Temporary cast until Board is updated to accept BaseShip[]
                         forceShowShips={true}
                         disabled={phase === GamePhase.GAME_OVER}
                         draggingShipId={draggingShipId}

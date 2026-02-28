@@ -1,8 +1,9 @@
 import type { Ship } from "@/lib/utils/types";
 import { BOARD_SIZE } from '@/lib/utils/constants';
-import { createFleet } from "../ships/ship-factory";
+import { createFleet } from "../ships/ship-catalog";
 import { placeShip } from "../ships/ship-placement";
 import { getValidPlacements } from "../ships/ship-validation";
+import { createShipFromPlacement } from "../ships/ship-entity";
 /**
  * RESPONSIBILITY: 🤖 AI FLEET GENERATION
  *
@@ -29,8 +30,11 @@ export function generateAIShips(boardSize: number = BOARD_SIZE): Ship[] {
         const randomIndex = Math.floor(Math.random() * validPlacements.length);
         const { position, orientation } = validPlacements[randomIndex];
 
-        // Place the ship and add to list
-        const placedShip = placeShip(ship, position, orientation, boardSize, placedShips);
+        // Place the ship and add to list (returns ShipPlacementInfo)
+        const placedPlacement = placeShip(ship, position, orientation, boardSize, placedShips);
+        
+        // Convert to full playable ship entity
+        const placedShip = createShipFromPlacement(placedPlacement);
         placedShips.push(placedShip);
     }
 
