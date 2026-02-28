@@ -1,10 +1,6 @@
 "use client";
-
-import { SHIPS_CONFIG } from "@/lib/utils/constants";
 import { ShipSpec } from "@/lib/game-logic/ships/ship-spec";
-import { Orientation } from "@/lib/utils/types";
 import { cn } from "@/lib/utils/utils";
-import { OrientationToggle } from "./OrientationToggle";
 
 /**
  * ShipPalette
@@ -21,18 +17,14 @@ interface ShipPaletteProps {
     ships: ShipSpec[];
     selectedShipId: string | null;
     placedShipIds: string[];
-    orientation: Orientation;
-    onShipSelect: (ship: ShipSpec) => void;
-    onRotate: () => void;
+    onShipSelect: (shipId: string) => void;
 }
 
 export const ShipPalette = ({ 
     ships,
     selectedShipId,
     placedShipIds,
-    orientation,
-    onShipSelect,
-    onRotate
+    onShipSelect
 }: ShipPaletteProps) => {
 
     return (
@@ -42,18 +34,8 @@ export const ShipPalette = ({
             )}
         >
             <div className="relative flex flex-col gap-2 sm:gap-4">
-                {/* Interactive Orientation Control */}
-                <div className="flex justify-between items-center px-1">
-                    <OrientationToggle />
-                </div>
-
                 {/* Internal Ship List */}
                 <div>
-                    <OrientationToggle
-                        orientation={orientation}
-                        onRotate={onRotate}
-                    />
-
                     {ships.map(ship => {
                         const isPlaced = placedShipIds.includes(ship.id);
                         const isSelected = selectedShipId === ship.id;
@@ -62,7 +44,7 @@ export const ShipPalette = ({
                             <button
                                 key={ship.id}
                                 disabled={isPlaced}
-                                onClick={() => onShipSelect(ship)}
+                                onClick={() => onShipSelect(ship.id)}
                             >
                                 {ship.type}
                             </button>

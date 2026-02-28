@@ -1,5 +1,5 @@
 import type { StateCreator } from "zustand";
-import type { Ship } from "@/lib/utils/types";
+import type { Ship, ShipPlacementInfo } from "@/lib/utils/types";
 import { GamePhase } from "../game-types";
 import  { placeShip, removeShipFromBoard } from "../../game-logic/ships/ship-placement"
 import { createBoardState } from "@/lib/game-logic/board/board-sync";
@@ -9,7 +9,6 @@ import type { GameActionResult } from "../game-types";
 // --- Result Types ---
 export interface PlaceShipResult {
     ship: Ship;
-    dryRun?: boolean;
 }
 
 export interface RemoveShipResult {
@@ -32,7 +31,7 @@ export interface PlacementSlice {
     // Actions
     selectShip: (shipId: string | null) => void;
     toggleOrientation: () => void;
-    placePlayerShip: (ship: Ship, options?: { dryRun?: boolean }) => GameActionResult<PlaceShipResult>;
+    placePlayerShip: (placement: ShipPlacementInfo) => GameActionResult<PlaceShipResult>;
     removePlayerShip: (shipId: string) => GameActionResult<RemoveShipResult>;
     confirmPlacement: () => GameActionResult<ConfirmPlacementResult>;
 }
@@ -88,10 +87,8 @@ export const createPlacementSlice: StateCreator<
      * - Updates ships and board state
      */
     placePlayerShip: (
-        ship,
-        options?: { dryRun?: boolean }
+        placement: ShipPlacementInfo
     ) => {    
-        const { dryRun = false } = options ?? {};
         const state = get();
         // --- Validate phase ---
         if (state.phase !== GamePhase.PLACEMENT) {
@@ -114,37 +111,37 @@ export const createPlacementSlice: StateCreator<
         const player = state.player;
 
         // --- Validate duplicate ship ---
-        const alreadyPlaced = player.ships.some((s) => s.id === ship.id);
+        const alreadyPlaced = player.ships.some((s) => s.id === placement.id);
         if (alreadyPlaced) {
             return {
                 success: false,
-                message: `${ship.type} already placed.`,
+                message: `${placement.type} already placed.`,
                 error: "DUPLICATE_SHIP",
             };
         }
 
         try {
             // --- Attempt placement using core logic ---
-            const placedShip = placeShip(
-                ship,
-                ship.position!,
-                ship.orientation!,
-                state.config.boardSize,
+            // createShip validates the placement internally using canPlaceShipAt
+            const placedPlacement = placeShip(
+                placement,
+                placement.position!,
+                placement.orientation!,
+                state.config.boardSize, // Posible origen del error
                 player.ships
             );
 
-            // 🚨 NUEVO: si es dryRun, terminamos aquí
-            if (dryRun) {
-                return {
-                    success: true,
-                    message: "Valid placement.",
-                    data: { ship: placedShip },
-                };
-            }
+            // --- Create full Ship object with combat state ---
+            const newShip: Ship = {
+                ...placedPlacement,
+                hits: new Array(placedPlacement.size).fill(false),
+                isSunk: false
+            };
+
             // --- Update state ---
             set(
                 (draft) => {
-                    draft.player.ships.push(placedShip);
+                    draft.player.ships.push(newShip);
                     draft.player.boardState = createBoardState(
                         draft.player.ships,
                         []
@@ -157,7 +154,7 @@ export const createPlacementSlice: StateCreator<
                     }
 
                     console.log(
-                        `[Placement] Ship placed: ${placedShip.type} at (${placedShip.position?.row}, ${placedShip.position?.col}) [${placedShip.orientation}]`
+                        `[Placement] Ship placed: ${newShip.type} at (${newShip.position?.row}, ${newShip.position?.col}) [${newShip.orientation}]`
                     );
                 },
                 false,
@@ -166,8 +163,8 @@ export const createPlacementSlice: StateCreator<
 
             return {
                 success: true,
-                message: `${placedShip.type} placed successfully.`,
-                data: { ship: placedShip },
+                message: `${newShip.type} placed successfully.`,
+                data: { ship: newShip },
             };
         } catch (error: unknown) {
             const message = error instanceof Error 

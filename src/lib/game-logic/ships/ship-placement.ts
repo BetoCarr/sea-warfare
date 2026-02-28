@@ -1,6 +1,6 @@
 import type { Position, Orientation, ShipPlacementInfo, BaseShip } from '@/lib/utils/types';
-import { createBoardState } from '../board/board-sync';
 import { BOARD_SIZE } from '@/lib/utils/constants';
+
 /**
  * RESPONSIBILITY 2: POSITIONING AND PLACEMENT MANAGEMENT
  * 

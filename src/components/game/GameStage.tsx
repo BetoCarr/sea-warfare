@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { useGameStore } from '@/lib/store/game-store';
 import { GamePhase } from '@/lib/store/game-types';
@@ -11,6 +11,7 @@ import { FeedbackMessage, FeedbackType } from '../hud/FeedbackMessage';
 import { PlacementPreview } from '@/lib/game-logic/placement/placement-types';
 import { useShipPlacementMobileBridge } from '@/application/placement/mobile/useShipPlacementMobileBridge';
 import { createFleet } from '@/lib/game-logic/ships/ship-factory';
+import { OrientationToggle } from './OrientationToggle';
 
 interface GameStageProps {
     activeMessage: string | null;
@@ -54,6 +55,17 @@ export const GameStage = ({
     // --- Mobile Bridge ---
     const placement = useShipPlacementMobileBridge();
 
+    // Keyboard shortcut 'R' for rotation
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key.toLowerCase() === 'r') {
+                placement.rotate();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [placement.rotate]);
+
     return (
         <main className={cn(
             "flex-1 min-h-0 overflow-hidden flex flex-col items-stretch relative px-4 md:px-8",
@@ -87,14 +99,24 @@ export const GameStage = ({
                     />
                 </div>
             </div>
-            <ShipPalette
-                ships={ships}
-                placedShipIds={placedShipIds}
-                selectedShipId={placement.selectedShipId}
-                orientation={placement.orientation}
-                onShipSelect={placement.selectShip}
-                onRotate={placement.rotate}
-            /> 
+            
+            <div className="flex flex-col gap-2 sm:gap-4 px-1">
+                <div className="flex justify-between items-center">
+                    <OrientationToggle 
+                        orientation={placement.orientation} 
+                        onToggle={placement.rotate} 
+                    />
+                </div>
+                <ShipPalette
+                    ships={ships}
+                    placedShipIds={placedShipIds}
+                    selectedShipId={placement.selectedShipId}
+                    onShipSelect={(shipId) => {
+                        const ship = ships.find(s => s.id === shipId);
+                        if (ship) placement.selectShip(ship);
+                    }}
+                /> 
+            </div>
         </main>
     );
 };
