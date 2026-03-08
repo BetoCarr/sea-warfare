@@ -17,7 +17,7 @@ import { SHIPS_CONFIG } from '@/lib/utils/constants';
  */
 export function generateShipId(type: ShipType): string {
     const timestamp = Date.now().toString(36);
-    const random = Math.random().toString(36).substring(2, 5); // revisar complejidad Big O
+    const random = Math.random().toString(36).substring(2, 5);
     return `${type}-${timestamp}-${random}`;
 }
 
@@ -67,4 +67,18 @@ export function createFleet(): BaseShip[] {
 export function validateBaseShip(ship: BaseShip): boolean {
     const config = SHIPS_CONFIG[ship.type];
     return ship.size === config.size;
+}
+
+export function getBaseShipByType(type: ShipType): BaseShip {
+    const config = SHIPS_CONFIG[type];
+
+    if (!config) {
+        throw new Error(`Invalid ship type: ${type}`);
+    }
+
+    return {
+        id: type,
+        type,
+        size: config.size
+    };
 }

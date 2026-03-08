@@ -1,7 +1,8 @@
 import type { StateCreator } from "zustand";
-import type { Ship, ShipPlacementInfo } from "@/lib/utils/types";
+import type { ShipPlacementInfo, Ship, Orientation, Position, ShipType } from "@/lib/utils/types";
 import { GamePhase } from "../game-types";
-import  { placeShip, removeShipFromBoard } from "../../game-logic/ships/ship-placement"
+import  { canPlaceShipAt, removeShipFromBoard } from "../../game-logic/ships/ship-placement"
+import { getBaseShipByType } from "../../game-logic/ships/ship-catalog";
 import { createBoardState } from "@/lib/game-logic/board/board-sync";
 import type { CompleteGameStore, GameStoreMiddlewares } from "../store-types";
 import type { GameActionResult } from "../game-types";
@@ -24,46 +25,29 @@ export interface ConfirmPlacementResult {
 // --- Slice Interface ---
 export interface PlacementSlice {
     // State
-    selectedShipId: string | null;
-    // orientation: ship;
-    orientation: "horizontal" | "vertical";
-    
+    selectedShipId: ShipType | null;
+    orientation: Orientation;
+    preview: ShipPlacementInfo | null;
+
     // Actions
-    selectShip: (shipId: string | null) => void;
+    selectShip: (shipId: ShipType | null) => void;
     toggleOrientation: () => void;
-    placePlayerShip: (placement: ShipPlacementInfo) => GameActionResult<PlaceShipResult>;
+    previewPlacement: (position: Position) => void;
     removePlayerShip: (shipId: string) => GameActionResult<RemoveShipResult>;
     confirmPlacement: () => GameActionResult<ConfirmPlacementResult>;
 }
-/**
- * Slice: PlacementSlice
- * ----------------------------------------------------------
- * Handles placement of the player's ships during the PLACEMENT
- * phase. All logic related to adding, updating, removing ships,
- * and validating a complete setup lives here.
- *
- * Responsibilities:
- * - Validates phase and player state before placement actions
- * - Prevents duplicate ship placements
- * - Uses the core helpers (placeShip, createBoardState)
- * - Updates player.isReady when all ships are placed
- * - Executes the transition toward BATTLE once AI is ready
- *
- * This slice does NOT handle:
- * - Lifecycle or resets
- * - AI auto-placement
- * - Battle mechanics (attacks, hit/miss, sinking)
- * - Turn handling
- */
+
 export const createPlacementSlice: StateCreator<
     CompleteGameStore,
     GameStoreMiddlewares,
     [],
     PlacementSlice
 > = (set, get) => ({
+
     // Initial State
     selectedShipId: null,
     orientation: "horizontal",
+    preview: null,
 
     // Actions
     selectShip: (shipId) => {
@@ -79,108 +63,39 @@ export const createPlacementSlice: StateCreator<
     },
 
 
-    /**
-     * Places a player ship on the board during the PLACEMENT phase.
-     * - Validates the game phase
-     * - Ensures no duplicate ship is placed
-     * - Uses placeShip() helper for placement rules & collision checking
-     * - Updates ships and board state
-     */
-    placePlayerShip: (
-        placement: ShipPlacementInfo
-    ) => {    
-        const state = get();
-        // --- Validate phase ---
-        if (state.phase !== GamePhase.PLACEMENT) {
-            return {
-                success: false,
-                message: "You can only place ships during the placement phase.",
-                error: "INVALID_PHASE",
-            };
+
+    previewPlacement: (position) => {
+        const { selectedShipId, orientation, player, config } = get();
+
+        if (!selectedShipId) {
+            set({ preview: null });
+            return;
         }
 
-        // --- Validate player ---
-        if (!state.player) {
-            return {
-                success: false,
-                message: "Player not initialized.",
-                error: "NO_PLAYER",
-            };
+        const baseShip = getBaseShipByType(selectedShipId);
+        if (!baseShip) {
+            set({ preview: null });
+            return;
         }
 
-        const player = state.player;
+        const placement: ShipPlacementInfo = {
+            ...baseShip,
+            position,
+            orientation
+        };
 
-        // --- Validate duplicate ship ---
-        const alreadyPlaced = player.ships.some((s) => s.id === placement.id);
-        if (alreadyPlaced) {
-            return {
-                success: false,
-                message: `${placement.type} already placed.`,
-                error: "DUPLICATE_SHIP",
-            };
-        }
+        const isValid = canPlaceShipAt(
+            baseShip,
+            position,
+            orientation,
+            config.boardSize,
+            player.ships
+        );
 
-        try {
-            // --- Attempt placement using core logic ---
-            // createShip validates the placement internally using canPlaceShipAt
-            const placedPlacement = placeShip(
-                placement,
-                placement.position!,
-                placement.orientation!,
-                state.config.boardSize, // Posible origen del error
-                player.ships
-            );
-
-            // --- Create full Ship object with combat state ---
-            const newShip: Ship = {
-                ...placedPlacement,
-                hits: new Array(placedPlacement.size).fill(false),
-                isSunk: false
-            };
-
-            // --- Update state ---
-            set(
-                (draft) => {
-                    draft.player.ships.push(newShip);
-                    draft.player.boardState = createBoardState(
-                        draft.player.ships,
-                        []
-                    );
-
-                    // Automatically mark player ready when all ships are placed
-                    if (draft.player.ships.length >= 5) {
-                        draft.player.isReady = true;
-                        console.log("[Placement] Player is ready (all ships placed)");
-                    }
-
-                    console.log(
-                        `[Placement] Ship placed: ${newShip.type} at (${newShip.position?.row}, ${newShip.position?.col}) [${newShip.orientation}]`
-                    );
-                },
-                false,
-                "placement/placePlayerShip"
-            );
-
-            return {
-                success: true,
-                message: `${newShip.type} placed successfully.`,
-                data: { ship: newShip },
-            };
-        } catch (error: unknown) {
-            const message = error instanceof Error 
-                ? error.message 
-                : "Invalid ship placement.";
-
-            console.warn("[Placement] Error placing ship:", message);
-
-            return {
-                success: false,
-                message,
-                error: "INVALID_PLACEMENT",
-            };
-        }
+        set({
+            preview: isValid ? placement : null
+        });
     },
-
     /**
      * Removes a previously placed ship from the board.
      * - Valid during PLACEMENT phase only
@@ -236,7 +151,7 @@ export const createPlacementSlice: StateCreator<
                 draft.player.isReady = draft.player.ships.length >= 5;
 
                 console.log("[Placement] Ship removed:", {
-                    removedShip: clearedShip.type,
+                    // removedShip: clearedShip.type,
                     remainingShips: draft.player.ships.length,
                     isReady: draft.player.isReady,
                 });
