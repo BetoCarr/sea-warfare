@@ -1,74 +1,54 @@
 import { useCallback, useState } from "react";
-import { usePlacementPreview } from "../usePlacementPreview";
 import { useShipPlacement } from "../useShipPlacement";
-import type { PlacementIntent } from "@/lib/game-logic/placement/placement-types";
-import type { ShipSpec } from "@/lib/game-logic/ships/ship-spec";
-import type { Position, Orientation } from "@/lib/utils/types";
+import type { Position, ShipType } from "@/lib/utils/types";
 
 type UIState = "idle" | "ship-selected" | "previewing";
 
 export function useShipPlacementMobileBridge() {
-    const { preview, previewAt, clearPreview } = usePlacementPreview();
-    const { placeShip } = useShipPlacement();
+  const {
+    preview,
+    previewPlacement,
+    confirmPlacement,
+    toggleOrientation,
+    orientation,
+    selectShip
+  } = useShipPlacement();
 
-    const [uiState, setUIState] = useState<UIState>("idle");
-    const [selectedShip, setSelectedShip] = useState<ShipSpec | null>(null);
-    const [orientation, setOrientation] = useState<Orientation>("horizontal");
+  const [uiState, setUIState] = useState<UIState>("idle");
+  const [selectedShip, setSelectedShip] = useState<ShipType | null>(null);
 
-    const selectShip = useCallback((ship: ShipSpec) => {
-        setSelectedShip(ship);
-        setUIState("ship-selected");
-        console.log("Selected ship:", ship);
-    }, []);
-
-  const rotate = useCallback(() => {
-    setOrientation(o => o === "horizontal" ? "vertical" : "horizontal");
-    if (preview) {
-      previewAt({
-        ...preview.intent,
-        orientation: orientation === "horizontal" ? "vertical" : "horizontal",
-      });
-    }
-  }, [preview, previewAt, orientation]);
+  const handleSelectShip = useCallback((ship: ShipType) => {
+    setSelectedShip(ship);
+    selectShip(ship);
+    setUIState("ship-selected");
+  }, [selectShip]);
 
   const tapCell = useCallback((position: Position) => {
     if (!selectedShip) return;
 
-    const intent: PlacementIntent = {
-      ship: selectedShip,
-      position,
-      orientation,
-    };
-
-    const result = previewAt(intent);
-
-    if (result.result === "invalid") {
-      navigator.vibrate?.(50);
-      clearPreview();
-      setUIState("ship-selected");
-      return;
-    }
-
+    previewPlacement(position);
     setUIState("previewing");
-  }, [selectedShip, orientation, previewAt, clearPreview]);
+
+  }, [selectedShip, previewPlacement]);
 
   const confirm = useCallback(() => {
-    if (!preview || preview.result !== "valid") return;
+    if (!preview) return;
 
-    placeShip(preview.intent);
-    clearPreview();
+    confirmPlacement();
+
     setSelectedShip(null);
     setUIState("idle");
-  }, [preview, placeShip, clearPreview]);
+
+  }, [preview, confirmPlacement]);
 
   return {
     uiState,
     preview,
     orientation,
     selectedShip,
-    selectShip,
+    handleSelectShip,
     tapCell,
-    rotate,
-    confirm,
+    toggleOrientation,
+    confirm
   };
 }

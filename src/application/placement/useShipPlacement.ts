@@ -1,43 +1,23 @@
 "use client";
 
-import { useCallback } from "react";
 import { useGameStore } from "@/lib/store/game-store";
-import { ShipPlacementInfo } from "@/lib/utils/types";
-import type { PlacementIntent } from "@/lib/game-logic/placement/placement-types";
 
 export function useShipPlacement() {
-
-    const {
-        placePlayerShip,
-        removePlayerShip,
-        selectShip,
-        orientation
-    } = useGameStore();
-
-    /**
-     * Commit definitivo de un placement válido
-     */
-    const placeShip = useCallback((intent: PlacementIntent) => {
-
-        const placementInfo: ShipPlacementInfo = {
-            type: intent.ship.type,
-            size: intent.ship.size,
-            position: intent.position,
-            orientation: intent.orientation,
-        };  
-
-        return placePlayerShip(placementInfo);
-
-    }, [placePlayerShip]);
-
-    const removeShip = useCallback((shipId: string) => {
-        removePlayerShip(shipId);
-    }, [removePlayerShip]);
+    const preview = useGameStore(s => s.preview);
+    const orientation = useGameStore(s => s.orientation);
+    const selectShip = useGameStore(s => s.selectShip);
+    const previewPlacement = useGameStore(s => s.previewPlacement);
+    const toggleOrientation = useGameStore(s => s.toggleOrientation);
+    const confirmPlacement = useGameStore(s => s.confirmPlacement);
+    const removePlayerShip = useGameStore(s => s.removePlayerShip);
 
     return {
-        placeShip,
-        removeShip,
+        preview,
+        orientation,
         selectShip,
-        orientation
+        previewPlacement,
+        toggleOrientation,
+        confirmPlacement,
+        removePlayerShip
     };
 }
