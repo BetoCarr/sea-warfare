@@ -24,13 +24,14 @@ export interface ConfirmPlacementResult {
 
 // --- Slice Interface ---
 export interface PlacementSlice {
+
     // State
-    selectedShipId: ShipType | null;
+    selectedShipType: ShipType | null;
     orientation: Orientation;
     preview: ShipPlacementInfo | null;
 
     // Actions
-    selectShip: (shipId: ShipType | null) => void;
+    selectShip: (shipType: ShipType | null) => void;
     toggleOrientation: () => void;
     previewPlacement: (position: Position) => void;
     removePlayerShip: (shipId: string) => GameActionResult<RemoveShipResult>;
@@ -45,14 +46,14 @@ export const createPlacementSlice: StateCreator<
 > = (set, get) => ({
 
     // Initial State
-    selectedShipId: null,
+    selectedShipType: null,
     orientation: "horizontal",
     preview: null,
 
     // Actions
-    selectShip: (shipId) => {
+    selectShip: (shipType) => {
         set((state) => {
-            state.selectedShipId = shipId;
+            state.selectedShipType = shipType;
         }, false, "placement/selectShip");
     },
 
@@ -62,17 +63,15 @@ export const createPlacementSlice: StateCreator<
         }, false, "placement/toggleOrientation");
     },
 
-
-
     previewPlacement: (position) => {
-        const { selectedShipId, orientation, player, config } = get();
+        const { selectedShipType, orientation, player, config } = get();
 
-        if (!selectedShipId) {
+        if (!selectedShipType) {
             set({ preview: null });
             return;
         }
 
-        const baseShip = getBaseShipByType(selectedShipId);
+        const baseShip = getBaseShipByType(selectedShipType);
         if (!baseShip) {
             set({ preview: null });
             return;
@@ -96,6 +95,7 @@ export const createPlacementSlice: StateCreator<
             preview: isValid ? placement : null
         });
     },
+
     /**
      * Removes a previously placed ship from the board.
      * - Valid during PLACEMENT phase only
