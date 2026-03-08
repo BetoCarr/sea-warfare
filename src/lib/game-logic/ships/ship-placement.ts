@@ -13,38 +13,37 @@ import { BOARD_SIZE } from '@/lib/utils/constants';
  */
 
 /**
- * Returns all coordinates occupied by a ship based on its position and orientation
+ * Returns all board coordinates occupied by a ship.
  */
 export function getShipCoordinates(ship: ShipPlacementInfo): Position[] {
-    if (!ship.position) return [];
-    
-    const coordinates: Position[] = [];
     const { row, col } = ship.position;
+    const { size, orientation } = ship;
 
-    for (let i = 0; i < ship.size; i++) {
-        if (ship.orientation === 'horizontal') {
-            coordinates.push({ row, col: col + i });
-        } else {
-            coordinates.push({ row: row + i, col });
-        }
+    const coordinates: Position[] = [];
+
+    for (let i = 0; i < size; i++) {
+        coordinates.push(
+            orientation === "horizontal"
+                ? { row, col: col + i }
+                : { row: row + i, col }
+        );
     }
 
     return coordinates;
 }
 
 /**
- * Checks whether a ship can be placed at a specific position with a given orientation
- * - Validates board boundaries
- * - Ensures no overlap with existing ships
+ * Determines whether a ship can be placed at a given position and orientation.
+ * Validates board boundaries and overlap with existing ships.
  */
 export function canPlaceShipAt(
     ship: BaseShip,
     position: Position,
     orientation: Orientation,
     boardSize: number = BOARD_SIZE,
-    existingShips: ShipPlacementInfo[] = []
+    existingShips: readonly ShipPlacementInfo[] = []
 ): boolean {
-    // Temporary ship object for validation
+
     const tempShip: ShipPlacementInfo = {
         ...ship,
         position,
@@ -55,26 +54,32 @@ export function canPlaceShipAt(
 
     // Check board boundaries
     for (const coord of coordinates) {
-        if (coord.row < 0 || coord.row >= boardSize ||
-            coord.col < 0 || coord.col >= boardSize) {
+        if (
+            coord.row < 0 ||
+            coord.row >= boardSize ||
+            coord.col < 0 ||
+            coord.col >= boardSize
+        ) {
             return false;
         }
     }
 
-    // Check for overlap with existing ships
+    // Build a set of occupied cells
+    const occupiedCells = new Set<string>();
+
     for (const existingShip of existingShips) {
-        if (existingShip.id === ship.id) continue; // Skip the same ship
-        
-        const existingCoords = getShipCoordinates(existingShip);
-        for (const coord of coordinates) {
-            for (const existingCoord of existingCoords) {
-                if (coord.row === existingCoord.row && coord.col === existingCoord.col) {
-                    return false;
-                }
-            }
+        for (const coord of getShipCoordinates(existingShip)) {
+            occupiedCells.add(`${coord.row},${coord.col}`);
         }
     }
-    
+
+    // Check overlap
+    for (const coord of coordinates) {
+        if (occupiedCells.has(`${coord.row},${coord.col}`)) {
+            return false;
+        }
+    }
+
     return true;
 }
 
@@ -82,13 +87,18 @@ export function canPlaceShipAt(
  * Places a ship at a specific position and orientation on the board
  * - Throws an error if placement is invalid
  */
-export function placeShip<T extends BaseShip>(
-    ship: T,
+/**
+ * Creates a valid ship placement on the board.
+ * Throws an error if placement rules are violated.
+ */
+export function createShipPlacement(
+    ship: BaseShip,
     position: Position,
     orientation: Orientation,
-    boardSize: number = BOARD_SIZE,    
+    boardSize: number = BOARD_SIZE,
     existingShips: ShipPlacementInfo[],
-): T & ShipPlacementInfo {
+): ShipPlacementInfo {
+
     if (!canPlaceShipAt(ship, position, orientation, boardSize, existingShips)) {
         throw new Error(`Cannot place ${ship.type} at the specified position`);
     }

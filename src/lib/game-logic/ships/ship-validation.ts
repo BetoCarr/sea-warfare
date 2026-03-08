@@ -44,7 +44,7 @@ export function validateFleet(ships: Ship[]): {
     for (let i = 0; i < ships.length; i++) {
         for (let j = i + 1; j < ships.length; j++) {
             if (shipsOverlap(ships[i], ships[j])) {
-                errors.push(`Ships ${ships[i].id} and ${ships[j].id} overlap`);
+                errors.push(`Ships ${ships[i].type} and ${ships[j].type} overlap`);
             }
         }
     }
@@ -88,8 +88,8 @@ export function validateShipSeparation(
             const distance = getDistanceBetweenShips(ships[i], ships[j]);
             if (distance < minDistance) {
                 violations.push({
-                    ship1: ships[i].id,
-                    ship2: ships[j].id,
+                    ship1: ships[i].type,
+                    ship2: ships[j].type,
                     distance
                 });
             }

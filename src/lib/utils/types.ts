@@ -14,7 +14,6 @@ export interface Position {
 }
 
 export interface BaseShip {
-    id: string;
     type: ShipType;
     size: number;
 }
@@ -27,6 +26,7 @@ export interface ShipPlacementInfo extends BaseShip {
 
 // Represents a ship in the game
 export interface Ship extends ShipPlacementInfo {
+    id: string;
     hits: boolean[];           // Array tracking which segments are hit
     isSunk: boolean;           // True if the ship is completely sunk
 }

@@ -67,6 +67,25 @@ export function getShipsByType<T extends BaseShip>(ships: T[], type: ShipType): 
 }
 
 /**
+ * Checks if a fleet contains at least one ship of the specified type
+ */
+export function hasShipOfType(
+    ships: ShipPlacementInfo[],
+    type: ShipType
+): boolean {
+    return ships.some(ship => ship.type === type);
+}
+
+/**
+ * Returns an array of ship types that have been placed on the board
+ */
+export function getPlacedShipTypes(
+    ships: ShipPlacementInfo[]
+): ShipType[] {
+    return ships.map(ship => ship.type);
+}
+
+/**
  * Collects fleet statistics by ship state and placement
  */
 export function getFleetStats(ships: Ship[]) {

@@ -24,18 +24,18 @@ export function generateShipId(type: ShipType): string {
 /**
  * Creates a base structural representation of a ship.
  * - Uses SHIPS_CONFIG to determine size
- * - Returns only structural properties: id, type, size
+ * - Returns only structural properties: type, size
  * - Does NOT include grid positioning, orientation, or combat state
  */
-export function createBaseShip(type: ShipType, id?: string): BaseShip {
+
+export function getBaseShipByType(type: ShipType): BaseShip {
     const config = SHIPS_CONFIG[type];
-    
+
     if (!config) {
         throw new Error(`Invalid ship type: ${type}`);
     }
 
     return {
-        id: id || generateShipId(type),
         type,
         size: config.size
     };
@@ -52,8 +52,7 @@ export function createFleet(): BaseShip[] {
 
     Object.entries(SHIPS_CONFIG).forEach(([shipType, config]) => {
         for (let i = 0; i < config.count; i++) {
-            const id = config.count > 1 ? `${shipType}-${i + 1}` : shipType;
-            fleet.push(createBaseShip(shipType as ShipType, id));
+            fleet.push(getBaseShipByType(shipType as ShipType));
         }
     });
 
@@ -67,18 +66,4 @@ export function createFleet(): BaseShip[] {
 export function validateBaseShip(ship: BaseShip): boolean {
     const config = SHIPS_CONFIG[ship.type];
     return ship.size === config.size;
-}
-
-export function getBaseShipByType(type: ShipType): BaseShip {
-    const config = SHIPS_CONFIG[type];
-
-    if (!config) {
-        throw new Error(`Invalid ship type: ${type}`);
-    }
-
-    return {
-        id: type,
-        type,
-        size: config.size
-    };
 }

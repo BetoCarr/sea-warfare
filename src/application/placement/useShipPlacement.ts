@@ -20,7 +20,6 @@ export function useShipPlacement() {
     const placeShip = useCallback((intent: PlacementIntent) => {
 
         const placementInfo: ShipPlacementInfo = {
-            id: intent.ship.id,
             type: intent.ship.type,
             size: intent.ship.size,
             position: intent.position,

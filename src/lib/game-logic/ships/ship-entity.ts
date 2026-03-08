@@ -1,5 +1,6 @@
 import type { Ship, ShipPlacementInfo } from '@/lib/utils/types';
 import { SHIPS_CONFIG } from '@/lib/utils/constants';
+import { generateShipId } from './ship-catalog';
 
 /**
  * RESPONSIBILITY: COMBAT ENTITY CONSTRUCTION AND MANAGEMENT
@@ -12,13 +13,16 @@ import { SHIPS_CONFIG } from '@/lib/utils/constants';
 
 /**
  * Creates a full playable Ship entity from placement information.
- * - Copies all placement structure and spatial context
- * - Initializes combat state: hits array and isSunk status
+ * Initializes identity and combat state.
  */
 export function createShipFromPlacement(placement: ShipPlacementInfo): Ship {
     return {
-        ...placement,
-        hits: new Array(placement.size).fill(false),
+        id: generateShipId(placement.type),
+        type: placement.type,
+        size: placement.size,
+        position: { ...placement.position },
+        orientation: placement.orientation,
+        hits: Array.from({ length: placement.size }, () => false),
         isSunk: false
     };
 }

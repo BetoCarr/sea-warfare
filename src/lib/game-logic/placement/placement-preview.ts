@@ -10,7 +10,7 @@ export function previewPlacement(
     
     // Minimal object required for placement logic
     const placementInfo = {
-        id: intent.ship.id,
+        type: intent.ship.type,
         size: intent.ship.size,
         position: intent.position,
         orientation: intent.orientation,
