@@ -8,44 +8,44 @@ export function useShipPlacementMobileBridge() {
   const {
     preview,
     previewPlacement,
-    confirmPlacement,
+    confirmShipPlacement,
     toggleOrientation,
     orientation,
-    selectShip
+    selectShip,
+    selectedShipType
   } = useShipPlacement();
 
   const [uiState, setUIState] = useState<UIState>("idle");
-  const [selectedShip, setSelectedShip] = useState<ShipType | null>(null);
 
   const handleSelectShip = useCallback((ship: ShipType) => {
-    setSelectedShip(ship);
     selectShip(ship);
     setUIState("ship-selected");
   }, [selectShip]);
 
   const tapCell = useCallback((position: Position) => {
-    if (!selectedShip) return;
+    if (!selectedShipType) return;
 
     previewPlacement(position);
     setUIState("previewing");
 
-  }, [selectedShip, previewPlacement]);
+  }, [selectedShipType, previewPlacement]);
 
   const confirm = useCallback(() => {
     if (!preview) return;
 
-    confirmPlacement();
+    const result = confirmShipPlacement();
 
-    setSelectedShip(null);
+    if (!result.success) return;
+
     setUIState("idle");
 
-  }, [preview, confirmPlacement]);
+  }, [preview, confirmShipPlacement]);
 
   return {
     uiState,
     preview,
     orientation,
-    selectedShip,
+    selectedShipType,
     handleSelectShip,
     tapCell,
     toggleOrientation,

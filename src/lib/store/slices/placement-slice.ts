@@ -6,6 +6,7 @@ import { getBaseShipByType } from "../../game-logic/ships/ship-catalog";
 import { createBoardState } from "@/lib/game-logic/board/board-sync";
 import type { CompleteGameStore, GameStoreMiddlewares } from "../store-types";
 import type { GameActionResult } from "../game-types";
+import { createShipFromPlacement } from "@/lib/game-logic/ships/ship-entity";
 
 // --- Result Types ---
 export interface PlaceShipResult {
@@ -34,8 +35,9 @@ export interface PlacementSlice {
     selectShip: (shipType: ShipType | null) => void;
     toggleOrientation: () => void;
     previewPlacement: (position: Position) => void;
+    confirmShipPlacement: () => GameActionResult<PlaceShipResult>;
     removePlayerShip: (shipId: string) => GameActionResult<RemoveShipResult>;
-    confirmPlacement: () => GameActionResult<ConfirmPlacementResult>;
+    confirmFleetPlacement: () => GameActionResult<ConfirmPlacementResult>;
 }
 
 export const createPlacementSlice: StateCreator<
@@ -96,6 +98,44 @@ export const createPlacementSlice: StateCreator<
         });
     },
 
+    confirmShipPlacement: () => {
+        const state = get();
+
+        if (state.phase !== GamePhase.PLACEMENT) {
+            return {
+                success: false,
+                error: "INVALID_PHASE"
+            };
+        }
+
+        if (!state.preview) {
+            return {
+                success: false,
+                error: "NO_PREVIEW"
+            };
+        }
+
+        const placement = state.preview;
+
+        const ship = createShipFromPlacement(placement);
+
+        set((draft) => {
+
+            draft.player.ships.push(ship);
+
+            draft.preview = null;
+            draft.selectedShipType = null;
+
+        }, false, "placement/confirmShipPlacement");
+
+        return {
+            success: true,
+            message: "Ship placed successfully.",
+            data: {
+                ship
+            }
+        }
+    },
     /**
      * Removes a previously placed ship from the board.
      * - Valid during PLACEMENT phase only
@@ -173,7 +213,7 @@ export const createPlacementSlice: StateCreator<
      * - Marks player as ready
      * - If AI is ready, transitions to BATTLE
      */
-    confirmPlacement: () => {
+    confirmFleetPlacement: () => {
         const state = get();
 
         // --- Validate phase ---
