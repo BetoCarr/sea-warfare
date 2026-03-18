@@ -1,6 +1,10 @@
 "use client";
+import type { ShipType } from "@/lib/utils/types";
 import { ShipSpec } from "@/lib/game-logic/ships/ship-spec";
+import { useShipPlacement } from "@/application/placement/useShipPlacement";
+import { useGameStore } from "@/lib/store/game-store";
 import { cn } from "@/lib/utils/utils";
+import { useMemo } from "react";
 
 /**
  * ShipPalette
@@ -14,18 +18,24 @@ import { cn } from "@/lib/utils/utils";
  * - This provides WYSIWYG drag-and-drop feedback.
  */
 interface ShipPaletteProps {
-    ships: ShipSpec[];
-    selectedShipId: string | null;
-    placedShipIds: string[];
-    onShipSelect: (shipId: string) => void;
+    ships: ShipSpec[];  
 }
 
 export const ShipPalette = ({ 
     ships,
-    selectedShipId,
-    placedShipIds,
-    onShipSelect
 }: ShipPaletteProps) => {
+
+    const {
+        selectedShipType,
+        selectShip,
+    } = useShipPlacement();
+
+    const playerShips = useGameStore(s => s.player.ships);
+
+    const placedTypes = useMemo(
+        () => new Set(playerShips.map(s => s.type)),
+        [playerShips]
+    );
 
     return (
         <div 
@@ -37,14 +47,15 @@ export const ShipPalette = ({
                 {/* Internal Ship List */}
                 <div>
                     {ships.map(ship => {
-                        const isPlaced = placedShipIds.includes(ship.id);
-                        const isSelected = selectedShipId === ship.id;
 
+                        const isPlaced = placedTypes.has(ship.type);
+                        const isSelected = selectedShipType === ship.type;
+                        
                         return (
                             <button
-                                key={ship.id}
+                                key={ship.type}
                                 disabled={isPlaced}
-                                onClick={() => onShipSelect(ship.id)}
+                                onClick={() => selectShip(ship.type)}
                             >
                                 {ship.type}
                             </button>

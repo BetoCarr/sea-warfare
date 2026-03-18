@@ -47,10 +47,6 @@ export const GameStage = ({
     const playerBoard = useGameStore(s => s.player.boardState.board);
     const playerShips = useGameStore(s => s.player.ships);
 
-    const placedShipIds = useMemo(
-        () => playerShips.map(ship => ship.id),
-        [playerShips]
-    );
 
     // --- Mobile Bridge ---
     const placement = useShipPlacementMobileBridge();
@@ -59,12 +55,12 @@ export const GameStage = ({
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key.toLowerCase() === 'r') {
-                placement.rotate();
+                placement.toggleOrientation();
             }
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [placement.rotate]);
+    }, [placement.toggleOrientation]);
 
     return (
         <main className={cn(
@@ -102,19 +98,13 @@ export const GameStage = ({
             
             <div className="flex flex-col gap-2 sm:gap-4 px-1">
                 <div className="flex justify-between items-center">
-                    <OrientationToggle 
+                    <OrientationToggle // -Hacer un "Smart" Orientation Toggle que detecta automáticamente la orientación del último barco colocado y sugiere la siguiente orientación (ej. si el último barco se colocó horizontalmente, sugerir vertical para el próximo)
                         orientation={placement.orientation} 
-                        onToggle={placement.rotate} 
+                        onToggle={placement.toggleOrientation} 
                     />
                 </div>
                 <ShipPalette
                     ships={ships}
-                    placedShipIds={placedShipIds}
-                    selectedShipId={placement.selectedShipId}
-                    onShipSelect={(shipId) => {
-                        const ship = ships.find(s => s.id === shipId);
-                        if (ship) placement.selectShip(ship);
-                    }}
                 /> 
             </div>
         </main>

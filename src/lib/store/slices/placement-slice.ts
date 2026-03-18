@@ -56,6 +56,7 @@ export const createPlacementSlice: StateCreator<
     selectShip: (shipType) => {
         set((state) => {
             state.selectedShipType = shipType;
+            console.log("[Placement] Ship selected:", shipType);
         }, false, "placement/selectShip");
     },
 
