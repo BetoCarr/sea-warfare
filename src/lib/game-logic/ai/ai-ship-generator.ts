@@ -1,7 +1,7 @@
 import type { Ship } from "@/lib/utils/types";
 import { BOARD_SIZE } from '@/lib/utils/constants';
 import { createFleet } from "../ships/ship-catalog";
-import { placeShip } from "../ships/ship-placement";
+import { canPlaceShipAt } from "../ships/ship-placement";
 import { getValidPlacements } from "../ships/ship-validation";
 import { createShipFromPlacement } from "../ships/ship-entity";
 /**
@@ -18,24 +18,40 @@ export function generateAIShips(boardSize: number = BOARD_SIZE): Ship[] {
     const fleet = createFleet();
     const placedShips: Ship[] = [];
 
-    for (const ship of fleet) {
-        const validPlacements = getValidPlacements(ship, boardSize, placedShips);
+    for (const baseShip of fleet) {
+        const validPlacements = getValidPlacements(baseShip, boardSize, placedShips);
 
         if (validPlacements.length === 0) {
-            console.warn(`[AI] ⚠️ No valid placements for ship: ${ship.type}`);
+            console.warn(`[AI] ⚠️ No valid placements for ship: ${baseShip.type}`);
             continue;
         }
 
         // Pick a random placement
         const randomIndex = Math.floor(Math.random() * validPlacements.length);
         const { position, orientation } = validPlacements[randomIndex];
-
-        // Place the ship and add to list (returns ShipPlacementInfo)
-        const placedPlacement = placeShip(ship, position, orientation, boardSize, placedShips);
         
-        // Convert to full playable ship entity
-        const placedShip = createShipFromPlacement(placedPlacement);
-        placedShips.push(placedShip);
+        const isValid = canPlaceShipAt(
+            baseShip,
+            position,
+            orientation,
+            boardSize,
+            placedShips
+        );
+
+        if (!isValid) {
+            console.warn(`[AI] ❌ Invalid placement after selection for: ${baseShip.type}`);
+            continue;
+        }
+
+        const placement = {
+            ...baseShip,
+            position,
+            orientation
+        }
+
+        const ship = createShipFromPlacement(placement);
+        
+        placedShips.push(ship);
     }
 
     return placedShips;
