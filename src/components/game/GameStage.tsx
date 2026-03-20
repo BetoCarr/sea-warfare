@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useMemo, useEffect } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 import { useGameStore } from '@/lib/store/game-store';
 import { GamePhase } from '@/lib/store/game-types';
 import { cn } from '@/lib/utils/utils';
@@ -9,9 +8,9 @@ import Board from './Board';
 import { ShipPalette } from './ShipPalette';
 import { FeedbackMessage, FeedbackType } from '../hud/FeedbackMessage';
 import { PlacementPreview } from '@/lib/game-logic/placement/placement-types';
-import { useShipPlacementMobileBridge } from '@/application/placement/mobile/useShipPlacementMobileBridge';
 import { createFleet } from '@/lib/game-logic/ships/ship-catalog';
 import { OrientationToggle } from './OrientationToggle';
+import { useShipPlacement } from '@/application/placement/useShipPlacement';
 
 interface GameStageProps {
     activeMessage: string | null;
@@ -49,8 +48,8 @@ export const GameStage = ({
 
 
     // --- Mobile Bridge ---
-    const placement = useShipPlacementMobileBridge();
-
+    const placement = useShipPlacement();
+    console.log(placement)
     // Keyboard shortcut 'R' for rotation
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -98,13 +97,15 @@ export const GameStage = ({
             
             <div className="flex flex-col gap-2 sm:gap-4 px-1">
                 <div className="flex justify-between items-center">
-                    <OrientationToggle // -Hacer un "Smart" Orientation Toggle que detecta automáticamente la orientación del último barco colocado y sugiere la siguiente orientación (ej. si el último barco se colocó horizontalmente, sugerir vertical para el próximo)
+                    <OrientationToggle
                         orientation={placement.orientation} 
                         onToggle={placement.toggleOrientation} 
                     />
                 </div>
                 <ShipPalette
                     ships={ships}
+                    selectedShipType={placement.selectedShipType}
+                    selectShip={placement.selectShip}
                 /> 
             </div>
         </main>

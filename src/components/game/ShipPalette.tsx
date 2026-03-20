@@ -19,16 +19,15 @@ import { useMemo } from "react";
  */
 interface ShipPaletteProps {
     ships: ShipSpec[];  
+    selectedShipType: ShipType | null;
+    selectShip: (shipType: ShipType | null) => void;
 }
 
 export const ShipPalette = ({ 
     ships,
+    selectedShipType,
+    selectShip
 }: ShipPaletteProps) => {
-
-    const {
-        selectedShipType,
-        selectShip,
-    } = useShipPlacement();
 
     const playerShips = useGameStore(s => s.player.ships);
 
