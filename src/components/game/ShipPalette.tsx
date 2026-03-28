@@ -1,10 +1,11 @@
 "use client";
 import type { ShipType } from "@/lib/utils/types";
 import { ShipSpec } from "@/lib/game-logic/ships/ship-spec";
-import { useShipPlacement } from "@/application/placement/useShipPlacement";
+// import { useShipPlacement } from "@/application/placement/useShipPlacement";
 import { useGameStore } from "@/lib/store/game-store";
 import { cn } from "@/lib/utils/utils";
 import { useMemo } from "react";
+import { ShipPaletteItem } from "./ShipPaletteItem";
 
 /**
  * ShipPalette
@@ -51,13 +52,12 @@ export const ShipPalette = ({
                         const isSelected = selectedShipType === ship.type;
                         
                         return (
-                            <button
-                                key={ship.type}
-                                disabled={isPlaced}
-                                onClick={() => selectShip(ship.type)}
-                            >
-                                {ship.type}
-                            </button>
+                            <ShipPaletteItem 
+                                type={ship.type}
+                                size={ship.size}
+                                isSelected={isSelected}
+                                selectShip={() => selectShip(ship.type)}
+                            />
                         );
                     })}
                 </div>
