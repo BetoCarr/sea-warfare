@@ -11,6 +11,7 @@ import { PlacementPreview } from '@/lib/game-logic/placement/placement-types';
 import { createFleet } from '@/lib/game-logic/ships/ship-catalog';
 import { OrientationToggle } from './OrientationToggle';
 import { useShipPlacement } from '@/application/placement/useShipPlacement';
+import { useBoardViewModel } from '@/application/board/useBoardViewModel';
 
 interface GameStageProps {
     activeMessage: string | null;
@@ -46,10 +47,21 @@ export const GameStage = ({
     const playerBoard = useGameStore(s => s.player.boardState.board);
     const playerShips = useGameStore(s => s.player.ships);
 
+    const boardVM = useBoardViewModel({
+        size: 10,
+        cells: playerBoard,
+        ships: playerShips,
+        hoveredCell: null, // por ahora no lo usamos
+        preview,
+        draggingShipId,
+        showShips: true,
+    });
 
+    console.log('BoardVM', boardVM);
+    
     // --- Mobile Bridge ---
     const placement = useShipPlacement();
-    console.log(placement)
+    // console.log(placement)
 
     // Keyboard shortcut 'R' for rotation
     useEffect(() => {

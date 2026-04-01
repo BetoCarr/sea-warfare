@@ -46,7 +46,6 @@ export const ShipPalette = ({
             <div className="relative flex flex-row flex-wrap gap-2 sm:gap-4">
                 {/* Internal Ship List */}
                     {ships.map(ship => {
-
                         const isPlaced = placedTypes.has(ship.type);
                         const isSelected = selectedShipType === ship.type;
                         
