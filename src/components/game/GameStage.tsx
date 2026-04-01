@@ -50,6 +50,7 @@ export const GameStage = ({
     // --- Mobile Bridge ---
     const placement = useShipPlacement();
     console.log(placement)
+
     // Keyboard shortcut 'R' for rotation
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -68,7 +69,7 @@ export const GameStage = ({
             phase === GamePhase.PLACEMENT && "md:pr-[280px]"
         )}>
             {/* 1. TOP SLOT: Feedback / Instructions (Stable Height) */}
-            <div className="h-20 sm:h-24 flex items-center justify-center flex-none z-20 pointer-events-none">
+            <div className="h-20 sm:h-24 flex items-center justify-center shrink-0">
                 <FeedbackMessage 
                     message={activeMessage} 
                     type={activeType} 
@@ -78,8 +79,7 @@ export const GameStage = ({
             </div>
 
             {/* 2. CENTER SLOT: The Main Engagement Area (Board) */}
-            <div className="flex items-center justify-center min-h-0 py-2 sm:py-4">
-                <div className="w-full max-w-full flex items-center justify-center transition-transform duration-500">
+                <div className="flex-1 min-h-0 flex items-center justify-center py-2 sm:py-4">                <div className="w-full max-w-full flex items-center justify-center transition-transform duration-500">
                     <Board
                         size={10}
                         cells={playerBoard}
@@ -94,8 +94,8 @@ export const GameStage = ({
                     />
                 </div>
             </div>
-            
-            <div className="flex flex-col gap-2 sm:gap-4 px-1">
+            {/* 3. BOTTOM SLOT: Ship Palette */}
+            <div className="shrink-0 flex flex-col gap-2 sm:gap-4 px-1">
                 <div className="flex justify-between items-center">
                     <OrientationToggle
                         orientation={placement.orientation} 

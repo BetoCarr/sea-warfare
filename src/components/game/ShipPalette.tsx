@@ -1,7 +1,6 @@
 "use client";
 import type { ShipType } from "@/lib/utils/types";
 import { ShipSpec } from "@/lib/game-logic/ships/ship-spec";
-// import { useShipPlacement } from "@/application/placement/useShipPlacement";
 import { useGameStore } from "@/lib/store/game-store";
 import { cn } from "@/lib/utils/utils";
 import { useMemo } from "react";
@@ -18,6 +17,7 @@ import { ShipPaletteItem } from "./ShipPaletteItem";
  * - Subscribes to `orientation` to layout segments horizontally or vertically.
  * - This provides WYSIWYG drag-and-drop feedback.
  */
+
 interface ShipPaletteProps {
     ships: ShipSpec[];  
     selectedShipType: ShipType | null;
@@ -40,28 +40,27 @@ export const ShipPalette = ({
     return (
         <div 
             className={cn(
-                "w-full h-full min-h-0 min-w-0 flex flex-col gap-4",
+                "w-full h-full min-h-0 min-w-0 flex flex-row gap-4",
             )}
         >
-            <div className="relative flex flex-col gap-2 sm:gap-4">
+            <div className="relative flex flex-row flex-wrap gap-2 sm:gap-4">
                 {/* Internal Ship List */}
-                <div>
                     {ships.map(ship => {
 
                         const isPlaced = placedTypes.has(ship.type);
                         const isSelected = selectedShipType === ship.type;
                         
                         return (
-                            <ShipPaletteItem 
-                                type={ship.type}
-                                size={ship.size}
-                                isSelected={isSelected}
-                                selectShip={() => selectShip(ship.type)}
-                            />
+                            <div key={ship.type} className= "mb-2 last:mb-0">
+                                <ShipPaletteItem 
+                                    type={ship.type}
+                                    size={ship.size}
+                                    isSelected={isSelected}
+                                    selectShip={() => selectShip(ship.type)}
+                                />
+                            </div>
                         );
                     })}
-                </div>
-
                 {/* Scroll shadows for mobile hint */}
                 <div className="md:hidden pointer-events-none absolute bottom-0 right-0 h-12 w-20 bg-gradient-to-l from-slate-950 via-slate-900/80 to-transparent z-10" />
                 <div className="md:hidden pointer-events-none absolute bottom-0 left-0 h-12 w-8 bg-gradient-to-r from-slate-950/50 to-transparent z-10" />
