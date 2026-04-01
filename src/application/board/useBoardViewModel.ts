@@ -34,7 +34,23 @@ export function useBoardViewModel({
             for (let col = 0; col < size; col++) {
 
                 // ⚠️ Fase 1: NO movemos lógica aún
-                const baseState = cells[row]?.[col] || 'empty';
+                const currentState = cells[row]?.[col] || 'empty';
+
+                // 🔴 Copia de getCellDisplayState (simplificada)
+                let computedState: CellState = currentState;
+                // console.log(computedState)
+                // ⚠️ Aún NO usamos ships aquí completamente
+                if (currentState === 'hit' || currentState === 'miss' || currentState === 'sunk') {
+                    computedState = currentState;
+                } else {
+                    // Placeholder: luego conectaremos ships correctamente
+                    if (showShips && currentState === 'ship') {
+                        computedState = 'ship';
+                    } else {
+                        computedState = 'empty';
+                    }
+                }
+
 
                 const isHovered =
                     hoveredCell?.row === row && hoveredCell?.col === col;
@@ -47,7 +63,7 @@ export function useBoardViewModel({
                 rowCells.push({
                     row,
                     col,
-                    state: baseState,
+                    state: computedState,
                     isHovered,
                     isGhost,
                     isPreview,
