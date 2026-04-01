@@ -10,7 +10,7 @@ interface UseBoardViewModelParams {
     ships: Ship[];
     hoveredCell?: Position | null;
     preview?: PlacementPreview | null;
-    draggingShipId?: string | null; // se debe usar shiptype ya que en fase placement no hay shipId aún
+    draggingShipId?: string | null; // TODO: unify dragging identifier (shipId vs shipType) across placement and gameplay
     showShips: boolean;
 }
 
@@ -25,6 +25,29 @@ export function useBoardViewModel({
 }: UseBoardViewModelParams): BoardViewModel {
 
     const vm = useMemo(() => {
+        const getCellInfo = (row: number, col: number) => {
+
+            const shipInCell = ships.find(ship => {
+                if (!ship.position) return false;
+
+                const { row: shipRow, col: shipCol } = ship.position;
+                const { orientation, size: shipSize } = ship;
+
+                if (orientation === 'horizontal') {
+                    return row === shipRow && col >= shipCol && col < shipCol + shipSize;
+                } else {
+                    return col === shipCol && row >= shipRow && row < shipRow + shipSize;
+                }
+            });
+
+            return {
+                hasShip: !!shipInCell,
+                ship: shipInCell,
+                isShipStart:
+                shipInCell?.position?.row === row &&
+                shipInCell?.position?.col === col,
+            };
+        };
 
         const result: BoardCellVM[][] = [];
 
@@ -38,17 +61,15 @@ export function useBoardViewModel({
 
                 // 🔴 Copia de getCellDisplayState (simplificada)
                 let computedState: CellState = currentState;
-                // console.log(computedState)
-                // ⚠️ Aún NO usamos ships aquí completamente
+                
+                const cellInfo = getCellInfo(row, col);
+
                 if (currentState === 'hit' || currentState === 'miss' || currentState === 'sunk') {
                     computedState = currentState;
+                } else if (cellInfo.hasShip && showShips) {
+                    computedState = 'ship';
                 } else {
-                    // Placeholder: luego conectaremos ships correctamente
-                    if (showShips && currentState === 'ship') {
-                        computedState = 'ship';
-                    } else {
-                        computedState = 'empty';
-                    }
+                    computedState = 'empty';
                 }
 
 
@@ -58,14 +79,16 @@ export function useBoardViewModel({
                 const isPreview =
                     preview?.occupiedCells?.some(p => p.row === row && p.col === col) ?? false;
 
-                const isGhost = false; // se moverá en fases posteriores
+                const isGhost =
+                    draggingShipId &&
+                    cellInfo.ship?.id === draggingShipId;
 
                 rowCells.push({
                     row,
                     col,
                     state: computedState,
                     isHovered,
-                    isGhost,
+                    isGhost: !!isGhost,                    
                     isPreview,
                 });
             }
@@ -78,7 +101,7 @@ export function useBoardViewModel({
             cells: result,
         };
 
-    }, [size, cells, hoveredCell, preview]);
+    }, [size, cells, ships, hoveredCell, preview, draggingShipId, showShips]);
 
     return vm;
 }
