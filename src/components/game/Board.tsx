@@ -6,8 +6,12 @@ import { cn } from '@/lib/utils/utils'; // Utility to combine class names dynami
 import { BOARD_SIZE, SHIPS_CONFIG } from '@/lib/utils/constants';
 import type { CellState, Position, Ship, ShipType } from '@/lib/utils/types';
 import type { PlacementPreview } from '@/lib/game-logic/placement/placement-types';
+import type { BoardViewModel } from '@/application/board/board-types';
+
 
 interface BoardProps {
+    boardVM?: BoardViewModel; // 👈 nuevo
+
     size?: number;                  
     cells: CellState[][];           
     isPlayerBoard: boolean;         
@@ -27,6 +31,7 @@ interface BoardProps {
  * cells, ships, and hover interactions.
  */
 export default function Board({
+    boardVM,
     size = BOARD_SIZE,
     cells,
     isPlayerBoard,
@@ -159,6 +164,10 @@ export default function Board({
         return false;
     }, [preview, draggingShipId, getCellInfo]);
 
+
+    const effectiveCells = boardVM?.cells;
+    const rows = effectiveCells ?? Array.from({ length: size });
+
     return (
         <div
             className={cn(
@@ -190,33 +199,37 @@ export default function Board({
                 ))}
 
                 {/* --- Rows and cells --- */}
-                {Array.from({ length: size }).map((_, row) => (
+                {/* {Array.from({ length: size }).map((_, row) => ( */}
+            
+                {rows.map((rowData, row) => (
                     <React.Fragment key={row}>
                         {/* Row number label */}
                         <div
-                            key={`row-${row}`}
                             className="text-[10px] sm:text-xs md:text-sm text-slate-400 text-center"
                         >
                             {row + 1}
                         </div>
 
-                        {/* Individual board cells */}
-                        {Array.from({ length: size }).map((_, col) => (
-                            <Cell
-                                key={`${row}-${col}`}
-                                state={cells[row][col]}
-                                position={{ row, col }}
-                                // onPress={(pos) =>
-                                //     // placementMobileBridge.mobileHandlers.onCellTap(pos.row, pos.col)
-                                // }
-                                disabled={disabled}
-                                showShip={isPlayerBoard || forceShowShips}
-                                draggable={isPlayerBoard && cells[row][col] === 'ship'}
-                                // isGhost={isGhostCell(row, col)}
-                                // isValidPreview={preview?.result === 'valid'}
-                            />
-                        ))}
-                    </ React.Fragment>
+                        {/* Cells */}
+                        {(effectiveCells ? rowData : Array.from({ length: size })).map((cellData: any, col: number) => {
+                            
+                            const vmCell = effectiveCells ? cellData : null;
+
+                            return (
+                                <Cell
+                                    key={`${row}-${col}`}
+                                    state={vmCell?.state ?? cells[row][col]}
+                                    position={{ row, col }}
+                                    disabled={disabled}
+                                    showShip={isPlayerBoard || forceShowShips}
+                                    draggable={isPlayerBoard && cells[row][col] === 'ship'}
+                                    // isPreview={vmCell?.isPreview}
+                                    // isGhost={vmCell?.isGhost}
+                                    // isHovered={vmCell?.isHovered}
+                                />
+                            );
+                        })}
+                    </React.Fragment>
                 ))}
             </div>
         </div>
