@@ -55,11 +55,9 @@ export function useBoardViewModel({
             const rowCells: BoardCellVM[] = [];
 
             for (let col = 0; col < size; col++) {
-
-                // ⚠️ Fase 1: NO movemos lógica aún
+                
                 const currentState = cells[row]?.[col] || 'empty';
 
-                // 🔴 Copia de getCellDisplayState (simplificada)
                 let computedState: CellState = currentState;
                 
                 const cellInfo = getCellInfo(row, col);

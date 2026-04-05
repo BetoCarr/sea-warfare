@@ -91,19 +91,15 @@ export const GameStage = ({
             </div>
 
             {/* 2. CENTER SLOT: The Main Engagement Area (Board) */}
-                <div className="flex-1 min-h-0 flex items-center justify-center py-2 sm:py-4">                <div className="w-full max-w-full flex items-center justify-center transition-transform duration-500">
+            <div className="w-full max-w-full flex items-center justify-center transition-transform duration-500">
+                <div className="flex-1 min-h-0 flex items-center justify-center py-2 sm:py-4">                
                     <Board
                         boardVM={boardVM}
-                        size={10}
                         cells={playerBoard}
-                        isPlayerBoard={true}
-                        onCellClick={onPlayerCellClick}
-                        onCellInteract={onCellInteract}
-                        ships={ships as any} // Temporary cast until Board is updated to accept BaseShip[]
-                        forceShowShips={true}
-                        disabled={phase === GamePhase.GAME_OVER}
-                        draggingShipId={draggingShipId}
-                        preview={preview}
+                        // isPlayerBoard={true}
+                        // onCellClick={onPlayerCellClick}
+                        // forceShowShips={true}
+                        // disabled={phase === GamePhase.GAME_OVER}
                     />
                 </div>
             </div>
