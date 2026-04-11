@@ -1,8 +1,11 @@
 import { useMemo } from 'react';
-import type { BoardViewModel, BoardCellVM } from './board-types';
+import { getCellInfo } from '@/lib/game-logic/board/getCellInfo';
+import { getVisualState } from './getVisualState';
+import type { BoardViewModel, BoardCellVM, CellVisualState } from './board-types';
 import type { CellState, Position } from '@/lib/utils/types';
 import type { PlacementPreview } from '@/lib/game-logic/placement/placement-types';
 import type { Ship } from '@/lib/utils/types';
+
 
 interface UseBoardViewModelParams {
     size: number;
@@ -10,10 +13,23 @@ interface UseBoardViewModelParams {
     ships: Ship[];
     hoveredCell?: Position | null;
     preview?: PlacementPreview | null;
-    draggingShipId?: string | null; // TODO: unify dragging identifier (shipId vs shipType) across placement and gameplay
+    draggingShipId?: string | null;
     showShips: boolean;
 }
 
+/**
+ * useBoardViewModel
+ * ------------------------------------------------------------
+ * Transforms raw domain/game state into a UI-friendly structure.
+ *
+ * Responsibilities:
+ * - Resolve ship presence per cell
+ * - Derive interaction states (hover, preview, dragging)
+ * - Convert domain state into a single visual state (visualState)
+ *
+ * Output:
+ * - Fully declarative BoardViewModel consumed by the Board UI
+ */
 export function useBoardViewModel({
     size,
     cells,
@@ -25,69 +41,45 @@ export function useBoardViewModel({
 }: UseBoardViewModelParams): BoardViewModel {
 
     const vm = useMemo(() => {
-        const getCellInfo = (row: number, col: number) => {
-
-            const shipInCell = ships.find(ship => {
-                if (!ship.position) return false;
-
-                const { row: shipRow, col: shipCol } = ship.position;
-                const { orientation, size: shipSize } = ship;
-
-                if (orientation === 'horizontal') {
-                    return row === shipRow && col >= shipCol && col < shipCol + shipSize;
-                } else {
-                    return col === shipCol && row >= shipRow && row < shipRow + shipSize;
-                }
-            });
-
-            return {
-                hasShip: !!shipInCell,
-                ship: shipInCell,
-                isShipStart:
-                shipInCell?.position?.row === row &&
-                shipInCell?.position?.col === col,
-            };
-        };
 
         const result: BoardCellVM[][] = [];
+
+        const previewSet = new Set(
+            preview?.occupiedCells?.map(p => `${p.row}-${p.col}`) ?? []
+        );
 
         for (let row = 0; row < size; row++) {
             const rowCells: BoardCellVM[] = [];
 
             for (let col = 0; col < size; col++) {
-                
+
                 const currentState = cells[row]?.[col] || 'empty';
-
-                let computedState: CellState = currentState;
                 
-                const cellInfo = getCellInfo(row, col);
-
-                if (currentState === 'hit' || currentState === 'miss' || currentState === 'sunk') {
-                    computedState = currentState;
-                } else if (cellInfo.hasShip && showShips) {
-                    computedState = 'ship';
-                } else {
-                    computedState = 'empty';
-                }
-
+                const cellInfo = getCellInfo(row, col, ships);
 
                 const isHovered =
                     hoveredCell?.row === row && hoveredCell?.col === col;
 
-                const isPreview =
-                    preview?.occupiedCells?.some(p => p.row === row && p.col === col) ?? false;
+                const isPreview = previewSet.has(`${row}-${col}`);
 
                 const isGhost =
                     draggingShipId &&
                     cellInfo.ship?.id === draggingShipId;
 
+                const visualState = getVisualState({
+                    currentState,
+                    hasShip: cellInfo.hasShip,
+                    isPreview,
+                    previewResult: preview?.result,
+                    isGhost: !!isGhost,
+                    showShips,
+                });
+
                 rowCells.push({
                     row,
                     col,
-                    state: computedState,
+                    visualState,
                     isHovered,
-                    isGhost: !!isGhost,                    
-                    isPreview,
                 });
             }
 

@@ -57,7 +57,6 @@ export const GameStage = ({
         showShips: true,
     });
 
-    console.log('BoardVM', boardVM);
     
     // --- Mobile Bridge ---
     const placement = useShipPlacement();
@@ -95,7 +94,7 @@ export const GameStage = ({
                 <div className="flex-1 min-h-0 flex items-center justify-center py-2 sm:py-4">                
                     <Board
                         boardVM={boardVM}
-                        cells={playerBoard}
+                        // cells={playerBoard}
                         // isPlayerBoard={true}
                         // onCellClick={onPlayerCellClick}
                         // forceShowShips={true}

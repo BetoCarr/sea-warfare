@@ -5,14 +5,13 @@ import Cell from './Cell';
 import { cn } from '@/lib/utils/utils'; // Utility to combine class names dynamically
 import { BOARD_SIZE, SHIPS_CONFIG } from '@/lib/utils/constants';
 import type { CellState, Position, Ship, ShipType } from '@/lib/utils/types';
-// import type { PlacementPreview } from '@/lib/game-logic/placement/placement-types';
 import type { BoardViewModel } from '@/application/board/board-types';
 
 
 interface BoardProps {
     boardVM: BoardViewModel; // 👈 nuevo
     // size?: number;                  
-    cells: CellState[][];           
+    // cells: CellState[][];           
     // isPlayerBoard: boolean;         
     // onCellClick: (row: number, col: number) => void; 
     // forceShowShips?: boolean;       
@@ -29,7 +28,7 @@ interface BoardProps {
 export default function Board({
     boardVM,
     // size = BOARD_SIZE,
-    cells,
+    // cells,
     // isPlayerBoard,
     // onCellClick,
     // forceShowShips = false,
@@ -39,10 +38,8 @@ export default function Board({
 }: BoardProps) {
     // Local hover state (used when no external hoveredCell is provided)
     const [localHoveredCell, setLocalHoveredCell] = useState<Position | null>(null);
+    console.log('BoardVM', boardVM);
     const size = boardVM.size;
-    // const rows = boardVM.cells;
-
-
 
     return (
         <div
@@ -85,17 +82,20 @@ export default function Board({
 
                         {/* Cells */}
                         {rowData.map((vmCell, col) => (
-                            <Cell
-                                key={`${row}-${col}`}
-                                state={vmCell.state}
-                                position={{ row, col }}
-                                // disabled={disabled}
-                                // showShip={isPlayerBoard || forceShowShips}
-                                // draggable={isPlayerBoard && vmCell.state === 'ship'}
-                                // isPreview={vmCell.isPreview}
-                                // isGhost={vmCell.isGhost}
-                                // isHovered={vmCell.isHovered}
-                            />
+                            <p>
+                                holsa
+                            </p>
+                            // <Cell
+                            //     key={`${row}-${col}`}
+                            //     // state={vmCell.state}
+                            //     position={{ row, col }}
+                            //     // disabled={disabled}
+                            //     // showShip={isPlayerBoard || forceShowShips}
+                            //     // draggable={isPlayerBoard && vmCell.state === 'ship'}
+                            //     // isPreview={vmCell.isPreview}
+                            //     // isGhost={vmCell.isGhost}
+                            //     // isHovered={vmCell.isHovered}
+                            // />
                         ))}
                     </React.Fragment>
                 ))}

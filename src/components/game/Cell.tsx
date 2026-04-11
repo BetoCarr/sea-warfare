@@ -5,18 +5,21 @@ import { cn } from '@/lib/utils/utils'; // A utility function to combine class n
 import type { CellState, Position } from '@/lib/utils/types';
 
 interface CellProps {
-    state: CellState;           // Current state of the cell (determines style & content)
-    position: Position;         // Grid coordinates (row/col) for accessibility & testing
+    position: Position;
+
+    // 🔥 ya procesado por VM
+    displayState: CellState;
+    content: React.ReactNode;
+    className: string;
+
+    // interacción
     onPress?: (position: Position) => void;
     onHover?: (position: Position) => void;
-    onDrop?: (position: Position) => void;
-    disabled?: boolean;         // Prevents interaction if true
-    showShip?: boolean;         // Controls whether ships are visible to the player
-    isHovered?: boolean;        // Used to highlight a cell during targeting/placement
-    className?: string;         // Optional custom className for style overrides
-    draggable?: boolean;
-    // isGhost?: boolean;
-    // isValidPreview?: boolean;
+
+    disabled?: boolean;
+
+    // UI flags
+    isHovered?: boolean;
 }
 
 /**
@@ -28,17 +31,14 @@ interface CellProps {
  * - Can be configured to hide ships until revealed.
  */
 export default function Cell({
-    state,
     position,
+    displayState: state,
+    content,
+    className,
     onPress,
     onHover,
-    onDrop,
     disabled = false,
-    showShip = false,
     isHovered = false,
-    className,
-    // isGhost,
-    // isValidPreview
 }: CellProps) {
 
     // Local state used to trigger temporary animations (e.g., pulse on click)
