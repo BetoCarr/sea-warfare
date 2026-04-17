@@ -66,7 +66,7 @@ export function useBoardViewModel({
                     draggingShipId &&
                     cellInfo.ship?.id === draggingShipId;
 
-                const visualState = getVisualState({
+                let visualState = getVisualState({
                     currentState,
                     hasShip: cellInfo.hasShip,
                     isPreview,

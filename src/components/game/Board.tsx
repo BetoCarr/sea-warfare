@@ -9,16 +9,7 @@ import type { BoardViewModel } from '@/application/board/board-types';
 
 
 interface BoardProps {
-    boardVM: BoardViewModel; // 👈 nuevo
-    // size?: number;                  
-    // cells: CellState[][];           
-    // isPlayerBoard: boolean;         
-    // onCellClick: (row: number, col: number) => void; 
-    // forceShowShips?: boolean;       
-    // disabled?: boolean;            
-    // className?: string;             
-    // hoveredCell?: Position | null; 
-    
+    boardVM: BoardViewModel; 
 }
 
 /**
@@ -27,14 +18,7 @@ interface BoardProps {
  */
 export default function Board({
     boardVM,
-    // size = BOARD_SIZE,
-    // cells,
-    // isPlayerBoard,
-    // onCellClick,
-    // forceShowShips = false,
-    // disabled = false,
-    // className,
-    // hoveredCell,
+
 }: BoardProps) {
     // Local hover state (used when no external hoveredCell is provided)
     const [localHoveredCell, setLocalHoveredCell] = useState<Position | null>(null);
@@ -79,10 +63,12 @@ export default function Board({
                         <div className="text-[10px] sm:text-xs md:text-sm text-slate-400 text-center">
                             {row + 1}
                         </div>
-
+                        
                         {/* Cells */}
                         {rowData.map((vmCell, col) => (
-                            <p>
+                            <p
+                                key={`${row}-${col}`}
+                            >
                                 holsa
                             </p>
                             // <Cell

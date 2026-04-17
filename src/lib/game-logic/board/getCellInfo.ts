@@ -6,7 +6,6 @@ export const getCellInfo = (row: number, col: number, ships: Ship[] ) => {
 
         const { row: shipRow, col: shipCol } = ship.position;
         const { orientation, size: shipSize } = ship;
-
         if (orientation === 'horizontal') {
             return row === shipRow && col >= shipCol && col < shipCol + shipSize;
         } else {

@@ -45,7 +45,9 @@ export const GameStage = ({
 
     const phase = useGameStore(s => s.phase);
     const playerBoard = useGameStore(s => s.player.boardState.board);
+
     const playerShips = useGameStore(s => s.player.ships);
+    console.log(playerShips)
 
     const boardVM = useBoardViewModel({
         size: 10,
@@ -57,10 +59,7 @@ export const GameStage = ({
         showShips: true,
     });
 
-    
-    // --- Mobile Bridge ---
     const placement = useShipPlacement();
-    // console.log(placement)
 
     // Keyboard shortcut 'R' for rotation
     useEffect(() => {
