@@ -2,43 +2,24 @@
 
 import { useState } from 'react';
 import { cn } from '@/lib/utils/utils'; // A utility function to combine class names
-import type { CellState, Position } from '@/lib/utils/types';
+import type { Position } from '@/lib/utils/types';
+import { CellVisualState } from '@/application/board/board-types';
 
 interface CellProps {
+    visualState: CellVisualState;
     position: Position;
-
-    // 🔥 ya procesado por VM
-    displayState: CellState;
-    content: React.ReactNode;
-    className: string;
-
-    // interacción
-    onPress?: (position: Position) => void;
-    onHover?: (position: Position) => void;
-
     disabled?: boolean;
-
-    // UI flags
     isHovered?: boolean;
+    onPress?: (pos: Position) => void;
 }
 
-/**
- * Cell component represents a single square in the game board.
- * 
- * - Visual state is determined by `CellState` (empty, ship, hit, miss, sunk).
- * - Includes accessibility labels for screen readers.
- * - Animations and hover effects provide user feedback.
- * - Can be configured to hide ships until revealed.
- */
+
 export default function Cell({
+    visualState,    
     position,
-    displayState: state,
-    content,
-    className,
-    onPress,
-    onHover,
     disabled = false,
     isHovered = false,
+    onPress,
 }: CellProps) {
 
     // Local state used to trigger temporary animations (e.g., pulse on click)
@@ -52,117 +33,93 @@ export default function Cell({
     const handleClick = () => {
         if (disabled) return;
 
-        // Animación local (UI concern)
-        if (state === 'empty' || state === 'ship') {
+        if (
+            visualState === 'water' ||
+            visualState === 'ship'
+        ) {
             setIsAnimating(true);
-            setTimeout(() => setIsAnimating(false), 300);
+            setTimeout(() => setIsAnimating(false), 250);
         }
 
-        // Emitir intención (domain-agnostic)
         onPress?.(position);
     };
 
+    const baseStyles =
+        "w-full aspect-square flex items-center justify-center border transition-all duration-150 select-none text-sm font-bold";
 
-    /**
-     * Returns the appropriate Tailwind CSS classNames for the cell
-     * based on its current state, hover state, and animation.
-     */
-    const getCellStyles = () => {
-        const baseStyles =
-            "w-full aspect-square flex items-center justify-center " +
-            "border " +
-            "m-0 " +
-            "transition-all duration-150 select-none text-sm font-bold";
+    const visualStyles: Record<CellVisualState, string> = {
+        water:
+            "bg-slate-700 border-slate-500 hover:bg-slate-600",
 
-        const stateStyles: Record<CellState, string> = {
-            empty:
-                "bg-slate-700 hover:bg-slate-600 border-slate-500 text-slate-300",
-            
-            ship: showShip
-                ? "bg-slate-500 hover:bg-slate-400 border-slate-300 text-white"
-                : "bg-slate-700 hover:bg-slate-600 border-slate-500 text-slate-300",
+        ship:
+            "bg-slate-500 border-slate-300 text-white hover:bg-slate-400",
 
-            hit:
-                "bg-red-600 border-red-700 text-white shadow-inner shadow-red-900",
+        hit:
+            "bg-red-600 border-red-700 text-white shadow-inner shadow-red-900",
 
-            miss:
-                "bg-slate-500 border-slate-600 text-slate-300 opacity-70",
+        miss:
+            "bg-slate-500 border-slate-600 text-slate-300 opacity-70",
 
-            sunk:
-                "bg-red-800 border-red-900 text-white shadow-inner shadow-black/40",
-        };
+        sunk:
+            "bg-red-800 border-red-900 text-white shadow-inner shadow-black/40",
 
-        // Disabled state
-        const disabledStyles = disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer";
+        'preview-valid':
+            "bg-emerald-500/50 border-emerald-400",
 
-        // Hover effect for targeting
-        const hoverStyles = isHovered && !disabled ? "ring-2 ring-yellow-400 ring-opacity-75 scale-105" : "";
-
-        // Animation for new hits/misses
-        const animationStyles = isAnimating ? "animate-pulse scale-110" : "";
-
-        return cn(
-            baseStyles,
-            stateStyles[state],
-            disabledStyles,
-            hoverStyles,
-            animationStyles,
-            // isGhost && (isValidPreview ? "bg-emerald-500/50 border-emerald-400" : "bg-red-500/50 border-red-400"),
-            className ?? ""
-        );
+        'preview-invalid':
+            "bg-red-500/40 border-red-400",
     };
-    /**
-     * Maps the cell's state to a visual symbol (emoji).
-     * This makes it easy to identify game events at a glance.
-     */
-    const getCellContent = () => {
-        switch (state) {
-            case 'hit':
-                return '💥'; // Hit explosion
-            case 'miss':
-                return '○'; // Miss marker  
-            case 'sunk':
-                return '💀'; // Sunk ship
-            case 'ship':
-                return showShip ? '🚢' : ''; // Ship (only if showShip is true)
-            case 'empty':
-            default:
-                return '';
-        }
+
+    const hoverStyles =
+        isHovered && !disabled
+            ? "ring-2 ring-yellow-400 scale-105"
+            : "";
+
+    const disabledStyles =
+        disabled
+            ? "cursor-not-allowed opacity-60"
+            : "cursor-pointer";
+
+    const animationStyles =
+        isAnimating
+            ? "animate-pulse scale-110"
+            : "";
+
+    const className = cn(
+        baseStyles,
+        visualStyles[visualState],
+        hoverStyles,
+        disabledStyles,
+        animationStyles
+    );
+
+    const contentMap: Record<CellVisualState, string> = {
+        water: "",
+        ship: "🚢",
+        hit: "💥",
+        miss: "○",
+        sunk: "💀",
+        'preview-valid': "",
+        'preview-invalid': "",
     };
-    /**
-     * Provides an accessible label for screen readers.
-     * Combines the grid position (e.g., "A1") with a description of the state.
-     * Ensures visually impaired users can follow the game state.
-     */
-    const getCellAriaLabel = () => {
-        const coord = `${String.fromCharCode(65 + position.col)}${position.row + 1}`;
-        const stateDesc = {
-            empty: 'empty water',
-            ship: showShip ? 'your ship' : 'unknown',
-            hit: 'hit ship',
-            miss: 'missed shot',
-            sunk: 'sunk ship'
-        };
-        
-        return `Cell ${coord}: ${stateDesc[state]}`;
-    };
+
+    const coord = `${String.fromCharCode(65 + position.col)}${position.row + 1}`;
 
     return (
         <button
-            className={getCellStyles()}
+            className={className}
             onClick={handleClick}
-            onMouseEnter={() => onHover?.(position)}
-            onDrop={() => onDrop?.(position)}
             disabled={disabled}
-            aria-label={getCellAriaLabel()}
+            aria-label={`Cell ${coord}: ${visualState}`}
             data-testid={`cell-${position.row}-${position.col}`}
-            data-state={state}
-            title={`${String.fromCharCode(65 + position.col)}${position.row + 1}`}
+            data-state={visualState}
+            title={coord}
         >
             <span className="pointer-events-none">
-                {getCellContent()}
+                {contentMap[visualState]}
             </span>
         </button>
     );
+
+
 }

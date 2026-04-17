@@ -66,22 +66,12 @@ export default function Board({
                         
                         {/* Cells */}
                         {rowData.map((vmCell, col) => (
-                            <p
+                            <Cell
                                 key={`${row}-${col}`}
-                            >
-                                holsa
-                            </p>
-                            // <Cell
-                            //     key={`${row}-${col}`}
-                            //     // state={vmCell.state}
-                            //     position={{ row, col }}
-                            //     // disabled={disabled}
-                            //     // showShip={isPlayerBoard || forceShowShips}
-                            //     // draggable={isPlayerBoard && vmCell.state === 'ship'}
-                            //     // isPreview={vmCell.isPreview}
-                            //     // isGhost={vmCell.isGhost}
-                            //     // isHovered={vmCell.isHovered}
-                            // />
+                                visualState={vmCell.visualState}
+                                isHovered={vmCell.isHovered}
+                                position={{ row, col }}
+                            />
                         ))}
                     </React.Fragment>
                 ))}

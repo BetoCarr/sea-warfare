@@ -47,7 +47,6 @@ export const GameStage = ({
     const playerBoard = useGameStore(s => s.player.boardState.board);
 
     const playerShips = useGameStore(s => s.player.ships);
-    console.log(playerShips)
 
     const boardVM = useBoardViewModel({
         size: 10,
