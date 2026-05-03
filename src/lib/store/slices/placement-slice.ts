@@ -1,5 +1,6 @@
 import type { StateCreator } from "zustand";
 import type { ShipPlacementInfo, Ship, Orientation, Position, ShipType } from "@/lib/utils/types";
+import type { PlacementIntent, PlacementPreview } from "@/lib/game-logic/placement/placement-types";
 import { GamePhase } from "../game-types";
 import  { canPlaceShipAt, removeShipFromBoard } from "../../game-logic/ships/ship-placement"
 import { getBaseShipByType } from "../../game-logic/ships/ship-catalog";
@@ -7,6 +8,7 @@ import { createBoardState } from "@/lib/game-logic/board/board-sync";
 import type { CompleteGameStore, GameStoreMiddlewares } from "../store-types";
 import type { GameActionResult } from "../game-types";
 import { createShipFromPlacement } from "@/lib/game-logic/ships/ship-entity";
+import { getOccupiedCells } from "@/lib/game-logic/ships/ship-cell-info";
 
 // --- Result Types ---
 export interface PlaceShipResult {
@@ -29,7 +31,7 @@ export interface PlacementSlice {
     // State
     selectedShipType: ShipType | null;
     orientation: Orientation;
-    preview: ShipPlacementInfo | null;
+    preview: PlacementPreview | null;
 
     // Actions
     selectShip: (shipType: ShipType | null) => void;
@@ -66,6 +68,7 @@ export const createPlacementSlice: StateCreator<
         }, false, "placement/toggleOrientation");
     },
 
+    // PREVIEWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
     previewPlacement: (position) => {
         const { selectedShipType, orientation, player, config } = get();
 
@@ -75,16 +78,23 @@ export const createPlacementSlice: StateCreator<
         }
 
         const baseShip = getBaseShipByType(selectedShipType);
+
         if (!baseShip) {
             set({ preview: null });
             return;
         }
 
-        const placement: ShipPlacementInfo = {
-            ...baseShip,
+        // const placement: ShipPlacementInfo = {
+        //     ...baseShip,
+        //     position,
+        //     orientation
+        // };
+        const intent: PlacementIntent = {
+            ship: baseShip,
             position,
             orientation
         };
+
 
         const isValid = canPlaceShipAt(
             baseShip,
@@ -93,9 +103,20 @@ export const createPlacementSlice: StateCreator<
             config.boardSize,
             player.ships
         );
+        
+        const occupiedCells = getOccupiedCells(
+            baseShip.size,
+            position,
+            orientation
+        );
+
 
         set({
-            preview: isValid ? placement : null
+            preview: {
+                intent,
+                occupiedCells,
+                result: isValid ? 'valid' : 'invalid',
+            }
         });
     },
 

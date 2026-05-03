@@ -36,7 +36,7 @@ export const createLifecycleSlice: StateCreator<
      * and transitions to the placement phase.
      */
     initializeGame: (config) => {
-        console.log("[Lifecycle] 🎮 initializeGame called with config:", config);
+        // console.log("[Lifecycle] 🎮 initializeGame called with config:", config);
 
         set(
             (draft) => {
@@ -50,12 +50,12 @@ export const createLifecycleSlice: StateCreator<
                 draft.phase = GamePhase.PLACEMENT;
                 draft.status = GameStatus.PLACING_SHIPS;
 
-                console.log("[Lifecycle] ✅ Game state initialized:", {
-                    gameId: draft.gameId,
-                    phase: draft.phase,
-                    status: draft.status,
-                    config: draft.config,
-                });
+                // console.log("[Lifecycle] ✅ Game state initialized:", {
+                //     gameId: draft.gameId,
+                //     phase: draft.phase,
+                //     status: draft.status,
+                //     config: draft.config,
+                // });
             },
             false,
             "lifecycle/initializeGame"
@@ -63,7 +63,7 @@ export const createLifecycleSlice: StateCreator<
 
         // Schedule delayed AI initialization to ensure store stability
         setTimeout(() => {
-            console.log("[Lifecycle] 🤖 Scheduling AI initialization");
+            // console.log("[Lifecycle] 🤖 Scheduling AI initialization");
             get()._initializeAI();
         }, 100);
     },

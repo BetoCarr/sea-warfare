@@ -40,7 +40,7 @@ export const createAISlice: StateCreator<
      * Initialize AI with randomly placed ships
      */
     _initializeAI: () => {
-        console.log("[AI] 🤖 Initializing AI...");
+        // console.log("[AI] 🤖 Initializing AI...");
 
         const state = get();
         const aiShips = generateAIShips(state.config.boardSize);
@@ -56,10 +56,10 @@ export const createAISlice: StateCreator<
                 draft.ai.boardState = createBoardState(aiShips, []);
                 draft.ai.isReady = true;
 
-                console.log("[AI] ✅ AI initialized:", {
-                    shipCount: aiShips.length,
-                    isReady: draft.ai.isReady,
-                });
+                // console.log("[AI] ✅ AI initialized:", {
+                //     shipCount: aiShips.length,
+                //     isReady: draft.ai.isReady,
+                // });
             },
             false,
             "ai/_initializeAI"

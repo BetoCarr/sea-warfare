@@ -10,6 +10,7 @@ import type { BoardViewModel } from '@/application/board/board-types';
 
 interface BoardProps {
     boardVM: BoardViewModel; 
+    onCellPress?: (position: Position) => void;
 }
 
 /**
@@ -18,6 +19,7 @@ interface BoardProps {
  */
 export default function Board({
     boardVM,
+    onCellPress,
 
 }: BoardProps) {
     // Local hover state (used when no external hoveredCell is provided)
@@ -71,6 +73,7 @@ export default function Board({
                                 visualState={vmCell.visualState}
                                 isHovered={vmCell.isHovered}
                                 position={{ row, col }}
+                                onPress={onCellPress}
                             />
                         ))}
                     </React.Fragment>

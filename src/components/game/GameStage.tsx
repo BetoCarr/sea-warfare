@@ -11,7 +11,9 @@ import { PlacementPreview } from '@/lib/game-logic/placement/placement-types';
 import { createFleet } from '@/lib/game-logic/ships/ship-catalog';
 import { OrientationToggle } from './OrientationToggle';
 import { useShipPlacement } from '@/application/placement/useShipPlacement';
+import { usePlacementMobileBridge } from '@/application/placement/mobile/useShipPlacementMobileBridge';
 import { useBoardViewModel } from '@/application/board/useBoardViewModel';
+import { Position } from '@/lib/utils/types';
 
 interface GameStageProps {
     activeMessage: string | null;
@@ -20,7 +22,6 @@ interface GameStageProps {
     onPlayerCellClick: (row: number, col: number) => void;
     onCellInteract: (type: 'start' | 'commit' | 'hover' | 'cancel', row: number, col: number, e: any) => void;
     draggingShipId?: string | null;
-    preview?: PlacementPreview | null;
 }
 
 /**
@@ -38,7 +39,6 @@ export const GameStage = ({
     onPlayerCellClick,
     onCellInteract,
     draggingShipId,
-    preview
 }: GameStageProps) => {
 
     const ships = useMemo(()=> createFleet(), [])
@@ -47,6 +47,16 @@ export const GameStage = ({
     const playerBoard = useGameStore(s => s.player.boardState.board);
 
     const playerShips = useGameStore(s => s.player.ships);
+
+    const placement = useShipPlacement();
+    const mobilePlacement = usePlacementMobileBridge();
+
+    
+    const preview = placement.preview as PlacementPreview | null;
+    
+    console.log("preview from store", preview);
+
+
 
     const boardVM = useBoardViewModel({
         size: 10,
@@ -58,8 +68,16 @@ export const GameStage = ({
         showShips: true,
     });
 
-    const placement = useShipPlacement();
 
+
+    const handleBoardTap = (position: Position) => {
+        if (phase === GamePhase.PLACEMENT) {
+            mobilePlacement.onBoardTap(position);
+            return;
+        }
+
+        onPlayerCellClick(position.row, position.col);
+    };
     // Keyboard shortcut 'R' for rotation
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -92,6 +110,8 @@ export const GameStage = ({
                 <div className="flex-1 min-h-0 flex items-center justify-center py-2 sm:py-4">                
                     <Board
                         boardVM={boardVM}
+                        onCellPress={handleBoardTap}
+
                         // cells={playerBoard}
                         // isPlayerBoard={true}
                         // onCellClick={onPlayerCellClick}

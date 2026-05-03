@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { getCellInfo } from '@/lib/game-logic/board/getCellInfo';
+import { getCellInfo } from '@/lib/game-logic/ships/ship-cell-info';
 import { getVisualState } from './getVisualState';
 import type { BoardViewModel, BoardCellVM, CellVisualState } from './board-types';
 import type { CellState, Position } from '@/lib/utils/types';

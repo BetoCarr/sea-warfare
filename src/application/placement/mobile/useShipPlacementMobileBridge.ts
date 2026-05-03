@@ -2,53 +2,31 @@ import { useCallback, useState } from "react";
 import { useShipPlacement } from "../useShipPlacement";
 import type { Position, ShipType } from "@/lib/utils/types";
 
-type UIState = "idle" | "ship-selected" | "previewing";
+export function usePlacementMobileBridge() {
+  const placement = useShipPlacement();
 
-export function useShipPlacementMobileBridge() {
-  const {
-    preview,
-    previewPlacement,
-    confirmShipPlacement,
-    toggleOrientation,
-    orientation,
-    selectShip,
-    selectedShipType
-  } = useShipPlacement();
+  const onShipTap = useCallback((ship: ShipType) => {
+    placement.selectShip(ship);
+  }, [placement]);
 
-  const [uiState, setUIState] = useState<UIState>("idle");
+  const onBoardTap = useCallback((position: Position) => {
+    if (!placement.selectedShipType) return;
 
-  const handleSelectShip = useCallback((ship: ShipType) => {
-    selectShip(ship);
-    setUIState("ship-selected");
-  }, [selectShip]);
+    placement.previewPlacement(position);
+  }, [placement]);
 
-  const tapCell = useCallback((position: Position) => {
-    if (!selectedShipType) return;
-
-    previewPlacement(position);
-    setUIState("previewing");
-
-  }, [selectedShipType, previewPlacement]);
-
-  const confirm = useCallback(() => {
-    if (!preview) return;
-
-    const result = confirmShipPlacement();
-
-    if (!result.success) return;
-
-    setUIState("idle");
-
-  }, [preview, confirmShipPlacement]);
+  const onConfirmTap = useCallback(() => {
+    placement.confirmShipPlacement();
+  }, [placement]);
 
   return {
-    uiState,
-    preview,
-    orientation,
-    selectedShipType,
-    handleSelectShip,
-    tapCell,
-    toggleOrientation,
-    confirm
+    orientation: placement.orientation,
+    selectedShipType: placement.selectedShipType,
+    preview: placement.preview,
+
+    onShipTap,
+    onBoardTap,
+    onConfirmTap,
+    onRotateTap: placement.toggleOrientation,
   };
 }

@@ -14,6 +14,6 @@ export type PlacementPreviewResult = "valid" | "invalid";
 // Result Object
 export type PlacementPreview = {
     intent: PlacementIntent;
-    result: PlacementPreviewResult
     occupiedCells: Position[];
+    result: PlacementPreviewResult
 };
