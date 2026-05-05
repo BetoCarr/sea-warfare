@@ -1,4 +1,5 @@
 import type { Ship } from "@/lib/utils/types";
+import type { PlacementIntent } from '@/lib/game-logic/placement/placement-types';
 import { BOARD_SIZE } from '@/lib/utils/constants';
 import { createFleet } from "../ships/ship-catalog";
 import { canPlaceShipAt } from "../ships/ship-placement";
@@ -30,12 +31,20 @@ export function generateAIShips(boardSize: number = BOARD_SIZE): Ship[] {
         const randomIndex = Math.floor(Math.random() * validPlacements.length);
         const { position, orientation } = validPlacements[randomIndex];
         
-        const isValid = canPlaceShipAt(
-            baseShip,
+        const intent: PlacementIntent = {
+            ship: baseShip,
             position,
-            orientation,
+            orientation
+        };
+
+        const isValid = canPlaceShipAt(
+            intent,
             boardSize,
-            placedShips
+            placedShips.map(ship => ({
+                ship: { type: ship.type, size: ship.size },
+                position: ship.position,
+                orientation: ship.orientation
+            }))
         );
 
         if (!isValid) {
@@ -43,13 +52,7 @@ export function generateAIShips(boardSize: number = BOARD_SIZE): Ship[] {
             continue;
         }
 
-        const placement = {
-            ...baseShip,
-            position,
-            orientation
-        }
-
-        const ship = createShipFromPlacement(placement);
+        const ship = createShipFromPlacement(intent);
         
         placedShips.push(ship);
     }

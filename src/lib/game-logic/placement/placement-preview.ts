@@ -1,6 +1,6 @@
 import type { Position, Ship } from "@/lib/utils/types";
-import { getShipCoordinates, canPlaceShipAt } from "../ships/ship-placement";
 import type { PlacementIntent, PlacementPreview } from "./placement-types";
+import { getShipCoordinates, canPlaceShipAt } from "../ships/ship-placement";
 
 export function previewPlacement(
     intent: PlacementIntent,
@@ -8,22 +8,16 @@ export function previewPlacement(
     existingShips: Ship[]
 ): PlacementPreview {
     
-    // Minimal object required for placement logic
-    const placementInfo = {
-        type: intent.ship.type,
-        size: intent.ship.size,
-        position: intent.position,
-        orientation: intent.orientation,
-    };
-
-    const occupiedCells: Position[] = getShipCoordinates(placementInfo);
+    const occupiedCells: Position[] = getShipCoordinates(intent);
 
     const isValid = canPlaceShipAt(
-        placementInfo,
-        intent.position,
-        intent.orientation,
+        intent,
         boardSize,
-        existingShips
+        existingShips.map(ship => ({
+            ship: { type: ship.type, size: ship.size },
+            position: ship.position,
+            orientation: ship.orientation
+        }))
     );
 
     return {

@@ -1,4 +1,5 @@
 import type { Position, Orientation, ShipPlacementInfo, BaseShip } from '@/lib/utils/types';
+import type { PlacementIntent } from '@/lib/game-logic/placement/placement-types';
 import { BOARD_SIZE } from '@/lib/utils/constants';
 
 /**
@@ -15,9 +16,11 @@ import { BOARD_SIZE } from '@/lib/utils/constants';
 /**
  * Returns all board coordinates occupied by a ship.
  */
-export function getShipCoordinates(ship: ShipPlacementInfo): Position[] {
-    const { row, col } = ship.position;
-    const { size, orientation } = ship;
+export function getShipCoordinates(intent: PlacementIntent): Position[] {
+    const { position, orientation, ship } = intent;
+    const { row, col } = position;
+    const size = ship.size;
+
 
     const coordinates: Position[] = [];
 
@@ -37,20 +40,12 @@ export function getShipCoordinates(ship: ShipPlacementInfo): Position[] {
  * Validates board boundaries and overlap with existing ships.
  */
 export function canPlaceShipAt(
-    ship: BaseShip,
-    position: Position,
-    orientation: Orientation,
+    intent: PlacementIntent,
     boardSize: number = BOARD_SIZE,
-    existingShips: readonly ShipPlacementInfo[] = []
+    existingShips: readonly PlacementIntent[] = []
 ): boolean {
 
-    const tempShip: ShipPlacementInfo = {
-        ...ship,
-        position,
-        orientation
-    };
-
-    const coordinates = getShipCoordinates(tempShip);
+    const coordinates = getShipCoordinates(intent);
 
     // Check board boundaries
     for (const coord of coordinates) {
@@ -67,8 +62,8 @@ export function canPlaceShipAt(
     // Build a set of occupied cells
     const occupiedCells = new Set<string>();
 
-    for (const existingShip of existingShips) {
-        for (const coord of getShipCoordinates(existingShip)) {
+    for (const existingIntent of existingShips) {
+        for (const coord of getShipCoordinates(existingIntent)) {
             occupiedCells.add(`${coord.row},${coord.col}`);
         }
     }
@@ -92,57 +87,81 @@ export function canPlaceShipAt(
  * Throws an error if placement rules are violated.
  */
 export function createShipPlacement(
-    ship: BaseShip,
-    position: Position,
-    orientation: Orientation,
+    // ship: BaseShip,
+    // position: Position,
+    // orientation: Orientation,
+    intent: PlacementIntent,
     boardSize: number = BOARD_SIZE,
-    existingShips: ShipPlacementInfo[],
+    existingShips: readonly PlacementIntent[],
 ): ShipPlacementInfo {
 
-    if (!canPlaceShipAt(ship, position, orientation, boardSize, existingShips)) {
-        throw new Error(`Cannot place ${ship.type} at the specified position`);
+    if (!canPlaceShipAt(intent, boardSize, existingShips)) {
+        throw new Error(`Cannot place ${intent.ship.type} at the specified position`);
     }
 
     return {
-        ...ship,
-        position: { ...position },
-        orientation
+        ...intent.ship,
+        position: { ...intent.position },
+        orientation: intent.orientation
     };
 }
 
-/**
- * Rotates a ship
- * - Toggles between horizontal and vertical
- * - Ensures rotation does not violate board boundaries or overlap existing ships
- * - If the ship has no position, simply toggles orientation
- */
 export function rotateShip<T extends ShipPlacementInfo>(
     ship: T,
     boardSize: number = BOARD_SIZE,
-    existingShips: ShipPlacementInfo[] = []
+    existingShips: readonly PlacementIntent[] = []
 ): T {
+
+    // 1. If no position → just toggle orientation (no validation needed)
     if (!ship.position) {
-        // No position yet, just toggle orientation
         return {
             ...ship,
-            orientation: ship.orientation === 'horizontal' ? 'vertical' : 'horizontal'
+            orientation:
+                ship.orientation === 'horizontal'
+                    ? 'vertical'
+                    : 'horizontal'
         };
     }
 
-    const newOrientation: Orientation = 
-        ship.orientation === 'horizontal' ? 'vertical' : 'horizontal';
-    
-    if (canPlaceShipAt(ship, ship.position, newOrientation, boardSize, existingShips)) {
+    // 2. Compute next orientation
+    const newOrientation: Orientation =
+        ship.orientation === 'horizontal'
+            ? 'vertical'
+            : 'horizontal';
+
+    // 3. Build intent (🔥 clave del refactor)
+    const intent: PlacementIntent = {
+        ship: {
+            type: ship.type,
+            size: ship.size
+        },
+        position: ship.position,
+        orientation: newOrientation
+    };
+
+    const otherShips = existingShips.filter(s => 
+        s.position.row !== ship.position!.row || 
+        s.position.col !== ship.position!.col || 
+        s.ship.type !== ship.type
+    );
+
+    // 4. Validate rotation
+    const canRotate = canPlaceShipAt(
+        intent,
+        boardSize,
+        otherShips
+    );
+
+    if (canRotate) {
         return {
             ...ship,
             orientation: newOrientation
         };
     }
-    
-    // Cannot rotate in current position, keep orientation unchanged
+
+    // 5. If invalid → keep original
     return ship;
 }
-
 /**
  * Removes a ship from the board by clearing its position
  */

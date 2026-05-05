@@ -155,7 +155,16 @@ export function getValidPlacements(
         
             // Test both orientations
             for (const orientation of ['horizontal', 'vertical'] as Orientation[]) {
-                if (canPlaceShipAt(ship, position, orientation, boardSize, existingShips)) {
+                const intent: PlacementIntent = {
+                    ship,
+                    position,
+                    orientation
+                };
+                if (canPlaceShipAt(intent, boardSize, existingShips.map(s => ({
+                    ship: { type: s.type, size: s.size },
+                    position: s.position,
+                    orientation: s.orientation
+                })))) {
                     validPlacements.push({ position, orientation });
                 }
             }

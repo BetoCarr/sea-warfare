@@ -1,4 +1,5 @@
 import type { Ship, ShipPlacementInfo } from '@/lib/utils/types';
+import type { PlacementIntent } from '@/lib/game-logic/placement/placement-types';
 import { SHIPS_CONFIG } from '@/lib/utils/constants';
 import { generateShipId } from './ship-catalog';
 
@@ -15,14 +16,14 @@ import { generateShipId } from './ship-catalog';
  * Creates a full playable Ship entity from placement information.
  * Initializes identity and combat state.
  */
-export function createShipFromPlacement(placement: ShipPlacementInfo): Ship {
+export function createShipFromPlacement(placement: PlacementIntent): Ship {
     return {
-        id: generateShipId(placement.type),
-        type: placement.type,
-        size: placement.size,
+        id: generateShipId(placement.ship.type),
+        type: placement.ship.type,
+        size: placement.ship.size,
         position: { ...placement.position },
         orientation: placement.orientation,
-        hits: Array.from({ length: placement.size }, () => false),
+        hits: Array.from({ length: placement.ship.size }, () => false),
         isSunk: false
     };
 }

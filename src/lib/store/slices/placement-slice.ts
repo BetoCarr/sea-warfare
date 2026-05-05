@@ -89,27 +89,24 @@ export const createPlacementSlice: StateCreator<
         //     position,
         //     orientation
         // };
+
         const intent: PlacementIntent = {
             ship: baseShip,
             position,
             orientation
         };
 
-
         const isValid = canPlaceShipAt(
-            baseShip,
-            position,
-            orientation,
+            intent,
             config.boardSize,
             player.ships
         );
-        
+
         const occupiedCells = getOccupiedCells(
             baseShip.size,
             position,
             orientation
         );
-
 
         set({
             preview: {
@@ -139,7 +136,7 @@ export const createPlacementSlice: StateCreator<
 
         const placement = state.preview;
 
-        const ship = createShipFromPlacement(placement);
+        const ship = createShipFromPlacement(placement.intent);
 
         set((draft) => {
 
