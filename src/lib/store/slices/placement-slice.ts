@@ -2,14 +2,13 @@ import type { StateCreator } from "zustand";
 import type { ShipPlacementInfo, Ship, Orientation, Position, ShipType } from "@/lib/utils/types";
 import type { PlacementIntent, PlacementPreview } from "@/lib/game-logic/placement/placement-types";
 import { GamePhase } from "../game-types";
-import  { canPlaceShipAt, intentToPlaceable, removeShipFromBoard } from "../../game-logic/ships/ship-placement"
+import  { canPlaceShipAt, getShipCoordinates } from "../../game-logic/ships/ship-placement"
 import { getBaseShipByType } from "../../game-logic/ships/ship-catalog";
 import { createBoardState } from "@/lib/game-logic/board/board-sync";
 import type { CompleteGameStore, GameStoreMiddlewares } from "../store-types";
 import type { GameActionResult } from "../game-types";
 import { createShipFromPlacement } from "@/lib/game-logic/ships/ship-entity";
-import { getOccupiedCells } from "@/lib/game-logic/ships/ship-cell-info";
-import { shipToPlaceable, toPlacementIntent } from "@/lib/game-logic/placement/placement-adapters";
+import { toShipPlacement } from "@/lib/game-logic/placement/placement-adapters";
 
 // --- Result Types ---
 export interface PlaceShipResult {
@@ -91,24 +90,16 @@ export const createPlacementSlice: StateCreator<
             orientation
         };
 
-        const existingPlaceables = player.ships
-            .filter(s => s.position) // seguridad
-            .map(toPlacementIntent);
-
         const isValid = canPlaceShipAt(
             intent,
             config.boardSize,
-            existingPlaceables
+            player.ships
         );
         
-        // const occupiedCells = getOccupiedCells(
-        //     baseShip.size,
-        //     position,
-        //     orientation
-        // );
+        const occupiedCells = getShipCoordinates(
+            toShipPlacement(intent)
+        );
 
-        const placeable = intentToPlaceable(intent);
-        const occupiedCells = getOccupiedCells(placeable);
         console.log(occupiedCells)
 
         set({
@@ -166,7 +157,10 @@ export const createPlacementSlice: StateCreator<
     removePlayerShip: (shipId) => {
         const state = get();
 
-        // --- Validate phase ---
+        // --------------------------------------------------
+        // Validate phase
+        // --------------------------------------------------
+
         if (state.phase !== GamePhase.PLACEMENT) {
             return {
                 success: false,
@@ -184,10 +178,17 @@ export const createPlacementSlice: StateCreator<
         }
 
         const player = state.player;
-        const targetShip = player.ships.find((s) => s.id === shipId);
+
+        const targetShip = player.ships.find(
+            (s) => s.id === shipId
+        );
 
         if (!targetShip) {
-            console.warn("[Placement] Ship not found:", shipId);
+            console.warn(
+                "[Placement] Ship not found:",
+                shipId
+            );
+
             return {
                 success: false,
                 message: "Ship not found on board.",
@@ -195,28 +196,35 @@ export const createPlacementSlice: StateCreator<
             };
         }
 
-        const clearedShip = removeShipFromBoard(targetShip);
-
-        // --- Update state ---
+        // --------------------------------------------------
+        // Update state
+        // --------------------------------------------------
         set(
             (draft) => {
-                draft.player.ships = draft.player.ships.filter(
-                    (s) => s.id !== shipId
+                draft.player.ships =
+                    draft.player.ships.filter(
+                        (s) => s.id !== shipId
+                    );
+
+                draft.player.boardState =
+                    createBoardState(
+                        draft.player.ships,
+                        []
+                    );
+
+                draft.player.isReady =
+                    draft.player.ships.length >= 5;
+
+                console.log(
+                    "[Placement] Ship removed:",
+                    {
+                        removedShip: targetShip.type,
+                        remainingShips:
+                            draft.player.ships.length,
+                        isReady:
+                            draft.player.isReady,
+                    }
                 );
-
-                draft.player.boardState = createBoardState(
-                    draft.player.ships,
-                    []
-                );
-
-                // Player no longer ready if fewer than 5 ships remain
-                draft.player.isReady = draft.player.ships.length >= 5;
-
-                console.log("[Placement] Ship removed:", {
-                    // removedShip: clearedShip.type,
-                    remainingShips: draft.player.ships.length,
-                    isReady: draft.player.isReady,
-                });
             },
             false,
             "placement/removePlayerShip"
@@ -224,12 +232,10 @@ export const createPlacementSlice: StateCreator<
 
         return {
             success: true,
-            message: `Ship ${targetShip.type} removed successfully.`,
-            data: { shipId },
         };
     },
 
-    /**
+    /** 
      * Confirms that the player has placed all ships.
      * - Validates ship count, structure, and orientation
      * - Marks player as ready

@@ -1,4 +1,4 @@
-import type { Position, ShipPlacementInfo } from "@/lib/utils/types";
+import type { ShipPlacementInfo } from "@/lib/utils/types";
 import type { PlacementIntent, PlacementPreview } from "./placement-types";
 import { toShipPlacement } from "./placement-adapters";
 import { getShipCoordinates, canPlaceShipAt } from "../ships/ship-placement";
@@ -15,11 +15,7 @@ export function previewPlacement(
     const isValid = canPlaceShipAt(
         intent,
         boardSize,
-        existingShips.map(ship => ({
-            ship: { type: ship.type, size: ship.size },
-            position: ship.position,
-            orientation: ship.orientation
-        }))
+        existingShips
     );
 
     return {
