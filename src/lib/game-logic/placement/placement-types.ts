@@ -1,10 +1,9 @@
 import type { Position, Orientation } from '@/lib/utils/types';
-import type { ShipSpec } from '@/lib/game-logic/ships/ship-spec';
-
+import type { BaseShip } from '@/lib/utils/types';
 
 // Value Object
 export type PlacementIntent = {
-    ship: ShipSpec;
+    ship: BaseShip;
     position: Position;
     orientation: Orientation;
 };

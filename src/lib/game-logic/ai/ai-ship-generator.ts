@@ -40,11 +40,7 @@ export function generateAIShips(boardSize: number = BOARD_SIZE): Ship[] {
         const isValid = canPlaceShipAt(
             intent,
             boardSize,
-            placedShips.map(ship => ({
-                ship: { type: ship.type, size: ship.size },
-                position: ship.position,
-                orientation: ship.orientation
-            }))
+            placedShips
         );
 
         if (!isValid) {

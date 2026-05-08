@@ -26,7 +26,8 @@ export function createBoardFromShips(ships: Ship[], size: number = BOARD_SIZE): 
     ships.forEach(ship => {
         if (!ship.position) return; // skip unplaced ships
         
-        const coordinates = getShipCoordinates(ship);
+        // const coordinates = getShipCoordinates({ position: ship.position, orientation: ship.orientation, size: ship.size });
+        const coordinates = getShipCoordinates(ship)
         coordinates.forEach(pos => {
             if (pos.row >= 0 && pos.row < size && pos.col >= 0 && pos.col < size) {
                 board[pos.row][pos.col] = 'ship';

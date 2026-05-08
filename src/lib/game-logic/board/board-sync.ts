@@ -43,7 +43,8 @@ export function syncBoardFromShips(
     ships.forEach(ship => {
         if (!ship.position) return;
         
-        const coordinates = getShipCoordinates(ship);
+        // const coordinates = getShipCoordinates({ position: ship.position, orientation: ship.orientation, size: ship.size });
+        const coordinates = getShipCoordinates(ship)
         coordinates.forEach((pos, segmentIndex) => {
             const key = `${pos.row},${pos.col}`;
             shipCoordinatesMap.set(key, { ship, segmentIndex });
@@ -77,7 +78,8 @@ export function syncBoardFromShips(
     ships.forEach(ship => {
         if (!ship.position) return;
         
-        const coordinates = getShipCoordinates(ship);
+        // const coordinates = getShipCoordinates({ position: ship.position, orientation: ship.orientation, size: ship.size });
+        const coordinates = getShipCoordinates(ship)
         coordinates.forEach((pos, segmentIndex) => {
             if (!isPositionInBounds(pos, size)) return;
             

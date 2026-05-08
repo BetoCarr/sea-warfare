@@ -21,31 +21,3 @@ export const getCellInfo = (row: number, col: number, ships: Ship[] ) => {
         shipInCell?.position?.col === col,
     };
 };
-
-export function getOccupiedCells(
-    size: number,
-    position: Position,
-    orientation: Orientation
-): Position[] {
-
-    const cells: Position[] = [];
-
-    for (let i = 0; i < size; i++) {
-        cells.push({
-            row: orientation === 'vertical'
-                ? position.row + i
-                : position.row,
-
-            col: orientation === 'horizontal'
-                ? position.col + i
-                : position.col,
-        });
-    }
-
-    return cells;
-}
-
-let celdas = getOccupiedCells(3, { row: 2, col: 3 }, 'horizontal');
-let celdas2 = getOccupiedCells(4, { row: 1, col: 1 }, 'vertical');
-console.log(celdas); 
-console.log(celdas2); 

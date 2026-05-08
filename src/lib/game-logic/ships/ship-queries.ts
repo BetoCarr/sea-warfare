@@ -20,7 +20,6 @@ import { validateShip } from './ship-entity';
  * Checks whether a coordinate belongs to a specific ship
  */
 export function isCoordinateInShip(ship: ShipPlacementInfo, position: Position): boolean {
-    if (!ship.position) return false;
     
     const coordinates = getShipCoordinates(ship);
     return coordinates.some(coord => 
@@ -39,7 +38,6 @@ export function findShipAtPosition<T extends ShipPlacementInfo>(ships: T[], posi
  * Calculates the minimum Euclidean distance between two ships
  */
 export function getDistanceBetweenShips(ship1: ShipPlacementInfo, ship2: ShipPlacementInfo): number {
-    if (!ship1.position || !ship2.position) return Infinity;
     
     const coords1 = getShipCoordinates(ship1);
     const coords2 = getShipCoordinates(ship2);
@@ -48,10 +46,9 @@ export function getDistanceBetweenShips(ship1: ShipPlacementInfo, ship2: ShipPla
 
     for (const coord1 of coords1) {
         for (const coord2 of coords2) {
-            const distance = Math.sqrt(
-                Math.pow(coord1.row - coord2.row, 2) + 
-                Math.pow(coord1.col - coord2.col, 2)
-            );
+            const distance =
+                Math.abs(coord1.row - coord2.row) +
+                Math.abs(coord1.col - coord2.col);
             minDistance = Math.min(minDistance, distance);
         }
     }
@@ -91,7 +88,6 @@ export function getPlacedShipTypes(
 export function getFleetStats(ships: Ship[]) {
     return {
         total: ships.length,
-        placed: ships.filter(ship => ship.position !== undefined).length,
         healthy: ships.filter(ship => getShipHealthStatus(ship) === 'healthy').length,
         damaged: ships.filter(ship => getShipHealthStatus(ship) === 'damaged').length,
         critical: ships.filter(ship => getShipHealthStatus(ship) === 'critical').length,
@@ -127,13 +123,11 @@ export function deserializeShip(shipData: string): Ship {
  */
 export function getShipSummary(ship: Ship) {
     const config = SHIPS_CONFIG[ship.type];
-
     return {
         id: ship.id,
         name: config.name,
         type: ship.type,
         size: ship.size,
-        isPlaced: !!ship.position,
         position: ship.position,
         orientation: ship.orientation,
         healthStatus: getShipHealthStatus(ship),

@@ -1,10 +1,11 @@
 import { SHIPS_CONFIG, BOARD_SIZE } from '@/lib/utils/constants';
 import type { Ship, Position, Orientation, ShipType, ShipPlacementInfo, BaseShip } from '@/lib/utils/types';
+import type { PlacementIntent } from '@/lib/game-logic/placement/placement-types';
 import { getShipCoordinates } from './ship-placement';
 import { getDistanceBetweenShips } from './ship-queries';
 import { getShipsByType } from './ship-queries';
-import { validateShip } from './ship-entity';
 import { canPlaceShipAt } from './ship-placement';
+
 /**
  * RESPONSIBILITY 5: ADVANCED VALIDATIONS
  * 
@@ -16,17 +17,28 @@ import { canPlaceShipAt } from './ship-placement';
  */
 
 /**
- * Validates that a fleet is complete according to game rules
+ * Validates that a fleet is complete according to game rules.
+ *
+ * Placement-phase validation only.
+ * Ensures:
+ * - Correct ship counts
+ * - No overlapping coordinates
  */
-export function validateFleet(ships: Ship[]): {
+export function validateFleet(
+    ships: ShipPlacementInfo[]
+): {
     isValid: boolean;
     errors: string[];
 } {
     const errors: string[] = [];
-
-    // Verify correct number of each ship type
+    // ------------------------------------------------------------
+    // Validate expected ship counts
+    // ------------------------------------------------------------
     Object.entries(SHIPS_CONFIG).forEach(([shipType, config]) => {
-        const shipsOfType = getShipsByType(ships, shipType as ShipType);
+        const shipsOfType = getShipsByType(
+            ships,
+            shipType as ShipType
+        );
         if (shipsOfType.length !== config.count) {
             errors.push(
                 `Expected ${config.count} ${config.name}(s), found ${shipsOfType.length}`
@@ -34,21 +46,23 @@ export function validateFleet(ships: Ship[]): {
         }
     });
 
-    // Verify all ships are placed
-    const unplacedShips = ships.filter(ship => !ship.position);
-    if (unplacedShips.length > 0) {
-        errors.push(`${unplacedShips.length} ship(s) not placed`);
-    }
-    
-    // Verify overlaps
-    for (let i = 0; i < ships.length; i++) {
-        for (let j = i + 1; j < ships.length; j++) {
-            if (shipsOverlap(ships[i], ships[j])) {
-                errors.push(`Ships ${ships[i].type} and ${ships[j].type} overlap`);
+    // ------------------------------------------------------------
+    // Validate overlapping cells
+    // ------------------------------------------------------------
+    const occupiedCells = new Set<string>();
+    for (const ship of ships) {
+        const coordinates = getShipCoordinates(ship);
+        for (const coord of coordinates) {
+            const key = `${coord.row}-${coord.col}`;
+            if (occupiedCells.has(key)) {
+                errors.push(
+                    `Ship ${ship.type} overlaps another ship`
+                );
+                break;
             }
+            occupiedCells.add(key);
         }
     }
-    
     return {
         isValid: errors.length === 0,
         errors
@@ -56,19 +70,19 @@ export function validateFleet(ships: Ship[]): {
 }
 
 /**
- * Checks if two ships overlap on the board
+ * Checks whether two placed ships overlap.
  */
-export function shipsOverlap(ship1: ShipPlacementInfo, ship2: ShipPlacementInfo): boolean {
-    if (!ship1.position || !ship2.position) return false;
-
-    const coords1 = getShipCoordinates(ship1);
-    const coords2 = getShipCoordinates(ship2);
-
-    return coords1.some(coord1 => 
-        coords2.some(coord2 => 
-            coord1.row === coord2.row && coord1.col === coord2.col
-        )
+export function shipsOverlap(
+    ship1: ShipPlacementInfo,
+    ship2: ShipPlacementInfo
+): boolean {
+    const occupied = new Set(
+        getShipCoordinates(ship1)
+            .map(c => `${c.row}-${c.col}`)
     );
+
+    return getShipCoordinates(ship2)
+        .some(c => occupied.has(`${c.row}-${c.col}`));
 }
 
 /**
@@ -103,43 +117,6 @@ export function validateShipSeparation(
 }
 
 /**
- * Validates the internal consistency of a ship
- */
-export function validateShipIntegrity(ship: Ship): {
-    isValid: boolean;
-    errors: string[];
-} {
-    const errors: string[] = [];
-    
-    // Validate basic configuration
-    if (!validateShip(ship)) {
-        errors.push('Invalid basic configuration');
-    }
-
-    // Validate consistency of hits vs. isSunk
-    const allHitsTrue = ship.hits.every(hit => hit);
-    if (ship.isSunk && !allHitsTrue) {
-        errors.push('Ship marked as sunk but not all hits are true');
-    }
-    if (!ship.isSunk && allHitsTrue) {
-        errors.push('All hits are true but the ship is not marked as sunk');
-    }
-
-    // Validate position if present
-    if (ship.position) {
-        const coordinates = getShipCoordinates(ship);
-        if (coordinates.length !== ship.size) {
-            errors.push('Number of coordinates does not match ship size');
-        }
-    }
-
-    return {
-        isValid: errors.length === 0,
-        errors
-    };
-}
-
-/**
  * Gets all valid placements for a ship on the board
  */
 export function getValidPlacements(
@@ -147,25 +124,37 @@ export function getValidPlacements(
     boardSize: number = BOARD_SIZE,
     existingShips: ShipPlacementInfo[] = []
 ): Array<{ position: Position; orientation: Orientation }> {
-    const validPlacements: Array<{ position: Position; orientation: Orientation }> = [];
+
+    const validPlacements: Array<{
+        position: Position;
+        orientation: Orientation;
+    }> = [];
 
     for (let row = 0; row < boardSize; row++) {
+
         for (let col = 0; col < boardSize; col++) {
+
             const position: Position = { row, col };
-        
-            // Test both orientations
+
             for (const orientation of ['horizontal', 'vertical'] as Orientation[]) {
+
                 const intent: PlacementIntent = {
                     ship,
                     position,
                     orientation
                 };
-                if (canPlaceShipAt(intent, boardSize, existingShips.map(s => ({
-                    ship: { type: s.type, size: s.size },
-                    position: s.position,
-                    orientation: s.orientation
-                })))) {
-                    validPlacements.push({ position, orientation });
+
+                if (
+                    canPlaceShipAt(
+                        intent,
+                        boardSize,
+                        existingShips
+                    )
+                ) {
+                    validPlacements.push({
+                        position,
+                        orientation
+                    });
                 }
             }
         }

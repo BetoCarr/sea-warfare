@@ -27,9 +27,9 @@ export function toPlacementIntent(ship: ShipPlacementInfo): PlacementIntent {
  */
 export function toShipPlacement(intent: PlacementIntent): ShipPlacementInfo {
     return {
-        type: intent.ship.type,
-        size: intent.ship.size,
+        ...intent.ship,
         position: intent.position,
-        orientation: intent.orientation
+        orientation: intent.orientation,
     };
 }
+

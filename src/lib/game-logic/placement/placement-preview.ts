@@ -1,14 +1,16 @@
-import type { Position, Ship } from "@/lib/utils/types";
+import type { Position, ShipPlacementInfo } from "@/lib/utils/types";
 import type { PlacementIntent, PlacementPreview } from "./placement-types";
+import { toShipPlacement } from "./placement-adapters";
 import { getShipCoordinates, canPlaceShipAt } from "../ships/ship-placement";
 
 export function previewPlacement(
     intent: PlacementIntent,
     boardSize: number,
-    existingShips: Ship[]
+    existingShips: ShipPlacementInfo[]
 ): PlacementPreview {
     
-    const occupiedCells: Position[] = getShipCoordinates(intent);
+    const placement = toShipPlacement(intent);
+    const occupiedCells = getShipCoordinates(placement);
 
     const isValid = canPlaceShipAt(
         intent,

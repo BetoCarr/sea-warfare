@@ -2,13 +2,14 @@ import type { StateCreator } from "zustand";
 import type { ShipPlacementInfo, Ship, Orientation, Position, ShipType } from "@/lib/utils/types";
 import type { PlacementIntent, PlacementPreview } from "@/lib/game-logic/placement/placement-types";
 import { GamePhase } from "../game-types";
-import  { canPlaceShipAt, removeShipFromBoard } from "../../game-logic/ships/ship-placement"
+import  { canPlaceShipAt, intentToPlaceable, removeShipFromBoard } from "../../game-logic/ships/ship-placement"
 import { getBaseShipByType } from "../../game-logic/ships/ship-catalog";
 import { createBoardState } from "@/lib/game-logic/board/board-sync";
 import type { CompleteGameStore, GameStoreMiddlewares } from "../store-types";
 import type { GameActionResult } from "../game-types";
 import { createShipFromPlacement } from "@/lib/game-logic/ships/ship-entity";
 import { getOccupiedCells } from "@/lib/game-logic/ships/ship-cell-info";
+import { shipToPlaceable, toPlacementIntent } from "@/lib/game-logic/placement/placement-adapters";
 
 // --- Result Types ---
 export interface PlaceShipResult {
@@ -84,29 +85,31 @@ export const createPlacementSlice: StateCreator<
             return;
         }
 
-        // const placement: ShipPlacementInfo = {
-        //     ...baseShip,
-        //     position,
-        //     orientation
-        // };
-
         const intent: PlacementIntent = {
             ship: baseShip,
             position,
             orientation
         };
 
+        const existingPlaceables = player.ships
+            .filter(s => s.position) // seguridad
+            .map(toPlacementIntent);
+
         const isValid = canPlaceShipAt(
             intent,
             config.boardSize,
-            player.ships
+            existingPlaceables
         );
+        
+        // const occupiedCells = getOccupiedCells(
+        //     baseShip.size,
+        //     position,
+        //     orientation
+        // );
 
-        const occupiedCells = getOccupiedCells(
-            baseShip.size,
-            position,
-            orientation
-        );
+        const placeable = intentToPlaceable(intent);
+        const occupiedCells = getOccupiedCells(placeable);
+        console.log(occupiedCells)
 
         set({
             preview: {
