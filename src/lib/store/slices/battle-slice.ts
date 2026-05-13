@@ -1,11 +1,11 @@
 import type { StateCreator } from "zustand";
 import { GamePhase, GameStatus } from "../game-types";
-import { processAttack } from "../../game-logic/board/board-attacks";
-import { chooseAIAttackPosition } from "../../game-logic/ai/ai-attack";
+import { processAttack } from "../../domain/board/board-attacks";
+import { chooseAIAttackPosition } from "../../domain/ai/ai-attack";
 import type { CompleteGameStore, GameStoreMiddlewares } from "../store-types";
 import type { Position } from "@/lib/utils/types";
 import type { GameActionResult } from "../game-types";
-import type { AttackResult } from "../../game-logic/board/board-attacks";
+import type { AttackResult } from "../../domain/board/board-attacks";
 
 export interface BattleSlice {
     playerAttack: (position: Position) => Promise<GameActionResult<AttackResult>>;

@@ -1,4 +1,4 @@
-import { Ship, Position, Orientation } from "@/lib/utils/types";
+import { Ship } from "@/lib/utils/types";
 
 export const getCellInfo = (row: number, col: number, ships: Ship[] ) => {
     const shipInCell = ships.find(ship => {

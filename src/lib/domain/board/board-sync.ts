@@ -1,6 +1,6 @@
 import type { CellState, Ship, Position } from '@/lib/utils/types';
 import { BOARD_SIZE } from '@/lib/utils/constants';
-import { getShipCoordinates } from '@/lib/game-logic/ships/ship-placement';
+import { getShipCoordinates } from '@/lib/domain/ships/ship-placement';
 import { createEmptyBoard, isPositionInBounds } from './board-factory';
 
 /**

@@ -1,6 +1,6 @@
 import { SHIPS_CONFIG, BOARD_SIZE } from '@/lib/utils/constants';
 import type { Ship, Position, Orientation, ShipType, ShipPlacementInfo, BaseShip } from '@/lib/utils/types';
-import type { PlacementIntent } from '@/lib/game-logic/placement/placement-types';
+import type { PlacementIntent } from '@/lib/domain/placement/placement-types';
 import { getShipCoordinates } from './ship-placement';
 import { getDistanceBetweenShips } from './ship-queries';
 import { getShipsByType } from './ship-queries';

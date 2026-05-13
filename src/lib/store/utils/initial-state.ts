@@ -1,6 +1,6 @@
 import type { GameState, GameConfig, Player, AIPlayer } from "../game-types";
 import { GamePhase, GameStatus } from "../game-types";
-import { createBoardState } from "@/lib/game-logic/board/board-sync";
+import { createBoardState } from "@/lib/domain/board/board-sync";
 import { DEFAULT_CONFIG } from "./constants";
 
 /**

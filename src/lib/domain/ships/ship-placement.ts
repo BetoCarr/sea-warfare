@@ -1,5 +1,5 @@
 import type { Position, Orientation, ShipPlacementInfo } from '@/lib/utils/types';
-import type { PlacementIntent } from '@/lib/game-logic/placement/placement-types';
+import type { PlacementIntent } from '@/lib/domain/placement/placement-types';
 import { BOARD_SIZE } from '@/lib/utils/constants';
 import { shipsOverlap } from './ship-validation';
 import { toShipPlacement } from '../placement/placement-adapters';

@@ -1,14 +1,14 @@
 import type { StateCreator } from "zustand";
 import type { ShipPlacementInfo, Ship, Orientation, Position, ShipType } from "@/lib/utils/types";
-import type { PlacementIntent, PlacementPreview } from "@/lib/game-logic/placement/placement-types";
+import type { PlacementIntent, PlacementPreview } from "@/lib/domain/placement/placement-types";
 import { GamePhase } from "../game-types";
-import  { canPlaceShipAt, getShipCoordinates } from "../../game-logic/ships/ship-placement"
-import { getBaseShipByType } from "../../game-logic/ships/ship-catalog";
-import { createBoardState } from "@/lib/game-logic/board/board-sync";
+import  { canPlaceShipAt, getShipCoordinates } from "../../domain/ships/ship-placement"
+import { getBaseShipByType } from "../../domain/ships/ship-catalog";
+import { createBoardState } from "@/lib/domain/board/board-sync";
 import type { CompleteGameStore, GameStoreMiddlewares } from "../store-types";
 import type { GameActionResult } from "../game-types";
-import { createShipFromPlacement } from "@/lib/game-logic/ships/ship-entity";
-import { toShipPlacement } from "@/lib/game-logic/placement/placement-adapters";
+import { createShipFromPlacement } from "@/lib/domain/ships/ship-entity";
+import { toShipPlacement } from "@/lib/domain/placement/placement-adapters";
 
 // --- Result Types ---
 export interface PlaceShipResult {

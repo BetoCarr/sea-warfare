@@ -1,4 +1,4 @@
-import { getShipCoordinates } from '@/lib/game-logic/ships/ship-placement';
+import { getShipCoordinates } from '@/lib/domain/ships/ship-placement';
 import type { Ship, Position } from '@/lib/utils/types';
 
 /**

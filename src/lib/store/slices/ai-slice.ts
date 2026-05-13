@@ -1,6 +1,6 @@
 import type { StateCreator } from "zustand";
-import { generateAIShips } from "@/lib/game-logic/ai/ai-ship-generator";
-import { createBoardState } from "@/lib/game-logic/board/board-sync";
+import { generateAIShips } from "@/lib/domain/ai/ai-ship-generator";
+import { createBoardState } from "@/lib/domain/board/board-sync";
 import type { CompleteGameStore, GameStoreMiddlewares } from "../store-types";
 
 /**
