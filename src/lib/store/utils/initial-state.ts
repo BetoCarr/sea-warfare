@@ -1,5 +1,5 @@
 import type { GameState, GameConfig, Player, AIPlayer } from "../game-types";
-import { GamePhase, GameStatus } from "../game-types";
+import { GamePhase, GameStatus } from "@/lib/domain/game/game-types";
 import { createBoardState } from "@/lib/domain/board/board-sync";
 import { DEFAULT_CONFIG } from "./constants";
 
@@ -57,14 +57,6 @@ export function createInitialPlayer(
         type: "human"
     }
 }
-
-
-
-
-
-
-
-
 
 /**
  * Creates the initial global game state

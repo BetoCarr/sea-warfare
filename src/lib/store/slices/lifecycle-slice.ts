@@ -1,6 +1,6 @@
 import { StateCreator } from "zustand";
 import type { GameConfig, GameActionResult } from "../game-types";
-import { GamePhase, GameStatus } from "../game-types";
+import { GamePhase, GameStatus } from "@/lib/domain/game/game-types";
 import { createInitialGameState } from "../utils/initial-state";
 import { getStartGameBlockerMessage } from "../game-selectors";
 import type { CompleteGameStore, GameStoreMiddlewares } from "../store-types";
@@ -50,12 +50,7 @@ export const createLifecycleSlice: StateCreator<
                 draft.phase = GamePhase.PLACEMENT;
                 draft.status = GameStatus.PLACING_SHIPS;
 
-                // console.log("[Lifecycle] ✅ Game state initialized:", {
-                //     gameId: draft.gameId,
-                //     phase: draft.phase,
-                //     status: draft.status,
-                //     config: draft.config,
-                // });
+
             },
             false,
             "lifecycle/initializeGame"
@@ -82,12 +77,12 @@ export const createLifecycleSlice: StateCreator<
             console.warn("[Lifecycle] ⚠️ Cannot start game:", blocker);
             return { success: false, message: blocker };
         }
-
-        // Advance to battle phase and waiting state
+        
+        // Start battle phase
         set(
             (draft) => {
                 draft.phase = GamePhase.BATTLE;
-                draft.status = GameStatus.WAITING_FOR_PLAYER;
+                draft.status = GameStatus.PLAYER_TURN;
             },
             false,
             "lifecycle/startGame"

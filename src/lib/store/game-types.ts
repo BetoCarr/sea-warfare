@@ -1,5 +1,6 @@
-import type { BoardState } from '@/lib/game-logic/board/board-sync';
-import type { AttackResult, LastAttack } from '@/lib/game-logic/board/board-attacks';
+import { GamePhase, GameStatus } from "@/lib/domain/game/game-types";
+import type { BoardState } from '@/lib/domain/board/board-sync';
+import type { AttackResult, LastAttack } from '@/lib/domain/board/board-attacks';
 import type { Ship } from '@/lib/utils/types';
 import type { Position } from '@/lib/utils/types';
 
@@ -7,32 +8,32 @@ export interface AIMemory {
     lastAttacks: Position[];
 }
 
-/**
- * High-level game phases
- */
-export enum GamePhase {
-    SETUP = 'setup',          // Initial preparation
-    PLACEMENT = 'placement',  // Player places ships
-    BATTLE = 'battle',        // Active battle
-    GAME_OVER = 'game_over'   // End of the game
-}
+// /**
+//  * High-level game phases
+//  */
+// export enum GamePhase {
+//     SETUP = 'setup',          // Initial preparation
+//     PLACEMENT = 'placement',  // Player places ships
+//     BATTLE = 'battle',        // Active battle
+//     GAME_OVER = 'game_over'   // End of the game
+// }
 
-/**
- * More fine-grained game statuses (optional).
- * Use this when you need transient states for UI/async flows.
- */
-export enum GameStatus {
-    IDLE = 'idle',
-    PLACING_SHIPS = 'placing_ships',
-    WAITING_FOR_PLAYER = 'waiting_for_player',
-    PLAYER_TURN = 'player_turn',
-    AI_TURN = 'ai_turn',
-    AI_THINKING = 'ai_thinking',
-    PROCESSING_ATTACK = 'processing_attack',
-    RESOLVING_ATTACK = 'resolving_attack',
-    SHIP_SUNK = 'ship_sunk',
-    FINISHED = 'finished',
-}
+// /**
+//  * More fine-grained game statuses (optional).
+//  * Use this when you need transient states for UI/async flows.
+//  */
+// export enum GameStatus {
+//     IDLE = 'idle',
+//     PLACING_SHIPS = 'placing_ships',
+//     WAITING_FOR_PLAYER = 'waiting_for_player',
+//     PLAYER_TURN = 'player_turn',
+//     AI_TURN = 'ai_turn',
+//     AI_THINKING = 'ai_thinking',
+//     PROCESSING_ATTACK = 'processing_attack',
+//     RESOLVING_ATTACK = 'resolving_attack',
+//     SHIP_SUNK = 'ship_sunk',
+//     FINISHED = 'finished',
+// }
 
 
 /**
