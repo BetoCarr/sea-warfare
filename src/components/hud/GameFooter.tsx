@@ -6,10 +6,6 @@ import { useGameStore } from '@/lib/store/game-store';
 import { GamePhase } from "@/lib/domain/game/game-types";
 import { cn } from '@/lib/utils/utils';
 import { FooterPanel } from './FooterPanel';
-import { ShipPalette } from '../game/ShipPalette';
-import { ReadinessIndicators } from './ReadinessIndicators';
-import { useShipPlacement } from '@/application/placement/useShipPlacement';
-import { useShipPlacementMobileBridge } from '@/application/placement/mobile/useShipPlacementMobileBridge';
 
 interface GameFooterProps {
     children?: React.ReactNode;
@@ -30,7 +26,6 @@ export const GameFooter = ({ children, className }: GameFooterProps) => {
         }))
     );
 
-    const placementCore = useShipPlacement();
     // const placementMobileBridge = useShipPlacementMobileBridge(placementCore);
 
     const renderContent = () => {
@@ -47,16 +42,6 @@ export const GameFooter = ({ children, className }: GameFooterProps) => {
                                 Tactical Systems Online • Monitoring Sector
                             </div>
                         </FooterPanel>
-                        {/* <FooterPanel className="flex-1" title="Fleet Command">
-                            <ShipPalette
-                                placedShips={player.ships.filter(s => s.position)}
-                                selectedShipId={placementCore.state.selectedShipId}
-                                onShipSelect={placementMobileBridge.mobileHandlers.onShipTap}
-                            />
-                        </FooterPanel>
-                        <FooterPanel className="md:w-72" title="Deployment Status">
-                            <ReadinessIndicators />
-                        </FooterPanel> */}
                     </>
                 );
             case GamePhase.BATTLE:

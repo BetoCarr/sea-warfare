@@ -1,6 +1,6 @@
 "use client";
 import type { ShipType } from "@/lib/utils/types";
-import { ShipSpec } from "@/lib/game-logic/ships/ship-spec";
+import { ShipSpec } from "@/lib/domain/ships/ship-spec";
 import { useGameStore } from "@/lib/store/game-store";
 import { cn } from "@/lib/utils/utils";
 import { useMemo } from "react";

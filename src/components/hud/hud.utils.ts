@@ -1,4 +1,4 @@
-import { GamePhase } from "@/lib/store/game-types";
+import { GamePhase } from "@/lib/domain/game/game-types";
 
 export const PHASE_LABELS: Record<GamePhase, string> = {
     [GamePhase.SETUP]: "Setup",

@@ -5,7 +5,7 @@ import { useShallow } from "zustand/react/shallow";
 import { getPhaseLabel } from "./hud.utils";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { GamePhase } from "@/lib/store/game-types";
+import { GamePhase } from "@/lib/domain/game/game-types";
 import { Section } from "@/components/ui/layout/Section";
 
 /**

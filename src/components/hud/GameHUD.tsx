@@ -1,12 +1,11 @@
 
-import { useRef, useState, useEffect } from "react";
 import { useGameStore } from "@/lib/store/game-store";
 import { GamePhase } from "@/lib/domain/game/game-types";
 import { useShallow } from "zustand/react/shallow";
 import { ReadinessIndicators } from "./ReadinessIndicators";
 import { TurnSection } from "./TurnSection";
-import { FeedbackMessage, FeedbackType } from "./FeedbackMessage";
 import { Button } from "@/components/ui/Button";
+import { useGameFlowController } from "@/application/game-flow/useGameFlowController";
 
 interface GameHUDProps {
   onInitialize?: () => void;
@@ -22,6 +21,8 @@ export function GameHUD({ onInitialize, onConfirm }: GameHUDProps) {
       currentTurn: state.currentTurn,
     }))
   );
+  const flow = useGameFlowController();
+
 
   const handleConfirmAction = () => {
     if (onConfirm) {
@@ -47,45 +48,56 @@ export function GameHUD({ onInitialize, onConfirm }: GameHUDProps) {
             return null;
     }
   };
-
   const renderAction = () => {
-    switch (phase) {
-        case GamePhase.SETUP:
-            return (
-              <Button 
+    if (flow.capabilities.canInitializeGame) {
+        return (
+            <Button 
                 variant="success"
                 onClick={onInitialize}
                 pulse={true}
-              >
-                <span className="hidden sm:inline">INITIALIZE SYSTEM</span>
-                <span className="sm:hidden">START</span>
-              </Button>
-            );
-        case GamePhase.PLACEMENT:
-            return (
-                <Button 
-                  variant="success"
-                  onClick={handleConfirmAction}
-                  disabled={!playerReady || !aiReady}
-                  pulse={playerReady && aiReady}
-                >
-                  <span className="sm:hidden">CONFIRM</span>
-                  <span className="hidden sm:inline">CONFIRM FLEET</span>
-                </Button>
-            );
-        case GamePhase.GAME_OVER:
-            return (
-              <Button 
-                variant="secondary"
-                onClick={() => window.location.reload()} 
-              >
-                REMATCH
-              </Button>
-            );
-        default:
-            return null;
+            >
+                <span className="hidden sm:inline">
+                    INITIALIZE SYSTEM
+                </span>
+
+                <span className="sm:hidden">
+                    START
+                </span>
+            </Button>
+        );
     }
-  };
+
+    if (flow.capabilities.canConfirmFleet) {
+        return (
+            <Button 
+                variant="success"
+                onClick={handleConfirmAction}
+                pulse={true}
+            >
+                <span className="sm:hidden">
+                    CONFIRM
+                </span>
+
+                <span className="hidden sm:inline">
+                    CONFIRM FLEET
+                </span>
+            </Button>
+        );
+    }
+
+    if (flow.capabilities.canRestartGame) {
+        return (
+            <Button 
+                variant="secondary"
+                onClick={() => window.location.reload()}
+            >
+                REMATCH
+            </Button>
+        );
+    }
+
+    return null;
+};
 
   // Phase Display Name
   const phaseLabel = {
