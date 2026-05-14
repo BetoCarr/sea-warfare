@@ -3,17 +3,22 @@
 import { useState, useRef, useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useGameStore } from "@/lib/store/game-store";
-import { GamePhase } from "@/lib/store/game-types";
+import { GamePhase } from "@/lib/domain/game/game-types";
 import { BOARD_SIZE, SHIPS_CONFIG } from "@/lib/utils/constants";
 import { GameHUD } from "../hud/GameHUD";
 import { FeedbackType } from "../hud/FeedbackMessage";
 import { GameStage } from "./GameStage";
 import { GameFooter } from "../hud/GameFooter";
+import { useGameFlowController } from "@/application/game-flow/useGameFlowController";
 
 export function GameScreen() {
     const [feedback, setFeedback] = useState<string | null>(null);
     const [feedbackType, setFeedbackType] = useState<FeedbackType>('info');
     const timeoutRef = useRef<number | null>(null);
+
+    const flow = useGameFlowController();
+    console.log("Derived Capabilities:", flow.capabilities);
+
 
     const {
         player,
@@ -103,17 +108,12 @@ export function GameScreen() {
                 onInitialize={handleInitialize} 
                 // onConfirm={handleConfirm}
             />
-
             <GameStage 
                 activeMessage={activeMessage}
                 activeType={activeType}
                 onDismissFeedback={() => setFeedback(null)}
                 onPlayerCellClick={(r, c) => {
-                    if (phase === GamePhase.PLACEMENT) {
-                        console.log('placement');
-                    } else if (phase === GamePhase.BATTLE && currentTurn === 'player') {
-                        playerAttack({ row: r, col: c });
-                    }
+                    playerAttack({ row: r, col: c });
                 }}
                 onCellInteract={() => {console.log('cell interact')}}
                 // draggingShipId={() => {console.log('dragging ship id')}}

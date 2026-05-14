@@ -1,8 +1,6 @@
 "use client";
-
 import React, { useMemo, useEffect } from 'react';
 import { useGameStore } from '@/lib/store/game-store';
-import { GamePhase } from '@/lib/store/game-types';
 import { cn } from '@/lib/utils/utils';
 import Board from './Board';
 import { ShipPalette } from './ShipPalette';
@@ -14,6 +12,7 @@ import { useShipPlacement } from '@/application/placement/useShipPlacement';
 import { usePlacementMobileBridge } from '@/application/placement/mobile/useShipPlacementMobileBridge';
 import { useBoardViewModel } from '@/application/board/useBoardViewModel';
 import { Position } from '@/lib/utils/types';
+import { useGameFlowController } from '@/application/game-flow/useGameFlowController';
 
 interface GameStageProps {
     activeMessage: string | null;
@@ -43,7 +42,6 @@ export const GameStage = ({
 
     const ships = useMemo(()=> createFleet(), [])
 
-    const phase = useGameStore(s => s.phase);
     const playerBoard = useGameStore(s => s.player.boardState.board);
 
     const playerShips = useGameStore(s => s.player.ships);
@@ -51,12 +49,11 @@ export const GameStage = ({
     const placement = useShipPlacement();
     const mobilePlacement = usePlacementMobileBridge();
 
-    
     const preview = placement.preview as PlacementPreview | null;
-    
+
     console.log("preview from store", preview);
 
-
+    const flow = useGameFlowController();
 
     const boardVM = useBoardViewModel({
         size: 10,
@@ -68,16 +65,15 @@ export const GameStage = ({
         showShips: true,
     });
 
-
-
     const handleBoardTap = (position: Position) => {
-        if (phase === GamePhase.PLACEMENT) {
+        if (flow.capabilities.canPlaceShip) {
             mobilePlacement.onBoardTap(position);
             return;
         }
 
         onPlayerCellClick(position.row, position.col);
     };
+
     // Keyboard shortcut 'R' for rotation
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -93,7 +89,7 @@ export const GameStage = ({
         <main className={cn(
             "flex-1 min-h-0 overflow-hidden flex flex-col items-stretch relative px-4 md:px-8",
             "transition-all duration-700 ease-in-out",
-            phase === GamePhase.PLACEMENT && "md:pr-[280px]"
+            flow.capabilities.canPlaceShip && "md:pr-[280px]"
         )}>
             {/* 1. TOP SLOT: Feedback / Instructions (Stable Height) */}
             <div className="h-20 sm:h-24 flex items-center justify-center shrink-0">
@@ -111,29 +107,25 @@ export const GameStage = ({
                     <Board
                         boardVM={boardVM}
                         onCellPress={handleBoardTap}
-
-                        // cells={playerBoard}
-                        // isPlayerBoard={true}
-                        // onCellClick={onPlayerCellClick}
-                        // forceShowShips={true}
-                        // disabled={phase === GamePhase.GAME_OVER}
                     />
                 </div>
             </div>
             {/* 3. BOTTOM SLOT: Ship Palette */}
-            <div className="shrink-0 flex flex-col gap-2 sm:gap-4 px-1">
-                <div className="flex justify-between items-center">
-                    <OrientationToggle
-                        orientation={placement.orientation} 
-                        onToggle={placement.toggleOrientation} 
-                    />
+            {flow.capabilities.canPlaceShip && (
+                <div className="shrink-0 flex flex-col gap-2 sm:gap-4 px-1">
+                    <div className="flex justify-between items-center">
+                        <OrientationToggle
+                            orientation={placement.orientation} 
+                            onToggle={placement.toggleOrientation} 
+                        />
+                    </div>
+                    <ShipPalette
+                        ships={ships}
+                        selectedShipType={placement.selectedShipType}
+                        selectShip={placement.selectShip}
+                    /> 
                 </div>
-                <ShipPalette
-                    ships={ships}
-                    selectedShipType={placement.selectedShipType}
-                    selectShip={placement.selectShip}
-                /> 
-            </div>
+            )}
         </main>
     );
 };

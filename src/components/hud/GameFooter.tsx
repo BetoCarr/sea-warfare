@@ -3,7 +3,7 @@
 import React, { useReducer } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { useGameStore } from '@/lib/store/game-store';
-import { GamePhase } from '@/lib/store/game-types';
+import { GamePhase } from "@/lib/domain/game/game-types";
 import { cn } from '@/lib/utils/utils';
 import { FooterPanel } from './FooterPanel';
 import { ShipPalette } from '../game/ShipPalette';

@@ -1,7 +1,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import { useGameStore } from "@/lib/store/game-store";
-import { GamePhase } from "@/lib/store/game-types";
+import { GamePhase } from "@/lib/domain/game/game-types";
 import { useShallow } from "zustand/react/shallow";
 import { ReadinessIndicators } from "./ReadinessIndicators";
 import { TurnSection } from "./TurnSection";
