@@ -32,22 +32,26 @@ export function GameHUD({ onInitialize, onConfirm }: GameHUDProps) {
 
   // --- Dynamic Content Selectors ---
   const renderCenterContent = () => {
-    switch (phase) {
-        case GamePhase.PLACEMENT:
-            return (
-              <div className="hidden md:flex items-center gap-4">
-                <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">Fleet Setup</span>
-                <ReadinessIndicators />
-              </div>
-            );
-        case GamePhase.BATTLE:
-            return <TurnSection />;
-        case GamePhase.GAME_OVER:
-            return <span className="text-xs font-bold text-yellow-400 tracking-[0.2em]">MATCH ENDED</span>;
-        default:
-            return null;
+    if (flow.capabilities.canInitializeGame) {
+        return <span className="text-xs font-bold text-yellow-400 tracking-[0.2em]">BOOT SEQUENCE</span>;
     }
+    if (flow.capabilities.canPlaceShip) {
+      return (
+        <div className="hidden md:flex items-center gap-4">
+          <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">Fleet Setup</span>
+          <ReadinessIndicators />
+        </div>
+      );
+    }
+    if (flow.capabilities.canAttack) {
+      return <TurnSection />;
+    }
+    if (flow.capabilities.canRestartGame) {
+      return <span className="text-xs font-bold text-yellow-400 tracking-[0.2em]">MATCH ENDED</span>;
+    }
+    return null;
   };
+
   const renderAction = () => {
     if (flow.capabilities.canInitializeGame) {
         return (
@@ -99,14 +103,6 @@ export function GameHUD({ onInitialize, onConfirm }: GameHUDProps) {
     return null;
 };
 
-  // Phase Display Name
-  const phaseLabel = {
-      [GamePhase.SETUP]: "BOOT",
-      [GamePhase.PLACEMENT]: "DEPLOY",
-      [GamePhase.BATTLE]: "COMBAT",
-      [GamePhase.GAME_OVER]: "END"
-  }[phase];
-
   return (
     <header className="h-14 flex-none flex items-center justify-between px-3 md:px-6 border-b border-slate-700/50 bg-slate-900 shadow-xl relative z-[60]">
       
@@ -120,7 +116,7 @@ export function GameHUD({ onInitialize, onConfirm }: GameHUDProps) {
         </div>
         <div className="h-4 w-px bg-slate-700 mx-1" />
         <span className="text-[10px] font-bold text-cyan-400 bg-cyan-950/30 px-2 py-0.5 rounded border border-cyan-500/20">
-          {phaseLabel}
+          {flow.presentation.phaseLabel}
         </span>
       </div>
 

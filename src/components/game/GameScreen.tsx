@@ -3,8 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useGameStore } from "@/lib/store/game-store";
-import { GamePhase } from "@/lib/domain/game/game-types";
-import { BOARD_SIZE, SHIPS_CONFIG } from "@/lib/utils/constants";
+import { BOARD_SIZE } from "@/lib/utils/constants";
 import { GameHUD } from "../hud/GameHUD";
 import { FeedbackType } from "../hud/FeedbackMessage";
 import { GameStage } from "./GameStage";
@@ -17,32 +16,19 @@ export function GameScreen() {
     const timeoutRef = useRef<number | null>(null);
 
     const flow = useGameFlowController();
-    console.log("Derived Capabilities:", flow.capabilities);
-
 
     const {
-        player,
-        ai,
-        phase,
-        currentTurn,
         playerAttack,
         initializeGame,
         lastAttack
     } = useGameStore(
         useShallow((state) => ({
-            player: state.player,
-            ai: state.ai,
-            phase: state.phase,
-            currentTurn: state.currentTurn,
             playerAttack: state.playerAttack,
             initializeGame: state.initializeGame,
             lastAttack: state.lastAttack,
         }))
     );
 
-
-    const playerReady = player.isReady;
-    const aiReady = ai.isReady;
 
     // --- Feedback Logic ---
     useEffect(() => {
@@ -79,25 +65,7 @@ export function GameScreen() {
         }
     }, [lastAttack]);
 
-    const instruction = (() => {
-        switch (phase) {
-            case GamePhase.SETUP:
-                return "Initialize combat protocols...";
-            case GamePhase.PLACEMENT:
-                if (playerReady && aiReady) return "Systems optimal. Ready for engagement!";
-                return "Distribute your fleet across the sector";
-            case GamePhase.BATTLE:
-                return (currentTurn === 'player') 
-                    ? "Targeting systems active. Select coordinates." 
-                    : "Enemy turn... awaiting impact.";
-            default:
-                return null;
-        }
-    })();
-
-
-
-    const activeMessage = feedback || instruction;
+    const activeMessage = feedback || flow.presentation.message;
     const activeType = feedback ? feedbackType : 'instruction';
 
     const handleInitialize = () => initializeGame({ boardSize: BOARD_SIZE });
@@ -106,7 +74,6 @@ export function GameScreen() {
         <div className="min-h-[100dvh] w-full bg-slate-900 text-slate-100 flex flex-col overflow-hidden relative">
             <GameHUD 
                 onInitialize={handleInitialize} 
-                // onConfirm={handleConfirm}
             />
             <GameStage 
                 activeMessage={activeMessage}
@@ -116,8 +83,6 @@ export function GameScreen() {
                     playerAttack({ row: r, col: c });
                 }}
                 onCellInteract={() => {console.log('cell interact')}}
-                // draggingShipId={() => {console.log('dragging ship id')}}
-                // preview={() => {console.log('preview')}}
             />
 
             <GameFooter />
