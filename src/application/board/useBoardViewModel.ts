@@ -6,8 +6,12 @@ import type { CellState, Position } from '@/lib/utils/types';
 import type { PlacementPreview } from '@/lib/domain/placement/placement-types';
 import type { Ship } from '@/lib/utils/types';
 
+export type BoardVariant =
+    | 'player'
+    | 'enemy';
 
 interface UseBoardViewModelParams {
+    boardVariant: BoardVariant;
     size: number;
     cells: CellState[][];
     ships: Ship[];
@@ -16,6 +20,7 @@ interface UseBoardViewModelParams {
     draggingShipId?: string | null;
     showShips: boolean;
 }
+
 
 /**
  * useBoardViewModel
@@ -31,6 +36,7 @@ interface UseBoardViewModelParams {
  * - Fully declarative BoardViewModel consumed by the Board UI
  */
 export function useBoardViewModel({
+    boardVariant,
     size,
     cells,
     ships,
@@ -67,6 +73,7 @@ export function useBoardViewModel({
                     cellInfo.ship?.id === draggingShipId;
 
                 let visualState = getVisualState({
+                    boardVariant,
                     currentState,
                     hasShip: cellInfo.hasShip,
                     isPreview,

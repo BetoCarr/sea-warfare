@@ -11,7 +11,7 @@ export interface BoardViewModel {
 }
 
 export type CellVisualState =
-    | 'water' // Revisar water o emty en el flujo
+    | 'water' 
     | 'ship'
     | 'hit'
     | 'miss'

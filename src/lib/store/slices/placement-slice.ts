@@ -1,7 +1,7 @@
 import type { StateCreator } from "zustand";
 import type { ShipPlacementInfo, Ship, Orientation, Position, ShipType } from "@/lib/utils/types";
 import type { PlacementIntent, PlacementPreview } from "@/lib/domain/placement/placement-types";
-import { GamePhase } from "../game-types";
+import { GamePhase } from "@/lib/domain/game/game-types";
 import  { canPlaceShipAt, getShipCoordinates } from "../../domain/ships/ship-placement"
 import { getBaseShipByType } from "../../domain/ships/ship-catalog";
 import { createBoardState } from "@/lib/domain/board/board-sync";

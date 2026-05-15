@@ -1,8 +1,10 @@
 
 import { CellState } from "@/lib/utils/types";
 import { CellVisualState } from "./board-types";
+import { BoardVariant } from "./useBoardViewModel";
 
 export function getVisualState(params: {
+        boardVariant: BoardVariant;
         currentState: CellState;
         hasShip: boolean;
         isPreview: boolean;
@@ -12,6 +14,7 @@ export function getVisualState(params: {
     }): CellVisualState {
 
     const {
+        boardVariant,
         currentState,
         hasShip,
         isPreview,
@@ -19,6 +22,18 @@ export function getVisualState(params: {
         isGhost,
         showShips,
     } = params;
+
+    // Board enemy visual logic is simpler: solo muestra agua, impactos y fallos (y eventualmente barcos hundidos)
+    if (boardVariant === 'enemy') {
+
+        if (currentState === 'empty') {
+            return 'water';
+        }
+
+        if (currentState === 'hit') {
+            return 'hit';
+        }
+    }
 
     // 1. Preview
     if (isPreview) {

@@ -56,6 +56,7 @@ export const GameStage = ({
     const flow = useGameFlowController();
 
     const boardVM = useBoardViewModel({
+        boardVariant: 'player',
         size: 10,
         cells: playerBoard,
         ships: playerShips,
@@ -104,10 +105,18 @@ export const GameStage = ({
             {/* 2. CENTER SLOT: The Main Engagement Area (Board) */}
             <div className="w-full max-w-full flex items-center justify-center transition-transform duration-500">
                 <div className="flex-1 min-h-0 flex items-center justify-center py-2 sm:py-4">                
-                    <Board
+                    {/* <Board
                         boardVM={boardVM}
                         onCellPress={handleBoardTap}
-                    />
+                    /> */}
+                    <Board
+                        boardVM={boardVM}
+                        interactive={
+                            flow.capabilities.canPlaceShip ||
+                            flow.capabilities.canAttack
+                        }
+                        onCellPress={handleBoardTap}
+                    />  
                 </div>
             </div>
             {/* 3. BOTTOM SLOT: Ship Palette */}
