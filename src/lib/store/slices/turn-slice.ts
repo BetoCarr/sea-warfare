@@ -1,5 +1,5 @@
 import type { StateCreator } from "zustand";
-import { GameStatus } from "../game-types";
+import { GameStatus } from "@/lib/domain/game/game-types";
 import type { CompleteGameStore } from "../store-types";
 
 /**
@@ -21,30 +21,37 @@ export const createTurnSlice: StateCreator<
     TurnSlice
 > = (set, get) => ({
     _transitionToNextTurn: () => {
-        console.log("[GameStore] 🔄 _transitionToNextTurn called");
+        console.log("[TurnSlice] 🔄 Transitioning turn");
 
         const state = get();
-        const nextTurn = state.currentTurn === "player" ? "ai" : "player";
 
-        set(draft => {
-        draft.currentTurn = nextTurn;
-        draft.status =
-            nextTurn === "player"
-                ? GameStatus.WAITING_FOR_PLAYER
-                : GameStatus.AI_THINKING;
+        const nextTurn =
+            state.currentTurn === "player"
+                ? "ai"
+                : "player";
 
-            console.log("[GameStore] ✅ Turn transitioned:", {
-                from: state.currentTurn,
-                to: nextTurn,
-                status: draft.status
-            });
+        set((draft) => {
+            draft.currentTurn = nextTurn;
+
+            draft.status =
+                nextTurn === "player"
+                    ? GameStatus.PLAYER_TURN
+                    : GameStatus.AI_TURN;
         });
 
+        console.log("[TurnSlice] ✅ Turn updated:", {
+            from: state.currentTurn,
+            to: nextTurn,
+        });
+
+        /**
+         * Trigger AI attack
+         */
         if (nextTurn === "ai") {
             setTimeout(() => {
-                console.log("[GameStore] 🎯 Triggering AI attack");
+                console.log("[TurnSlice] 🤖 AI attacking");
                 get().aiAttack();
-            }, 6000);
+            }, 600);
         }
-    }
+    },
 });
