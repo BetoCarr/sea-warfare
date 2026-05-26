@@ -1,22 +1,9 @@
+import { BaseShip} from '../domain/ships/models/BaseShip';
+import { Position } from '../domain/shared/models/Position';
+import { Orientation } from '../domain/placement/models/Orientation';
+
 // Represents the current state of a cell on the board
 export type CellState = 'empty' | 'ship' | 'hit' | 'miss' | 'sunk';
-
-// Ship categories/types
-export type ShipType = 'carrier' | 'battleship' | 'cruiser' | 'submarine' | 'destroyer';
-
-// Orientation of a ship on the board
-export type Orientation = 'horizontal' | 'vertical';
-
-// Grid coordinates for cells or ship positions
-export interface Position {
-    row: number;  // Row index (0-based)
-    col: number;  // Column index (0-based)
-}
-
-export interface BaseShip {
-    type: ShipType;
-    size: number;
-}
 
 // Interface for placement logic (decoupled from game state)
 export interface ShipPlacementInfo extends BaseShip {

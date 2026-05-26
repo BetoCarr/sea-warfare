@@ -1,7 +1,8 @@
 "use client";
 
 import React from 'react';
-import type { Ship, Position } from '@/lib/utils/types';
+import type { Ship } from '@/lib/utils/types';
+import type { Position } from '@/lib/domain/shared/models/Position';
 
 /**
  * Props for the Ship component

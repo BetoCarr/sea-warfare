@@ -1,5 +1,5 @@
 import type { StateCreator } from 'zustand';
-import { GamePhase, GameStatus } from '../game-types';
+import { GamePhase, GameStatus } from '../../domain/game/game-types';
 import type { CompleteGameStore, GameStoreMiddlewares } from '../store-types';
 /**
  * Slice: UtilitySlice

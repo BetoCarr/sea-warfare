@@ -1,5 +1,9 @@
 import { SHIPS_CONFIG, BOARD_SIZE } from '@/lib/utils/constants';
-import type { Ship, Position, Orientation, ShipType, ShipPlacementInfo, BaseShip } from '@/lib/utils/types';
+import type { ShipPlacementInfo } from '@/lib/utils/types';
+import type { Position } from '@/lib/domain/shared/models/Position';
+import type { Orientation } from '@/lib/domain/placement/models/Orientation';
+import type { ShipType } from '@/lib/domain/ships/models/ShipType';
+import type { BaseShip } from '@/lib/domain/ships/models/BaseShip';
 import type { PlacementIntent } from '@/lib/domain/placement/placement-types';
 import { getShipCoordinates } from './ship-placement';
 import { getDistanceBetweenShips } from './ship-queries';

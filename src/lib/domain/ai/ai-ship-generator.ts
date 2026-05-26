@@ -1,5 +1,5 @@
 import type { Ship } from "@/lib/utils/types";
-import type { PlacementIntent } from '@/lib/game-logic/placement/placement-types';
+import type { PlacementIntent } from '@/lib/domain/placement/placement-types';
 import { BOARD_SIZE } from '@/lib/utils/constants';
 import { createFleet } from "../ships/ship-catalog";
 import { canPlaceShipAt } from "../ships/ship-placement";

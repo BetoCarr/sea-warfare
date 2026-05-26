@@ -1,4 +1,5 @@
-import type { Position, Ship } from '@/lib/utils/types';
+import type { Ship } from '@/lib/utils/types';
+import type { Position } from '@/lib/domain/shared/models/Position';
 import { createBoardState, BoardState, wasPositionAttacked } from './board-sync';
 import { BOARD_SIZE } from '@/lib/utils/constants';
 import { isPositionInBounds } from './board-factory';

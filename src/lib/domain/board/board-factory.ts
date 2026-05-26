@@ -1,4 +1,5 @@
-import type { CellState, Ship, Position } from '@/lib/utils/types';
+import type { CellState, Ship } from '@/lib/utils/types';
+import type { Position } from '@/lib/domain/shared/models/Position';
 import { BOARD_SIZE } from '@/lib/utils/constants';
 import { getShipCoordinates } from '@/lib/domain/ships/ship-placement';
 

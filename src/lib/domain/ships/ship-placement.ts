@@ -1,4 +1,5 @@
-import type { Position, Orientation, ShipPlacementInfo } from '@/lib/utils/types';
+import type { ShipPlacementInfo } from '@/lib/utils/types';
+import type { Position } from '@/lib/domain/shared/models/Position';
 import type { PlacementIntent } from '@/lib/domain/placement/placement-types';
 import { BOARD_SIZE } from '@/lib/utils/constants';
 import { shipsOverlap } from './ship-validation';

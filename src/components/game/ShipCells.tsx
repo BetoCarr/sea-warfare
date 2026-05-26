@@ -1,5 +1,4 @@
-import { Orientation } from "@/lib/utils/types";
-
+import type { Orientation } from '@/lib/domain/placement/models/Orientation';
 
 interface ShipCellsProps {
     size: number;

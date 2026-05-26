@@ -1,4 +1,4 @@
-import type { Position } from "@/lib/utils/types";
+import type { Position } from "@/lib/domain/shared/models/Position";
 import type { BoardState } from "../board/board-sync";
 import { isPositionInBounds } from "../board/board-factory";
 

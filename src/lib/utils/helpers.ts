@@ -1,4 +1,5 @@
-import type { CellState, Position } from './types';
+import type { CellState } from './types';
+import type { Position } from '@/lib/domain/shared/models/Position';
 import { BOARD_SIZE } from './constants';
 
 /**

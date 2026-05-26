@@ -1,10 +1,8 @@
 'use client';
 import React from 'react';
-import { useState, useCallback, useMemo } from 'react';
 import Cell from './Cell';
 import { cn } from '@/lib/utils/utils'; // Utility to combine class names dynamically
-import { BOARD_SIZE, SHIPS_CONFIG } from '@/lib/utils/constants';
-import type { CellState, Position, Ship, ShipType } from '@/lib/utils/types';
+import type { Position } from '@/lib/domain/shared/models/Position';
 import type { BoardViewModel } from '@/application/board/board-types';
 
 

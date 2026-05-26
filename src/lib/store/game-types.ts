@@ -2,7 +2,7 @@ import { GamePhase, GameStatus } from "@/lib/domain/game/game-types";
 import type { BoardState } from '@/lib/domain/board/board-sync';
 import type { AttackResult, LastAttack } from '@/lib/domain/board/board-attacks';
 import type { Ship } from '@/lib/utils/types';
-import type { Position } from '@/lib/utils/types';
+import type { Position } from '@/lib/domain/shared/models/Position';
 
 export interface AIMemory {
     lastAttacks: Position[];

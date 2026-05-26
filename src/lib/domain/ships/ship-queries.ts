@@ -1,5 +1,8 @@
 import { SHIPS_CONFIG } from '@/lib/utils/constants';;
-import { Position, Ship, ShipType, ShipPlacementInfo, BaseShip } from '@/lib/utils/types';
+import { Ship, ShipPlacementInfo } from '@/lib/utils/types';
+import type { Position } from '@/lib/domain/shared/models/Position';
+import type { ShipType } from '@/lib/domain/ships/models/ShipType';
+import type { BaseShip } from '@/lib/domain/ships/models/BaseShip';
 import { getShipCoordinates } from './ship-placement';
 import { getShipHealthStatus, getShipDamagePercentage } from './ship-damage';
 import { validateShip } from './ship-entity';

@@ -1,5 +1,5 @@
 "use client";
-import type { ShipType } from "@/lib/utils/types";
+import type { ShipType } from '@/lib/domain/ships/models/ShipType';
 import { ShipSpec } from "@/lib/domain/ships/ship-spec";
 import { useGameStore } from "@/lib/store/game-store";
 import { cn } from "@/lib/utils/utils";

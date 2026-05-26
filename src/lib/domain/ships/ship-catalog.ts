@@ -1,4 +1,5 @@
-import type { BaseShip, ShipType } from '@/lib/utils/types';
+import type { BaseShip } from '@/lib/domain/ships/models/BaseShip';
+import type { ShipType } from '@/lib/domain/ships/models/ShipType';
 import { SHIPS_CONFIG } from '@/lib/utils/constants';
 
 /**

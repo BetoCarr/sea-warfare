@@ -1,4 +1,4 @@
-import { ShipType } from "@/lib/utils/types";
+import type { ShipType } from '@/lib/domain/ships/models/ShipType';
 import { ShipCells } from "./ShipCells";
 interface ShipPaletteItemProps {
     type: ShipType;

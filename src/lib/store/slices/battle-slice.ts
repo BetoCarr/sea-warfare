@@ -3,7 +3,7 @@ import { GamePhase, GameStatus } from "@/lib/domain/game/game-types";
 import { processAttack } from "../../domain/board/board-attacks";
 import { chooseAIAttackPosition } from "../../domain/ai/ai-attack";
 import type { CompleteGameStore, GameStoreMiddlewares } from "../store-types";
-import type { Position } from "@/lib/utils/types";
+import type { Position } from "@/lib/domain/shared/models/Position";
 import type { GameActionResult } from "../game-types";
 import type { AttackResult } from "../../domain/board/board-attacks";
 

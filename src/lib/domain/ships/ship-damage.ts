@@ -1,5 +1,6 @@
 import { getShipCoordinates } from '@/lib/domain/ships/ship-placement';
-import type { Ship, Position } from '@/lib/utils/types';
+import type { Ship } from '@/lib/utils/types';
+import type { Position } from '@/lib/domain/shared/models/Position';
 
 /**
  * RESPONSIBILITY 3: DAMAGE AND STATUS MANAGEMENT

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { cn } from '@/lib/utils/utils'; // A utility function to combine class names
-import type { Position } from '@/lib/utils/types';
+import type { Position } from '@/lib/domain/shared/models/Position';
 import { CellVisualState } from '@/application/board/board-types';
 
 interface CellProps {

@@ -1,4 +1,4 @@
-import type { Ship, ShipPlacementInfo } from '@/lib/utils/types';
+import type { Ship } from '@/lib/utils/types';
 import type { PlacementIntent } from '@/lib/domain/placement/placement-types';
 import { SHIPS_CONFIG } from '@/lib/utils/constants';
 import { generateShipId } from './ship-catalog';

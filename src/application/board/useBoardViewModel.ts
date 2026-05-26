@@ -2,7 +2,8 @@ import { useMemo } from 'react';
 import { getCellInfo } from '@/lib/domain/ships/ship-cell-info';
 import { getVisualState } from './getVisualState';
 import type { BoardViewModel, BoardCellVM, CellVisualState } from './board-types';
-import type { CellState, Position } from '@/lib/utils/types';
+import type { CellState } from '@/lib/utils/types';
+import type { Position } from '@/lib/domain/shared/models/Position';
 import type { PlacementPreview } from '@/lib/domain/placement/placement-types';
 import type { Ship } from '@/lib/utils/types';
 

@@ -11,7 +11,7 @@ import { OrientationToggle } from './OrientationToggle';
 import { useShipPlacement } from '@/application/placement/useShipPlacement';
 import { usePlacementMobileBridge } from '@/application/placement/mobile/useShipPlacementMobileBridge';
 import { useBoardViewModel } from '@/application/board/useBoardViewModel';
-import { Position } from '@/lib/utils/types';
+import type { Position } from '@/lib/domain/shared/models/Position';
 import { useGameFlowController } from '@/application/game-flow/useGameFlowController';
 
 interface GameStageProps {

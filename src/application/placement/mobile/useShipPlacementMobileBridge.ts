@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { useShipPlacement } from "../useShipPlacement";
-import type { Position, ShipType } from "@/lib/utils/types";
+import type { ShipType } from "@/lib/domain/ships/models/ShipType";
+import type { Position } from "@/lib/domain/shared/models/Position";
 
 export function usePlacementMobileBridge() {
   const placement = useShipPlacement();
