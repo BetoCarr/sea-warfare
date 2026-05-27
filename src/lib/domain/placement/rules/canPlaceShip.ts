@@ -2,6 +2,7 @@ import type { BaseShip } from '@/lib/domain/ships/models/BaseShip';
 import type { Position } from '@/lib/domain/shared/models/Position';
 import type { Orientation } from '../models/Orientation';
 import type { ShipPlacement } from '../models/ShipPlacement';
+import type { PlacementValidationResult } from '../models/PlacementValidationError';
 import { getShipCoordinates } from './getShipCoordinates';
 import { shipsOverlap } from './shipsOverlap';
 
@@ -10,7 +11,7 @@ export type CanPlaceShipParams = {
     ship: BaseShip;
     origin: Position;
     orientation: Orientation;
-    existingShips: ShipPlacement[];
+    existingPlacements: ShipPlacement[];
 };
 
 /**
@@ -19,7 +20,7 @@ export type CanPlaceShipParams = {
  * Pure function that:
  * - Validates board bounds
  * - Validates overlap with existing ships
- * - Returns true only if all validations pass
+ * - Returns a validation result indicating success or failure
  * - Has no side effects
  * 
  * Validation responsibilities:
@@ -29,8 +30,8 @@ export type CanPlaceShipParams = {
  */
 export function canPlaceShip(
     params: CanPlaceShipParams,
-): boolean {
-    const { boardSize, ship, origin, orientation, existingShips } = params;
+): PlacementValidationResult {
+    const { boardSize, ship, origin, orientation, existingPlacements } = params;
 
     // Derive the coordinates this ship would occupy
     const shipCoordinates = getShipCoordinates({
@@ -41,15 +42,15 @@ export function canPlaceShip(
 
     // Validate all coordinates stay within board bounds
     if (!areCoordinatesWithinBounds(shipCoordinates, boardSize)) {
-        return false;
+        return { valid: false, error: 'OUT_OF_BOUNDS' };
     }
 
     // Validate no overlap with existing ships
-    if (hasPlacementCollision(shipCoordinates, existingShips)) {
-        return false;
+    if (hasPlacementCollision(shipCoordinates, existingPlacements)) {
+        return { valid: false, error: 'OVERLAP' };
     }
 
-    return true;
+    return { valid: true };
 }
 
 /**
@@ -77,9 +78,9 @@ function areCoordinatesWithinBounds(
  */
 function hasPlacementCollision(
     shipCoordinates: Position[],
-    existingShips: ShipPlacement[],
+    existingPlacements: ShipPlacement[],
 ): boolean {
-    for (const existingPlacement of existingShips) {
+    for (const existingPlacement of existingPlacements) {
         const existingCoordinates = getShipCoordinates({
             origin: existingPlacement.origin,
             size: existingPlacement.ship.size,
