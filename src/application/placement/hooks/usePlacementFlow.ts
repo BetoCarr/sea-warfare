@@ -62,11 +62,9 @@ export function usePlacementFlow(): PlacementFlow {
                 
                 selectedShip, // TODO
 
-                interaction: {
-                    selectedShipType, // Revisar y modificar según sea necesario
-                    orientation,
-                    hoveredCell,
-                },
+                hoveredCell, // TODO
+                
+                orientation, // TODO
 
                 existingPlacements:
                     playerPlacements,
