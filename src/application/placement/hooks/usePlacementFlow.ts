@@ -5,6 +5,7 @@ import { usePlacementInteractionStore } from '../interactions/placement-interact
 import { derivePlacementPreview } from '../derive/derivePlacementPreview';
 import { derivePlacementAvailability } from '../derive/derivePlacementAvailability';
 import { derivePlacementPresentation } from '../derive/derivePlacementPresentation';
+import { placeShipOnBoard } from '@/lib/domain/placement/mutations/placeShipOnBoard';
 
 import type { PlacementFlow } from './placement-flow.types';
 
@@ -13,11 +14,16 @@ export function usePlacementFlow(): PlacementFlow {
         state => state.playerPlacements,
     );
 
+    const setPlayerPlacements =
+        useGameplayStore(
+            state => state.setPlayerPlacements,
+        );
+    
     const selectedShipType =
         usePlacementInteractionStore(
             state => state.selectedShipType,
         );
-        
+    
     const selectedShip =
         useMemo(
             () =>
@@ -30,7 +36,7 @@ export function usePlacementFlow(): PlacementFlow {
                     ) ?? null,
             [selectedShipType],
         );
-        
+
     const orientation =
         usePlacementInteractionStore(
             state => state.orientation,
@@ -60,11 +66,11 @@ export function usePlacementFlow(): PlacementFlow {
         () =>
             derivePlacementPreview({
                 
-                selectedShip, // TODO
+                selectedShip,
 
-                hoveredCell, // TODO
+                hoveredCell,
                 
-                orientation, // TODO
+                orientation,
 
                 existingPlacements:
                     playerPlacements,
@@ -72,7 +78,7 @@ export function usePlacementFlow(): PlacementFlow {
             }),
         [
             playerPlacements,
-            selectedShipType,
+            selectedShip,
             orientation,
             hoveredCell,
         ],
@@ -84,7 +90,7 @@ export function usePlacementFlow(): PlacementFlow {
                 placements:
                     playerPlacements,
 
-                requiredFleet: STANDARD_FLEET, // TODO
+                requiredFleet: STANDARD_FLEET,
             }),
         [playerPlacements],
     );
@@ -118,7 +124,46 @@ export function usePlacementFlow(): PlacementFlow {
     }
 
     function placeShip(): void {
-        // TODO
+        if (
+            !selectedShip ||
+            !hoveredCell
+        ) {
+            return;
+        }
+
+        if (!preview) return;
+
+        if (!preview.isValid) return;
+
+        const existingPlacement =
+            playerPlacements.find(
+                placement =>
+                    placement.ship.type === selectedShip.type,
+            );
+
+        const placement = {
+            ship: selectedShip,
+            origin: hoveredCell,
+            orientation,
+        };
+
+        const result =
+            placeShipOnBoard({
+                existingPlacements:
+                    playerPlacements,
+
+                placement,
+            });
+
+        if (!result.success) {
+            return;
+        }
+
+        setPlayerPlacements(
+            result.placements,
+        );
+
+        setSelectedShipType(null);
     }
 
     function confirmFleet(): void {
@@ -140,9 +185,9 @@ export function usePlacementFlow(): PlacementFlow {
 
         setHoveredCell,
 
-        placeShip,
-
         rotate,
+    
+        placeShip,
 
         confirmFleet,
     };
