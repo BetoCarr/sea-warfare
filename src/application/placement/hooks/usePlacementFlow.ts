@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { STANDARD_FLEET } from '../../../lib/domain/ships/models/StandardFleet';
+import { ShipType } from '@/lib/domain/ships/models/ShipType';
 import { useGameplayStore } from '../../../lib/store/gameplay/gameplay-store';
 import { usePlacementInteractionStore } from '../interactions/placement-interaction.store';
 import { derivePlacementPreview } from '../derive/derivePlacementPreview';
@@ -9,6 +10,7 @@ import { placeShipOnBoard } from '@/lib/domain/placement/mutations/placeShipOnBo
 import { replaceShipPlacement } from '@/lib/domain/placement/mutations/replaceShipPlacement';
 
 import type { PlacementFlow } from './placement-flow.types';
+import { GamePhase } from '@/lib/domain/game/game-types';
 
 export function usePlacementFlow(): PlacementFlow {
     const playerPlacements = useGameplayStore(
@@ -20,23 +22,23 @@ export function usePlacementFlow(): PlacementFlow {
             state => state.setPlayerPlacements,
         );
     
+    const setPhase =
+        useGameplayStore(
+            state => state.setPhase,
+        );
+    
     const selectedShipType =
         usePlacementInteractionStore(
             state => state.selectedShipType,
         );
     
     const selectedShip =
-        useMemo(
-            () =>
-                selectedShipType == null
-                    ? null
-                    : STANDARD_FLEET.find(
-                        ship =>
-                            ship.type ===
-                            selectedShipType,
-                    ) ?? null,
-            [selectedShipType],
-        );
+        selectedShipType == null
+            ? null
+            : STANDARD_FLEET.find(
+                ship =>
+                    ship.type === selectedShipType,
+            ) ?? null;
 
     const orientation =
         usePlacementInteractionStore(
@@ -111,7 +113,7 @@ export function usePlacementFlow(): PlacementFlow {
     );
 
     function selectShip(
-        shipType: typeof selectedShipType,
+        shipType: ShipType | null,
     ): void {
         setSelectedShipType(shipType);
     }
@@ -125,16 +127,14 @@ export function usePlacementFlow(): PlacementFlow {
     }
 
     function placeShip(): void {
+
         if (
             !selectedShip ||
-            !hoveredCell
+            !hoveredCell ||
+            !preview?.isValid
         ) {
             return;
         }
-
-        if (!preview) return;
-
-        if (!preview.isValid) return;
 
         const hasExistingPlacement =
             playerPlacements.some(
@@ -172,7 +172,11 @@ export function usePlacementFlow(): PlacementFlow {
     }
 
     function confirmFleet(): void {
-        // TODO
+        if (!availability.allShipsPlaced) {
+            return;
+        }
+
+        setPhase(GamePhase.BATTLE);
     }
 
     return {
