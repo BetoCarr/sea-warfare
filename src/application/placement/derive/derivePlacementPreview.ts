@@ -41,12 +41,18 @@ export function derivePlacementPreview({
         orientation,
     });
 
+    const placementsForValidation =
+        existingPlacements.filter(
+            placement =>
+                placement.ship.type !== selectedShip.type,
+        );
+    
     const validation = canPlaceShip({
         boardSize,
         ship: selectedShip,
         origin: hoveredCell,
         orientation,
-        existingPlacements,
+        existingPlacements: placementsForValidation,
     });
 
     return {

@@ -98,4 +98,22 @@ describe('derivePlacementPreview', () => {
         
         expect(firstPreview).toEqual(secondPreview);
     });
+    it('ignores the current placement of the selected ship during repositioning', () => {
+        const existingPlacement: ShipPlacement = {
+            ship: mockCarrier,
+            origin: { row: 2, col: 2 },
+            orientation: 'horizontal',
+        };
+
+        const preview = derivePlacementPreview({
+            selectedShip: mockCarrier,
+            hoveredCell: { row: 2, col: 2 },
+            orientation: 'horizontal',
+            existingPlacements: [existingPlacement],
+        });
+
+        expect(preview).not.toBeNull();
+        expect(preview?.isValid).toBe(true);
+        expect(preview?.validationError).toBeUndefined();
+    });
 });
