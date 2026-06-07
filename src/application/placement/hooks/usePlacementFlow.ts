@@ -6,6 +6,7 @@ import { derivePlacementPreview } from '../derive/derivePlacementPreview';
 import { derivePlacementAvailability } from '../derive/derivePlacementAvailability';
 import { derivePlacementPresentation } from '../derive/derivePlacementPresentation';
 import { placeShipOnBoard } from '@/lib/domain/placement/mutations/placeShipOnBoard';
+import { replaceShipPlacement } from '@/lib/domain/placement/mutations/replaceShipPlacement';
 
 import type { PlacementFlow } from './placement-flow.types';
 
@@ -135,8 +136,8 @@ export function usePlacementFlow(): PlacementFlow {
 
         if (!preview.isValid) return;
 
-        const existingPlacement =
-            playerPlacements.find(
+        const hasExistingPlacement =
+            playerPlacements.some(
                 placement =>
                     placement.ship.type === selectedShip.type,
             );
@@ -147,11 +148,15 @@ export function usePlacementFlow(): PlacementFlow {
             orientation,
         };
 
-        const result =
-            placeShipOnBoard({
+        const result = hasExistingPlacement
+            ? replaceShipPlacement({
                 existingPlacements:
                     playerPlacements,
-
+                placement,
+            })
+            : placeShipOnBoard({
+                existingPlacements:
+                    playerPlacements,
                 placement,
             });
 
