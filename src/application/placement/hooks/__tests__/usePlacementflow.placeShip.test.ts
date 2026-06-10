@@ -1,83 +1,20 @@
-import React, { act } from 'react';
-import { createRoot } from 'react-dom/client';
-
-import { usePlacementFlow } from './usePlacementFlow';
 import { useGameplayStore } from '@/lib/store/gameplay/gameplay-store';
-import { initialGameplayState } from '@/lib/store/gameplay/gameplay-store.initial';
-import { usePlacementInteractionStore } from '../interactions/placement-interaction.store';
-import { initialPlacementInteractionState } from '../interactions/placement-interaction.initial';
-import { STANDARD_FLEET } from '@/lib/domain/ships/models/StandardFleet';
-import type { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
+import { usePlacementInteractionStore } from '../../interactions/placement-interaction.store';
+import { initialPlacementInteractionState } from '../../interactions/placement-interaction.initial';
+
+import { executePlacementFlowAction } from '../testing/executePlacementFlowAction';
+import { resetPlacementStores } from '../testing/resetPlacementStores';
+import { placementGameState } from '../testing/placementGameState';
+import { carrier, createDestroyerPlacement } from '../testing/placement-test-data';
 
 declare global {
     var IS_REACT_ACT_ENVIRONMENT: boolean | undefined;
 }
 
-const carrier = STANDARD_FLEET.find(ship => ship.type === 'carrier')!;
-const destroyer = STANDARD_FLEET.find(ship => ship.type === 'destroyer')!;
-
-function createDestroyerPlacement(): ShipPlacement {
-    return {
-        ship: destroyer,
-        origin: { row: 0, col: 0 },
-        orientation: 'horizontal',
-    };
-}
-
-function createHookHarness() {
-    const container = document.createElement('div');
-    document.body.appendChild(container);
-
-    const root = createRoot(container);
-    const hookState: {
-        current: ReturnType<typeof usePlacementFlow> | null;
-    } = {
-        current: null,
-    };
-
-    function TestComponent(): null {
-        hookState.current = usePlacementFlow();
-        return null;
-    }
-
-    act(() => {
-        root.render(React.createElement(TestComponent));
-    });
-
-    return {
-        getCurrent: () => hookState.current!,
-        unmount: () => {
-            act(() => {
-                root.unmount();
-            });
-            container.remove();
-        },
-    };
-}
-
-function resetStores() {
-    useGameplayStore.setState({
-        ...initialGameplayState,
-        playerPlacements: [],
-    });
-
-    usePlacementInteractionStore.setState({
-        ...initialPlacementInteractionState,
-        selectedShipType: null,
-        hoveredCell: null,
-        orientation: 'horizontal',
-    });
-}
-
 describe('usePlacementFlow placeShip', () => {
     beforeEach(() => {
         globalThis.IS_REACT_ACT_ENVIRONMENT = true;
-        resetStores();
-    });
-
-    afterEach(() => {
-        useGameplayStore.setState(initialGameplayState);
-        usePlacementInteractionStore.setState(initialPlacementInteractionState);
+        resetPlacementStores();
     });
 
     it('creates a new placement when the selected ship can be placed', () => {
@@ -88,10 +25,8 @@ describe('usePlacementFlow placeShip', () => {
             orientation: 'horizontal',
         });
 
-        const harness = createHookHarness();
-
-        act(() => {
-            harness.getCurrent().placeShip();
+        executePlacementFlowAction(flow => {
+            flow.placeShip();
         });
 
         expect(useGameplayStore.getState().playerPlacements).toEqual([
@@ -102,13 +37,11 @@ describe('usePlacementFlow placeShip', () => {
             },
         ]);
         expect(usePlacementInteractionStore.getState().selectedShipType).toBeNull();
-
-        harness.unmount();
     });
 
     it('replaces an existing placement when the same ship is placed again', () => {
         useGameplayStore.setState({
-            ...initialGameplayState,
+            ...placementGameState,
             playerPlacements: [
                 {
                     ship: carrier,
@@ -125,10 +58,8 @@ describe('usePlacementFlow placeShip', () => {
             orientation: 'horizontal',
         });
 
-        const harness = createHookHarness();
-
-        act(() => {
-            harness.getCurrent().placeShip();
+        executePlacementFlowAction(flow => {
+            flow.placeShip();
         });
 
         expect(useGameplayStore.getState().playerPlacements).toHaveLength(1);
@@ -138,15 +69,13 @@ describe('usePlacementFlow placeShip', () => {
             orientation: 'horizontal',
         });
         expect(usePlacementInteractionStore.getState().selectedShipType).toBeNull();
-
-        harness.unmount();
     });
 
     it('does not mutate placements when placement validation fails', () => {
         const initialPlacements = [createDestroyerPlacement()];
 
         useGameplayStore.setState({
-            ...initialGameplayState,
+            ...placementGameState,
             playerPlacements: initialPlacements,
         });
 
@@ -157,23 +86,19 @@ describe('usePlacementFlow placeShip', () => {
             orientation: 'horizontal',
         });
 
-        const harness = createHookHarness();
-
-        act(() => {
-            harness.getCurrent().placeShip();
+        executePlacementFlowAction(flow => {
+            flow.placeShip();
         });
 
         expect(useGameplayStore.getState().playerPlacements).toEqual(initialPlacements);
         expect(usePlacementInteractionStore.getState().selectedShipType).toBe('carrier');
-
-        harness.unmount();
     });
 
     it('does nothing when no ship is selected', () => {
         const initialPlacements = [createDestroyerPlacement()];
 
         useGameplayStore.setState({
-            ...initialGameplayState,
+            ...placementGameState,
             playerPlacements: initialPlacements,
         });
 
@@ -184,22 +109,18 @@ describe('usePlacementFlow placeShip', () => {
             orientation: 'horizontal',
         });
 
-        const harness = createHookHarness();
-
-        act(() => {
-            harness.getCurrent().placeShip();
+        executePlacementFlowAction(flow => {
+            flow.placeShip();
         });
 
         expect(useGameplayStore.getState().playerPlacements).toEqual(initialPlacements);
-
-        harness.unmount();
     });
 
     it('does nothing when no hovered cell exists', () => {
         const initialPlacements = [createDestroyerPlacement()];
 
         useGameplayStore.setState({
-            ...initialGameplayState,
+            ...placementGameState,
             playerPlacements: initialPlacements,
         });
 
@@ -210,14 +131,10 @@ describe('usePlacementFlow placeShip', () => {
             orientation: 'horizontal',
         });
 
-        const harness = createHookHarness();
-
-        act(() => {
-            harness.getCurrent().placeShip();
+        executePlacementFlowAction(flow => {
+            flow.placeShip();
         });
 
         expect(useGameplayStore.getState().playerPlacements).toEqual(initialPlacements);
-
-        harness.unmount();
     });
 });
