@@ -4,8 +4,8 @@ import { getVisualState } from './getVisualState';
 import type { BoardViewModel, BoardCellVM, CellVisualState } from './board-types';
 import type { CellState } from '@/lib/utils/types';
 import type { Position } from '@/lib/domain/shared/models/Position';
-import type { PlacementPreview } from '@/lib/domain/placement/placement-types';
 import type { Ship } from '@/lib/utils/types';
+import type { PlacementPreview } from '../placement/derive/placement-preview.types';
 
 export type BoardVariant =
     | 'player'
@@ -52,7 +52,7 @@ export function useBoardViewModel({
         const result: BoardCellVM[][] = [];
 
         const previewSet = new Set(
-            preview?.occupiedCells?.map(p => `${p.row}-${p.col}`) ?? []
+            preview?.cells?.map(p => `${p.row}-${p.col}`) ?? []
         );
 
         for (let row = 0; row < size; row++) {
@@ -78,7 +78,7 @@ export function useBoardViewModel({
                     currentState,
                     hasShip: cellInfo.hasShip,
                     isPreview,
-                    previewResult: preview?.result,
+                    previewResult: preview?.isValid ? 'valid' : 'invalid',
                     isGhost: !!isGhost,
                     showShips,
                 });

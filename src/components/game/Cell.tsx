@@ -11,6 +11,8 @@ interface CellProps {
     disabled?: boolean;
     isHovered?: boolean;
     onPress?: (pos: Position) => void;
+    onHover?: (pos: Position) => void;
+    onLeave?: () => void;
 }
 
 
@@ -20,6 +22,8 @@ export default function Cell({
     disabled = false,
     isHovered = false,
     onPress,
+    onHover,
+    onLeave
 }: CellProps) {
 
     // Local state used to trigger temporary animations (e.g., pulse on click)
@@ -109,6 +113,11 @@ export default function Cell({
         <button
             className={className}
             onClick={handleClick}
+            onMouseEnter={() => {
+                // console.log('hover', position);
+                onHover?.(position);
+            }}
+            onMouseLeave={() => onLeave?.()}
             disabled={disabled}
             aria-label={`Cell ${coord}: ${visualState}`}
             data-testid={`cell-${position.row}-${position.col}`}

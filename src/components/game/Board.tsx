@@ -5,11 +5,19 @@ import { cn } from '@/lib/utils/utils'; // Utility to combine class names dynami
 import type { Position } from '@/lib/domain/shared/models/Position';
 import type { BoardViewModel } from '@/application/board/board-types';
 
-
 interface BoardProps {
-    boardVM: BoardViewModel; 
+    boardVM: BoardViewModel;
     interactive?: boolean;
-    onCellPress?: (position: Position) => void;
+
+    onCellPress?: (
+        position: Position,
+    ) => void;
+
+    onCellHover?: (
+        position: Position,
+    ) => void;
+
+    onCellLeave?: () => void;
 }
 
 /**
@@ -20,10 +28,10 @@ export default function Board({
     boardVM,
     interactive = false,
     onCellPress,
+    onCellHover,
+    onCellLeave
 }: BoardProps) {
-    // Local hover state (used when no external hoveredCell is provided)
-    // const [localHoveredCell, setLocalHoveredCell] = useState<Position | null>(null);
-    console.log('BoardVM', boardVM);
+
     const size = boardVM.size;
 
     const handlePress = (position: Position) => {
@@ -78,6 +86,8 @@ export default function Board({
                                 visualState={vmCell.visualState}
                                 isHovered={vmCell.isHovered}
                                 position={{ row, col }}
+                                onHover={onCellHover}
+                                onLeave={onCellLeave}
                                 onPress={handlePress}
                             />
                         ))}

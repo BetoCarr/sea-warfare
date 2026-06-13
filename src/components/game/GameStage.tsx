@@ -1,23 +1,20 @@
 "use client";
-import React, { useMemo, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useGameStore } from '@/lib/store/game-store';
 import { cn } from '@/lib/utils/utils';
 import Board from './Board';
 import { ShipPalette } from './ShipPalette';
 import { FeedbackMessage, FeedbackType } from '../hud/FeedbackMessage';
-import { PlacementPreview } from '@/lib/domain/placement/placement-types';
-import { createFleet } from '@/lib/domain/ships/ship-catalog';
 import { OrientationToggle } from './OrientationToggle';
-import { useShipPlacement } from '@/application/placement/useShipPlacement';
-import { usePlacementMobileBridge } from '@/application/placement/mobile/useShipPlacementMobileBridge';
 import { useBoardViewModel } from '@/application/board/useBoardViewModel';
 import type { Position } from '@/lib/domain/shared/models/Position';
 import { useGameFlowController } from '@/application/game-flow/useGameFlowController';
+import { usePlacementFlow } from '@/application/placement/hooks/usePlacementFlow';
 
 interface GameStageProps {
     activeMessage: string | null;
     activeType: FeedbackType;
-    onDismissFeedback: () => void;
+    onDismissFeedback: () => void;  
     onPlayerCellClick: (row: number, col: number) => void;
     onCellInteract: (type: 'start' | 'commit' | 'hover' | 'cancel', row: number, col: number, e: any) => void;
     draggingShipId?: string | null;
@@ -36,24 +33,20 @@ export const GameStage = ({
     activeType,
     onDismissFeedback,
     onPlayerCellClick,
-    onCellInteract,
     draggingShipId,
 }: GameStageProps) => {
-
-    const ships = useMemo(()=> createFleet(), [])
 
     const playerBoard = useGameStore(s => s.player.boardState.board);
 
     const playerShips = useGameStore(s => s.player.ships);
 
-    const placement = useShipPlacement();
-    const mobilePlacement = usePlacementMobileBridge();
 
-    const preview = placement.preview as PlacementPreview | null;
+    const placement = usePlacementFlow();
 
-    console.log("preview from store", preview);
-
+    console.log("preview from store", placement.preview);
+    // console.log(placement);
     const flow = useGameFlowController();
+
 
     const boardVM = useBoardViewModel({
         boardVariant: 'player',
@@ -61,14 +54,14 @@ export const GameStage = ({
         cells: playerBoard,
         ships: playerShips,
         hoveredCell: null, // por ahora no lo usamos
-        preview,
+        preview: placement.preview,
         draggingShipId,
         showShips: true,
     });
 
     const handleBoardTap = (position: Position) => {
         if (flow.capabilities.canPlaceShip) {
-            mobilePlacement.onBoardTap(position);
+            // mobilePlacement.onBoardTap(position);
             return;
         }
 
@@ -79,12 +72,12 @@ export const GameStage = ({
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key.toLowerCase() === 'r') {
-                placement.toggleOrientation();
+                placement.rotate();
             }
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [placement.toggleOrientation]);
+    }, [placement.orientation]);
 
     return (
         <main className={cn(
@@ -115,6 +108,10 @@ export const GameStage = ({
                             flow.capabilities.canPlaceShip ||
                             flow.capabilities.canAttack
                         }
+                        onCellHover={placement.setHoveredCell}
+                        onCellLeave={() =>
+                            placement.setHoveredCell(null)
+                        }
                         onCellPress={handleBoardTap}
                     />  
                 </div>
@@ -125,14 +122,10 @@ export const GameStage = ({
                     <div className="flex justify-between items-center">
                         <OrientationToggle
                             orientation={placement.orientation} 
-                            onToggle={placement.toggleOrientation} 
+                            onToggle={placement.rotate} 
                         />
                     </div>
-                    <ShipPalette
-                        ships={ships}
-                        selectedShipType={placement.selectedShipType}
-                        selectShip={placement.selectShip}
-                    /> 
+                    <ShipPalette /> 
                 </div>
             )}
         </main>
