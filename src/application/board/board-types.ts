@@ -1,8 +1,9 @@
+import { Position } from "@/lib/domain/shared/models/Position";
+
 export interface BoardCellVM {
     row: number;
     col: number;
     visualState: CellVisualState;
-    isHovered: boolean; // Revisar isHovered debe ser derivado de hoveredCell en lugar de ser parte del VM
 }
 
 export interface BoardViewModel {

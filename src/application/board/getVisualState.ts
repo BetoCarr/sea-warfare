@@ -9,7 +9,6 @@ export function getVisualState(params: {
         hasShip: boolean;
         isPreview: boolean;
         previewResult?: 'valid' | 'invalid';
-        isGhost: boolean;
         showShips: boolean;
     }): CellVisualState {
 
@@ -19,7 +18,6 @@ export function getVisualState(params: {
         hasShip,
         isPreview,
         previewResult,
-        isGhost,
         showShips,
     } = params;
 
@@ -40,11 +38,6 @@ export function getVisualState(params: {
         return previewResult === 'valid'
             ? 'preview-valid'
             : 'preview-invalid';
-    }
-
-    // 2. Ghost (dragging existing ship)
-    if (isGhost) {
-        return 'preview-invalid'; // o crea 'ghost' si quieres diferenciar
     }
 
     // 3. Estados finales del juego

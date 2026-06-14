@@ -16,12 +16,9 @@ interface UseBoardViewModelParams {
     size: number;
     cells: CellState[][];
     ships: Ship[];
-    hoveredCell?: Position | null;
     preview?: PlacementPreview | null;
-    draggingShipId?: string | null;
     showShips: boolean;
 }
-
 
 /**
  * useBoardViewModel
@@ -41,9 +38,7 @@ export function useBoardViewModel({
     size,
     cells,
     ships,
-    hoveredCell,
     preview,
-    draggingShipId,
     showShips,
 }: UseBoardViewModelParams): BoardViewModel {
 
@@ -64,14 +59,7 @@ export function useBoardViewModel({
                 
                 const cellInfo = getCellInfo(row, col, ships);
 
-                const isHovered =
-                    hoveredCell?.row === row && hoveredCell?.col === col;
-
                 const isPreview = previewSet.has(`${row}-${col}`);
-
-                const isGhost =
-                    draggingShipId &&
-                    cellInfo.ship?.id === draggingShipId;
 
                 let visualState = getVisualState({
                     boardVariant,
@@ -79,7 +67,6 @@ export function useBoardViewModel({
                     hasShip: cellInfo.hasShip,
                     isPreview,
                     previewResult: preview?.isValid ? 'valid' : 'invalid',
-                    isGhost: !!isGhost,
                     showShips,
                 });
 
@@ -87,7 +74,6 @@ export function useBoardViewModel({
                     row,
                     col,
                     visualState,
-                    isHovered,
                 });
             }
 
@@ -99,7 +85,7 @@ export function useBoardViewModel({
             cells: result,
         };
 
-    }, [size, cells, ships, hoveredCell, preview, draggingShipId, showShips]);
+    }, [size, cells, ships, preview, showShips]);
 
     return vm;
 }

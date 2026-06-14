@@ -9,7 +9,6 @@ interface CellProps {
     visualState: CellVisualState;
     position: Position;
     disabled?: boolean;
-    isHovered?: boolean;
     onPress?: (pos: Position) => void;
     onHover?: (pos: Position) => void;
     onLeave?: () => void;
@@ -20,7 +19,6 @@ export default function Cell({
     visualState,    
     position,
     disabled = false,
-    isHovered = false,
     onPress,
     onHover,
     onLeave
@@ -74,11 +72,6 @@ export default function Cell({
             "bg-red-500/40 border-red-400",
     };
 
-    const hoverStyles =
-        isHovered && !disabled
-            ? "ring-2 ring-yellow-400 scale-105"
-            : "";
-
     const disabledStyles =
         disabled
             ? "cursor-not-allowed opacity-60"
@@ -92,7 +85,6 @@ export default function Cell({
     const className = cn(
         baseStyles,
         visualStyles[visualState],
-        hoverStyles,
         disabledStyles,
         animationStyles
     );
@@ -114,7 +106,6 @@ export default function Cell({
             className={className}
             onClick={handleClick}
             onMouseEnter={() => {
-                // console.log('hover', position);
                 onHover?.(position);
             }}
             onMouseLeave={() => onLeave?.()}

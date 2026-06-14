@@ -7,6 +7,7 @@ import type { BoardViewModel } from '@/application/board/board-types';
 
 interface BoardProps {
     boardVM: BoardViewModel;
+
     interactive?: boolean;
 
     onCellPress?: (
@@ -84,7 +85,6 @@ export default function Board({
                             <Cell
                                 key={`${row}-${col}`}
                                 visualState={vmCell.visualState}
-                                isHovered={vmCell.isHovered}
                                 position={{ row, col }}
                                 onHover={onCellHover}
                                 onLeave={onCellLeave}

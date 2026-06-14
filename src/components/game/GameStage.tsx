@@ -33,29 +33,24 @@ export const GameStage = ({
     activeType,
     onDismissFeedback,
     onPlayerCellClick,
-    draggingShipId,
 }: GameStageProps) => {
 
     const playerBoard = useGameStore(s => s.player.boardState.board);
 
     const playerShips = useGameStore(s => s.player.ships);
 
-
     const placement = usePlacementFlow();
 
     console.log("preview from store", placement.preview);
-    // console.log(placement);
-    const flow = useGameFlowController();
 
+    const flow = useGameFlowController();
 
     const boardVM = useBoardViewModel({
         boardVariant: 'player',
         size: 10,
         cells: playerBoard,
         ships: playerShips,
-        hoveredCell: null, // por ahora no lo usamos
         preview: placement.preview,
-        draggingShipId,
         showShips: true,
     });
 
@@ -97,11 +92,7 @@ export const GameStage = ({
 
             {/* 2. CENTER SLOT: The Main Engagement Area (Board) */}
             <div className="w-full max-w-full flex items-center justify-center transition-transform duration-500">
-                <div className="flex-1 min-h-0 flex items-center justify-center py-2 sm:py-4">                
-                    {/* <Board
-                        boardVM={boardVM}
-                        onCellPress={handleBoardTap}
-                    /> */}
+                <div className="flex-1 min-h-0 flex items-center justify-center py-2 sm:py-4">                                
                     <Board
                         boardVM={boardVM}
                         interactive={
