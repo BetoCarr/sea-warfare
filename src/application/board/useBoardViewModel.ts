@@ -1,10 +1,9 @@
 import { useMemo } from 'react';
-import { getCellInfo } from '@/lib/domain/ships/ship-cell-info';
 import { getVisualState } from './getVisualState';
-import type { BoardViewModel, BoardCellVM, CellVisualState } from './board-types';
+import { deriveOccupiedCells } from '../placement/derive/deriveOccupiedCells';
+import { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
+import type { BoardViewModel, BoardCellVM } from './board-types';
 import type { CellState } from '@/lib/utils/types';
-import type { Position } from '@/lib/domain/shared/models/Position';
-import type { Ship } from '@/lib/utils/types';
 import type { PlacementPreview } from '../placement/derive/placement-preview.types';
 
 export type BoardVariant =
@@ -15,29 +14,17 @@ interface UseBoardViewModelParams {
     boardVariant: BoardVariant;
     size: number;
     cells: CellState[][];
-    ships: Ship[];
+    playerPlacements: ShipPlacement[];
     preview?: PlacementPreview | null;
     showShips: boolean;
 }
 
-/**
- * useBoardViewModel
- * ------------------------------------------------------------
- * Transforms raw domain/game state into a UI-friendly structure.
- *
- * Responsibilities:
- * - Resolve ship presence per cell
- * - Derive interaction states (hover, preview, dragging)
- * - Convert domain state into a single visual state (visualState)
- *
- * Output:
- * - Fully declarative BoardViewModel consumed by the Board UI
- */
+
 export function useBoardViewModel({
     boardVariant,
     size,
     cells,
-    ships,
+    playerPlacements,
     preview,
     showShips,
 }: UseBoardViewModelParams): BoardViewModel {
@@ -50,6 +37,11 @@ export function useBoardViewModel({
             preview?.cells?.map(p => `${p.row}-${p.col}`) ?? []
         );
 
+        const occupiedCellSet = new Set(
+            deriveOccupiedCells(playerPlacements)
+                .map(cell => `${cell.row}-${cell.col}`)
+        );  
+
         for (let row = 0; row < size; row++) {
             const rowCells: BoardCellVM[] = [];
 
@@ -57,14 +49,18 @@ export function useBoardViewModel({
 
                 const currentState = cells[row]?.[col] || 'empty';
                 
-                const cellInfo = getCellInfo(row, col, ships);
+                const cellKey = `${row}-${col}`;
 
-                const isPreview = previewSet.has(`${row}-${col}`);
+                const hasShip =
+                    occupiedCellSet.has(cellKey);
+
+                const isPreview =
+                    previewSet.has(cellKey);
 
                 let visualState = getVisualState({
                     boardVariant,
                     currentState,
-                    hasShip: cellInfo.hasShip,
+                    hasShip,
                     isPreview,
                     previewResult: preview?.isValid ? 'valid' : 'invalid',
                     showShips,
@@ -85,7 +81,7 @@ export function useBoardViewModel({
             cells: result,
         };
 
-    }, [size, cells, ships, preview, showShips]);
+    }, [size, cells, playerPlacements, preview, showShips]);
 
     return vm;
 }

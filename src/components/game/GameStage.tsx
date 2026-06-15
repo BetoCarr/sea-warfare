@@ -10,6 +10,7 @@ import { useBoardViewModel } from '@/application/board/useBoardViewModel';
 import type { Position } from '@/lib/domain/shared/models/Position';
 import { useGameFlowController } from '@/application/game-flow/useGameFlowController';
 import { usePlacementFlow } from '@/application/placement/hooks/usePlacementFlow';
+import { carrier, destroyer } from '@/application/placement/hooks/testing/placement-test-data';
 
 interface GameStageProps {
     activeMessage: string | null;
@@ -37,8 +38,6 @@ export const GameStage = ({
 
     const playerBoard = useGameStore(s => s.player.boardState.board);
 
-    const playerShips = useGameStore(s => s.player.ships);
-
     const placement = usePlacementFlow();
 
     console.log("preview from store", placement.preview);
@@ -49,7 +48,7 @@ export const GameStage = ({
         boardVariant: 'player',
         size: 10,
         cells: playerBoard,
-        ships: playerShips,
+        playerPlacements: placement.playerPlacements,
         preview: placement.preview,
         showShips: true,
     });

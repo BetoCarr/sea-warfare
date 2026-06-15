@@ -8,7 +8,6 @@ import { derivePlacementAvailability } from '../derive/derivePlacementAvailabili
 import { derivePlacementPresentation } from '../derive/derivePlacementPresentation';
 import { placeShipOnBoard } from '@/lib/domain/placement/mutations/placeShipOnBoard';
 import { replaceShipPlacement } from '@/lib/domain/placement/mutations/replaceShipPlacement';
-
 import type { PlacementFlow } from './placement-flow.types';
 import { GamePhase } from '@/lib/domain/game/game-types';
 
@@ -180,6 +179,8 @@ export function usePlacementFlow(): PlacementFlow {
     }
 
     return {
+        playerPlacements,
+        
         selectedShipType,
 
         orientation,

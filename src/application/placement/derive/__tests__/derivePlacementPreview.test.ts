@@ -1,4 +1,4 @@
-import { derivePlacementPreview } from './derivePlacementPreview';
+import { derivePlacementPreview } from '../derivePlacementPreview';
 import type { BaseShip } from '@/lib/domain/ships/models/BaseShip';
 import type { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
 

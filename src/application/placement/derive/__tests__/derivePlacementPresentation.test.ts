@@ -1,6 +1,6 @@
-import { derivePlacementPresentation } from './derivePlacementPresentation';
-import type { PlacementAvailability } from './placement-availability.types';
-import type { PlacementPreview } from './placement-preview.types';
+import { derivePlacementPresentation } from '../derivePlacementPresentation';
+import type { PlacementAvailability } from '../placement-availability.types';
+import type { PlacementPreview } from '../placement-preview.types';
 
 function buildAvailability(overrides: Partial<PlacementAvailability> = {}): PlacementAvailability {
     return {
