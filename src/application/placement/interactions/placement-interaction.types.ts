@@ -7,5 +7,5 @@ export type PlacementInteractionState = {
 
     orientation: Orientation;
 
-    hoveredCell: Position | null;
+    targetCell: Position | null;
 };

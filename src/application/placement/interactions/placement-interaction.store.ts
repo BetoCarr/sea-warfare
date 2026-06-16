@@ -25,9 +25,9 @@ export const usePlacementInteractionStore =
             });
         },
 
-        setHoveredCell: (position) => {
+        setTargetCell: (position) => {
             set({
-                hoveredCell: position,
+                targetCell: position,
             });
         },
 

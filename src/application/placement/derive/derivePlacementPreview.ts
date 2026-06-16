@@ -13,7 +13,7 @@ import type { PlacementPreview } from './placement-preview.types';
 type DerivePlacementPreviewParams = {
     selectedShip: BaseShip | null;
 
-    hoveredCell: Position | null;
+    targetCell: Position | null;
 
     orientation: Orientation;
     
@@ -24,19 +24,19 @@ type DerivePlacementPreviewParams = {
 
 export function derivePlacementPreview({
     selectedShip,
-    hoveredCell,
+    targetCell,
     orientation,
     existingPlacements,
     boardSize = DEFAULT_BOARD_SIZE,
 }: DerivePlacementPreviewParams): PlacementPreview | null {
 
 
-    if (!selectedShip || !hoveredCell) {
+    if (!selectedShip || !targetCell) {
         return null;
     }
 
     const cells = getShipCoordinates({
-        origin: hoveredCell,
+        origin: targetCell,
         size: selectedShip.size,
         orientation,
     });
@@ -50,7 +50,7 @@ export function derivePlacementPreview({
     const validation = canPlaceShip({
         boardSize,
         ship: selectedShip,
-        origin: hoveredCell,
+        origin: targetCell,
         orientation,
         existingPlacements: placementsForValidation,
     });

@@ -12,7 +12,7 @@ export function resetPlacementStores(): void {
     usePlacementInteractionStore.setState({
         ...initialPlacementInteractionState,
         selectedShipType: null,
-        hoveredCell: null,
+        targetCell: null,
         orientation: 'horizontal',
     });
 }

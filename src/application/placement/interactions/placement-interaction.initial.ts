@@ -7,5 +7,5 @@ export const initialPlacementInteractionState:
 
     orientation: 'horizontal',
 
-    hoveredCell: null,
+    targetCell: null,
 };

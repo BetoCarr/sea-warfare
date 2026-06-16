@@ -12,7 +12,7 @@ export type PlacementInteractionActions = {
         orientation: Orientation
     ) => void;
 
-    setHoveredCell: (
+    setTargetCell: (
         position: Position | null
     ) => void;
 

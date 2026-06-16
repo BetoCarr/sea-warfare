@@ -44,9 +44,9 @@ export function usePlacementFlow(): PlacementFlow {
             state => state.orientation,
         );
 
-    const hoveredCell =
+    const targetCell =
         usePlacementInteractionStore(
-            state => state.hoveredCell,
+            state => state.targetCell,
         );
 
     const setSelectedShipType =
@@ -54,9 +54,9 @@ export function usePlacementFlow(): PlacementFlow {
             state => state.setSelectedShipType,
         );
 
-    const setHoveredCell =
+    const setTargetCell =
         usePlacementInteractionStore(
-            state => state.setHoveredCell,
+            state => state.setTargetCell,
         );
 
     const setOrientation =
@@ -70,7 +70,7 @@ export function usePlacementFlow(): PlacementFlow {
                 
                 selectedShip,
 
-                hoveredCell,
+                targetCell,
                 
                 orientation,
 
@@ -82,7 +82,7 @@ export function usePlacementFlow(): PlacementFlow {
             playerPlacements,
             selectedShip,
             orientation,
-            hoveredCell,
+            targetCell,
         ],
     );
 
@@ -129,7 +129,7 @@ export function usePlacementFlow(): PlacementFlow {
 
         if (
             !selectedShip ||
-            !hoveredCell ||
+            !targetCell ||
             !preview?.isValid
         ) {
             return;
@@ -143,7 +143,7 @@ export function usePlacementFlow(): PlacementFlow {
 
         const placement = {
             ship: selectedShip,
-            origin: hoveredCell,
+            origin: targetCell,
             orientation,
         };
 
@@ -193,7 +193,7 @@ export function usePlacementFlow(): PlacementFlow {
 
         selectShip,
 
-        setHoveredCell,
+        setTargetCell,
 
         rotate,
     

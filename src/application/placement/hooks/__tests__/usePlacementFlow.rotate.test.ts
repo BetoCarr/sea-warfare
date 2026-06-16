@@ -55,11 +55,11 @@ describe('usePlacementFlow rotate', () => {
     });
 
     it('preserves hovered cell', () => {
-        const hoveredCell = { row: 3, col: 4 };
+        const targetCell = { row: 3, col: 4 };
 
         usePlacementInteractionStore.setState({
             ...initialPlacementInteractionState,
-            hoveredCell,
+            targetCell,
             orientation: 'horizontal',
         });
 
@@ -67,6 +67,6 @@ describe('usePlacementFlow rotate', () => {
             flow.rotate();
         });
 
-        expect(usePlacementInteractionStore.getState().hoveredCell).toEqual(hoveredCell);
+        expect(usePlacementInteractionStore.getState().targetCell).toEqual(targetCell);
     });
 });

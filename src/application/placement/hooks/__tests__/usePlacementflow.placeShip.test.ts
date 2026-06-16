@@ -21,7 +21,7 @@ describe('usePlacementFlow placeShip', () => {
         usePlacementInteractionStore.setState({
             ...initialPlacementInteractionState,
             selectedShipType: 'carrier',
-            hoveredCell: { row: 0, col: 0 },
+            targetCell: { row: 0, col: 0 },
             orientation: 'horizontal',
         });
 
@@ -54,7 +54,7 @@ describe('usePlacementFlow placeShip', () => {
         usePlacementInteractionStore.setState({
             ...initialPlacementInteractionState,
             selectedShipType: 'carrier',
-            hoveredCell: { row: 0, col: 5 },
+            targetCell: { row: 0, col: 5 },
             orientation: 'horizontal',
         });
 
@@ -82,7 +82,7 @@ describe('usePlacementFlow placeShip', () => {
         usePlacementInteractionStore.setState({
             ...initialPlacementInteractionState,
             selectedShipType: 'carrier',
-            hoveredCell: { row: 0, col: 7 },
+            targetCell: { row: 0, col: 7 },
             orientation: 'horizontal',
         });
 
@@ -105,7 +105,7 @@ describe('usePlacementFlow placeShip', () => {
         usePlacementInteractionStore.setState({
             ...initialPlacementInteractionState,
             selectedShipType: null,
-            hoveredCell: { row: 0, col: 0 },
+            targetCell: { row: 0, col: 0 },
             orientation: 'horizontal',
         });
 
@@ -127,7 +127,7 @@ describe('usePlacementFlow placeShip', () => {
         usePlacementInteractionStore.setState({
             ...initialPlacementInteractionState,
             selectedShipType: 'carrier',
-            hoveredCell: null,
+            targetCell: null,
             orientation: 'horizontal',
         });
 

@@ -7,7 +7,7 @@ function getInteractionSnapshot() {
     return {
         selectedShipType: state.selectedShipType,
         orientation: state.orientation,
-        hoveredCell: state.hoveredCell,
+        targetCell: state.targetCell,
     };
 }
 
@@ -19,7 +19,7 @@ describe('usePlacementInteractionStore', () => {
     it('should initialize with the default interaction state', () => {
         expect(usePlacementInteractionStore.getState().selectedShipType).toBeNull();
         expect(usePlacementInteractionStore.getState().orientation).toBe('horizontal');
-        expect(usePlacementInteractionStore.getState().hoveredCell).toBeNull();
+        expect(usePlacementInteractionStore.getState().targetCell).toBeNull();
         expect(getInteractionSnapshot()).toEqual(initialPlacementInteractionState);
     });
 
@@ -43,13 +43,13 @@ describe('usePlacementInteractionStore', () => {
 
     it('should update and clear the hovered cell', () => {
         const store = usePlacementInteractionStore.getState();
-        const hoveredCell = { row: 2, col: 4 };
+        const targetCell = { row: 2, col: 4 };
 
-        store.setHoveredCell(hoveredCell);
-        expect(usePlacementInteractionStore.getState().hoveredCell).toEqual(hoveredCell);
+        store.setTargetCell(targetCell);
+        expect(usePlacementInteractionStore.getState().targetCell).toEqual(targetCell);
 
-        store.setHoveredCell(null);
-        expect(usePlacementInteractionStore.getState().hoveredCell).toBeNull();
+        store.setTargetCell(null);
+        expect(usePlacementInteractionStore.getState().targetCell).toBeNull();
     });
 
     it('should reset placement interaction state to its initial values', () => {
@@ -57,14 +57,14 @@ describe('usePlacementInteractionStore', () => {
 
         store.setSelectedShipType('destroyer');
         store.setOrientation('vertical');
-        store.setHoveredCell({ row: 3, col: 5 });
+        store.setTargetCell({ row: 3, col: 5 });
 
         store.resetPlacementInteraction();
 
         expect(getInteractionSnapshot()).toEqual(initialPlacementInteractionState);
         expect(usePlacementInteractionStore.getState().selectedShipType).toBeNull();
         expect(usePlacementInteractionStore.getState().orientation).toBe('horizontal');
-        expect(usePlacementInteractionStore.getState().hoveredCell).toBeNull();
+        expect(usePlacementInteractionStore.getState().targetCell).toBeNull();
     });
 
     it('should always reset to the same initial interaction snapshot', () => {
@@ -72,14 +72,14 @@ describe('usePlacementInteractionStore', () => {
 
         store.setSelectedShipType('battleship');
         store.setOrientation('vertical');
-        store.setHoveredCell({ row: 1, col: 1 });
+        store.setTargetCell({ row: 1, col: 1 });
 
         store.resetPlacementInteraction();
         const firstReset = getInteractionSnapshot();
 
         store.setSelectedShipType('submarine');
         store.setOrientation('horizontal');
-        store.setHoveredCell({ row: 7, col: 8 });
+        store.setTargetCell({ row: 7, col: 8 });
 
         store.resetPlacementInteraction();
         const secondReset = getInteractionSnapshot();

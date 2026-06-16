@@ -39,8 +39,8 @@ export const GameStage = ({
     const playerBoard = useGameStore(s => s.player.boardState.board);
 
     const placement = usePlacementFlow();
-
-    console.log("preview from store", placement.preview);
+    console.log(placement);
+    // console.log("preview from store", placement.preview);
 
     const flow = useGameFlowController();
 
@@ -98,9 +98,9 @@ export const GameStage = ({
                             flow.capabilities.canPlaceShip ||
                             flow.capabilities.canAttack
                         }
-                        onCellHover={placement.setHoveredCell}
+                        onCellHover={placement.setTargetCell}
                         onCellLeave={() =>
-                            placement.setHoveredCell(null)
+                            placement.setTargetCell(null)
                         }
                         onCellPress={handleBoardTap}
                     />  

@@ -16,7 +16,7 @@ describe('derivePlacementPreview', () => {
     it('returns null when no ship is selected', () => {
         const preview = derivePlacementPreview({
             selectedShip: null,
-            hoveredCell: { row: 3, col: 4 },
+            targetCell: { row: 3, col: 4 },
             orientation: 'horizontal',
             existingPlacements: [],
         });
@@ -27,7 +27,7 @@ describe('derivePlacementPreview', () => {
     it('returns null when no hovered cell exists', () => {
         const preview = derivePlacementPreview({
             selectedShip: mockSubmarine,
-            hoveredCell: null,
+            targetCell: null,
             orientation: 'vertical',
             existingPlacements: [],
         });
@@ -38,7 +38,7 @@ describe('derivePlacementPreview', () => {
     it('returns a valid preview for a valid placement', () => {
         const preview = derivePlacementPreview({
             selectedShip: mockSubmarine,
-            hoveredCell: { row: 2, col: 2 },
+            targetCell: { row: 2, col: 2 },
             orientation: 'horizontal',
             existingPlacements: [],
         });
@@ -56,7 +56,7 @@ describe('derivePlacementPreview', () => {
     it('returns an invalid preview when placement exceeds board bounds', () => {
         const preview = derivePlacementPreview({
             selectedShip: mockCarrier,
-            hoveredCell: { row: 0, col: 6 },
+            targetCell: { row: 0, col: 6 },
             orientation: 'horizontal',
             existingPlacements: [],
         });
@@ -75,7 +75,7 @@ describe('derivePlacementPreview', () => {
 
         const preview = derivePlacementPreview({
             selectedShip: mockSubmarine,
-            hoveredCell: { row: 1, col: 3 },
+            targetCell: { row: 1, col: 3 },
             orientation: 'vertical',
             existingPlacements: [existingPlacement],
         });
@@ -88,7 +88,7 @@ describe('derivePlacementPreview', () => {
     it('is deterministic for identical inputs', () => {
         const params = {
             selectedShip: mockSubmarine,
-            hoveredCell: { row: 2, col: 2 },
+            targetCell: { row: 2, col: 2 },
             orientation: 'horizontal' as const,
             existingPlacements: [],
         };
@@ -107,7 +107,7 @@ describe('derivePlacementPreview', () => {
 
         const preview = derivePlacementPreview({
             selectedShip: mockCarrier,
-            hoveredCell: { row: 2, col: 2 },
+            targetCell: { row: 2, col: 2 },
             orientation: 'horizontal',
             existingPlacements: [existingPlacement],
         });

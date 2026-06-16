@@ -23,7 +23,7 @@ export type PlacementFlow = {
         shipType: ShipType | null,
     ) => void;
 
-    setHoveredCell: (
+    setTargetCell: (
         position: Position | null,
     ) => void;
 
