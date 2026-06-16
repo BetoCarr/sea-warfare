@@ -55,7 +55,7 @@ export const GameStage = ({
 
     const handleBoardTap = (position: Position) => {
         if (flow.capabilities.canPlaceShip) {
-            // mobilePlacement.onBoardTap(position);
+            placement.placeShip();
             return;
         }
 

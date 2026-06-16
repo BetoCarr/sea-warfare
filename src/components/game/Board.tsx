@@ -35,12 +35,6 @@ export default function Board({
 
     const size = boardVM.size;
 
-    const handlePress = (position: Position) => {
-        if (!interactive) return;
-
-        onCellPress?.(position);
-    };
-
     return (
         <div
             className={cn(
@@ -88,7 +82,7 @@ export default function Board({
                                 position={{ row, col }}
                                 onHover={onCellHover}
                                 onLeave={onCellLeave}
-                                onPress={handlePress}
+                                onPress={onCellPress}
                             />
                         ))}
                     </React.Fragment>
