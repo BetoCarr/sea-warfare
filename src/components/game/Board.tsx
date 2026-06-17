@@ -10,15 +10,15 @@ interface BoardProps {
 
     interactive?: boolean;
 
-    onCellPress?: (
-        position: Position,
-    ) => void;
-
     onCellHover?: (
         position: Position,
     ) => void;
 
     onCellLeave?: () => void;
+
+    onCellPress?: (
+        position: Position,
+    ) => void;
 }
 
 /**
@@ -28,9 +28,9 @@ interface BoardProps {
 export default function Board({
     boardVM,
     interactive = false,
-    onCellPress,
     onCellHover,
-    onCellLeave
+    onCellLeave,
+    onCellPress
 }: BoardProps) {
 
     const size = boardVM.size;

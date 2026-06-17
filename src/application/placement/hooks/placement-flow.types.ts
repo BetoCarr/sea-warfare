@@ -7,18 +7,20 @@ import type { PlacementPresentation } from '../derive/placement-presentation.typ
 import { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
 
 export type PlacementFlow = {
+    // authoritative
     playerPlacements: ShipPlacement[];
-    
+
+    // interaction
     selectedShipType: ShipType | null;
-
     orientation: Orientation;
-
+    targetCell: Position | null; // Agregar a la documentación
+    
+    // derived
     preview: PlacementPreview | null;
-
     availability: PlacementAvailability;
-
     presentation: PlacementPresentation;
-
+    
+    // interaction api
     selectShip: (
         shipType: ShipType | null,
     ) => void;
@@ -27,9 +29,13 @@ export type PlacementFlow = {
         position: Position | null,
     ) => void;
 
-    placeShip: () => void;
-
     rotate: () => void;
 
+    onCellPress( // Agregar a la documentación
+        position: Position,
+    ): void;
+    
+    // mutations
+    placeShip: () => void;
     confirmFleet: () => void;
 };

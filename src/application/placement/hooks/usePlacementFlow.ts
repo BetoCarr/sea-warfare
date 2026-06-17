@@ -7,30 +7,22 @@ import { derivePlacementPreview } from '../derive/derivePlacementPreview';
 import { derivePlacementAvailability } from '../derive/derivePlacementAvailability';
 import { derivePlacementPresentation } from '../derive/derivePlacementPresentation';
 import { placeShipOnBoard } from '@/lib/domain/placement/mutations/placeShipOnBoard';
+import { GamePhase } from '@/lib/domain/game/game-types';
 import { replaceShipPlacement } from '@/lib/domain/placement/mutations/replaceShipPlacement';
 import type { PlacementFlow } from './placement-flow.types';
-import { GamePhase } from '@/lib/domain/game/game-types';
+import type { Position } from '@/lib/domain/shared/models/Position';
 
 export function usePlacementFlow(): PlacementFlow {
+
     const playerPlacements = useGameplayStore(
         state => state.playerPlacements,
     );
 
-    const setPlayerPlacements =
-        useGameplayStore(
-            state => state.setPlayerPlacements,
-        );
-    
-    const setPhase =
-        useGameplayStore(
-            state => state.setPhase,
-        );
-    
     const selectedShipType =
-        usePlacementInteractionStore(
-            state => state.selectedShipType,
-        );
-    
+    usePlacementInteractionStore(
+        state => state.selectedShipType,
+    );
+
     const selectedShip =
         selectedShipType == null
             ? null
@@ -49,6 +41,17 @@ export function usePlacementFlow(): PlacementFlow {
             state => state.targetCell,
         );
 
+    const setPlayerPlacements =
+        useGameplayStore(
+            state => state.setPlayerPlacements,
+        );
+    
+    const setPhase =
+        useGameplayStore(
+            state => state.setPhase,
+        );
+    
+
     const setSelectedShipType =
         usePlacementInteractionStore(
             state => state.setSelectedShipType,
@@ -58,7 +61,7 @@ export function usePlacementFlow(): PlacementFlow {
         usePlacementInteractionStore(
             state => state.setTargetCell,
         );
-
+    
     const setOrientation =
         usePlacementInteractionStore(
             state => state.setOrientation,
@@ -115,6 +118,7 @@ export function usePlacementFlow(): PlacementFlow {
         shipType: ShipType | null,
     ): void {
         setSelectedShipType(shipType);
+        setTargetCell(null);
     }
 
     function rotate(): void {
@@ -123,6 +127,24 @@ export function usePlacementFlow(): PlacementFlow {
                 ? 'vertical'
                 : 'horizontal',
         );
+    } 
+
+    function onCellPress(position: Position): void {
+            if (!targetCell) {
+                setTargetCell(position);
+                return;
+            }
+
+            const isSameCell =
+                targetCell.row === position.row &&
+                targetCell.col === position.col;
+
+            if (!isSameCell) {
+                setTargetCell(position);
+                return;
+            }
+
+            placeShip();
     }
 
     function placeShip(): void {
@@ -168,6 +190,8 @@ export function usePlacementFlow(): PlacementFlow {
         );
 
         setSelectedShipType(null);
+
+        setTargetCell(null);
     }
 
     function confirmFleet(): void {
@@ -185,6 +209,8 @@ export function usePlacementFlow(): PlacementFlow {
 
         orientation,
 
+        targetCell,
+
         preview,
 
         availability,
@@ -196,6 +222,8 @@ export function usePlacementFlow(): PlacementFlow {
         setTargetCell,
 
         rotate,
+
+        onCellPress,
     
         placeShip,
 

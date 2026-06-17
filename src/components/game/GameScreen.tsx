@@ -9,11 +9,14 @@ import { FeedbackType } from "../hud/FeedbackMessage";
 import { GameStage } from "./GameStage";
 import { GameFooter } from "../hud/GameFooter";
 import { useGameFlowController } from "@/application/game-flow/useGameFlowController";
+import { useSupportsHover } from "@/lib/device/useSupportsHover";
 
 export function GameScreen() {
     const [feedback, setFeedback] = useState<string | null>(null);
     const [feedbackType, setFeedbackType] = useState<FeedbackType>('info');
     const timeoutRef = useRef<number | null>(null);
+
+    const supportsHover = useSupportsHover();
 
     const flow = useGameFlowController();
 
@@ -78,13 +81,12 @@ export function GameScreen() {
             <GameStage 
                 activeMessage={activeMessage}
                 activeType={activeType}
+                supportsHover={supportsHover}
                 onDismissFeedback={() => setFeedback(null)}
                 onPlayerCellClick={(r, c) => {
                     playerAttack({ row: r, col: c });
                 }}
-                onCellInteract={() => {console.log('cell interact')}}
             />
-
             <GameFooter />
         </div>
     );

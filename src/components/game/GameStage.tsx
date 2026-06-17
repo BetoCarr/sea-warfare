@@ -15,10 +15,9 @@ import { carrier, destroyer } from '@/application/placement/hooks/testing/placem
 interface GameStageProps {
     activeMessage: string | null;
     activeType: FeedbackType;
+    supportsHover: boolean;
     onDismissFeedback: () => void;  
     onPlayerCellClick: (row: number, col: number) => void;
-    onCellInteract: (type: 'start' | 'commit' | 'hover' | 'cancel', row: number, col: number, e: any) => void;
-    draggingShipId?: string | null;
 }
 
 /**
@@ -32,6 +31,7 @@ interface GameStageProps {
 export const GameStage = ({
     activeMessage,
     activeType,
+    supportsHover,
     onDismissFeedback,
     onPlayerCellClick,
 }: GameStageProps) => {
@@ -39,8 +39,7 @@ export const GameStage = ({
     const playerBoard = useGameStore(s => s.player.boardState.board);
 
     const placement = usePlacementFlow();
-    console.log(placement);
-    // console.log("preview from store", placement.preview);
+    // console.log(placement);
 
     const flow = useGameFlowController();
 
@@ -98,11 +97,21 @@ export const GameStage = ({
                             flow.capabilities.canPlaceShip ||
                             flow.capabilities.canAttack
                         }
-                        onCellHover={placement.setTargetCell}
-                        onCellLeave={() =>
-                            placement.setTargetCell(null)
+                        onCellHover={
+                            supportsHover
+                                ? placement.setTargetCell
+                                : undefined
                         }
-                        onCellPress={handleBoardTap}
+                        onCellLeave={
+                            supportsHover
+                                ? () => placement.setTargetCell(null)
+                                : undefined
+                        }
+                        onCellPress={
+                            supportsHover
+                                ? handleBoardTap
+                                : placement.onCellPress
+                        }                    
                     />  
                 </div>
             </div>
