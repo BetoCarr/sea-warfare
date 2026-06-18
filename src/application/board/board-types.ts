@@ -1,8 +1,8 @@
-import { Position } from "@/lib/domain/shared/models/Position";
-
 export interface BoardCellVM {
     row: number;
     col: number;
+    // Possibly 
+    // shipType?: ShipType;
     visualState: CellVisualState;
 }
 

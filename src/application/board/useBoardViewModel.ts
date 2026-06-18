@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { getVisualState } from './getVisualState';
 import { deriveOccupiedCells } from '../placement/derive/deriveOccupiedCells';
+import { deriveShipOccupancy } from '../placement/derive/deriveShipOccupancy';
 import { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
 import type { BoardViewModel, BoardCellVM } from './board-types';
 import type { CellState } from '@/lib/utils/types';
@@ -37,10 +38,21 @@ export function useBoardViewModel({
             preview?.cells?.map(p => `${p.row}-${p.col}`) ?? []
         );
 
+        const shipCells = deriveShipOccupancy(playerPlacements);
+
         const occupiedCellSet = new Set(
             deriveOccupiedCells(playerPlacements)
                 .map(cell => `${cell.row}-${cell.col}`)
         );  
+
+        const shipCellMap = new Map(
+            shipCells.map(c => [
+                `${c.position.row}-${c.position.col}`,
+                c.shipType,
+            ])
+        );
+        
+        console.log('Ship Cell Map:', shipCellMap);
 
         for (let row = 0; row < size; row++) {
             const rowCells: BoardCellVM[] = [];
