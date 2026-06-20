@@ -6,9 +6,8 @@ import { usePlacementInteractionStore } from '../interactions/placement-interact
 import { derivePlacementPreview } from '../derive/derivePlacementPreview';
 import { derivePlacementAvailability } from '../derive/derivePlacementAvailability';
 import { derivePlacementPresentation } from '../derive/derivePlacementPresentation';
-import { placeShipOnBoard } from '@/lib/domain/placement/mutations/placeShipOnBoard';
+import { upsertShipPlacement } from '@/lib/domain/placement/mutations/upsertShipPlacement';
 import { GamePhase } from '@/lib/domain/game/game-types';
-import { replaceShipPlacement } from '@/lib/domain/placement/mutations/replaceShipPlacement';
 import type { PlacementFlow } from './placement-flow.types';
 import type { Position } from '@/lib/domain/shared/models/Position';
 
@@ -157,37 +156,22 @@ export function usePlacementFlow(): PlacementFlow {
             return;
         }
 
-        const hasExistingPlacement =
-            playerPlacements.some(
-                placement =>
-                    placement.ship.type === selectedShip.type,
-            );
-
         const placement = {
             ship: selectedShip,
             origin: targetCell,
             orientation,
         };
 
-        const result = hasExistingPlacement
-            ? replaceShipPlacement({
-                existingPlacements:
-                    playerPlacements,
-                placement,
-            })
-            : placeShipOnBoard({
-                existingPlacements:
-                    playerPlacements,
-                placement,
-            });
+        const result = upsertShipPlacement({
+            existingPlacements: playerPlacements,
+            placement,
+        });
 
         if (!result.success) {
             return;
         }
 
-        setPlayerPlacements(
-            result.placements,
-        );
+        setPlayerPlacements(result.placements);
 
         setSelectedShipType(null);
 

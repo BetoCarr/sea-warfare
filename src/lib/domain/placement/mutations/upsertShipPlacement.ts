@@ -3,34 +3,42 @@ import type { PlacementValidationError } from '../models/PlacementValidationErro
 import { canPlaceShip } from '../rules/canPlaceShip';
 import { DEFAULT_BOARD_SIZE } from '@/lib/domain/board/models/BoardConfig';
 
-type PlaceShipParams = {
+type UpsertShipPlacementParams = {
     existingPlacements: ShipPlacement[];
     placement: ShipPlacement;
     boardSize?: number;
 };
 
-type PlaceShipResult =
+type UpsertShipPlacementResult =
     | {
         success: true;
         placements: ShipPlacement[];
     }
     | {
         success: false;
-        error: PlacementValidationError;
+        error: PlacementValidationError; // Revisar el nombre del tipo de error
     };
 
-export function placeShipOnBoard({
+export function upsertShipPlacement({
     existingPlacements,
     placement,
     boardSize = DEFAULT_BOARD_SIZE,
-}: PlaceShipParams): PlaceShipResult {
+}: UpsertShipPlacementParams): UpsertShipPlacementResult {
+
+    const authoritativePlacements =
+        existingPlacements.filter(
+            existingPlacement =>
+                existingPlacement.ship.type !==
+                placement.ship.type,
+        );
 
     const validation = canPlaceShip({
         boardSize,
         ship: placement.ship,
         origin: placement.origin,
         orientation: placement.orientation,
-        existingPlacements,
+        existingPlacements:
+            authoritativePlacements,
     });
 
     if (!validation.valid) {
@@ -43,7 +51,7 @@ export function placeShipOnBoard({
     return {
         success: true,
         placements: [
-            ...existingPlacements,
+            ...authoritativePlacements,
             placement,
         ],
     };
