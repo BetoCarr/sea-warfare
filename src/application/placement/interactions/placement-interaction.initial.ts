@@ -9,5 +9,4 @@ export const initialPlacementInteractionState:
 
     targetCell: null,
 
-    activeShipOrigin: null
 };

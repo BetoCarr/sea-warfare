@@ -40,11 +40,6 @@ export function usePlacementFlow(): PlacementFlow {
             state => state.targetCell,
         );
 
-    const activeShipOrigin =
-        usePlacementInteractionStore(
-            state => state.activeShipOrigin,
-        );
-
     const setPlayerPlacements =
         useGameplayStore(
             state => state.setPlayerPlacements,
@@ -66,10 +61,10 @@ export function usePlacementFlow(): PlacementFlow {
             state => state.setTargetCell,
         );
     
-    const setActiveShipOrigin =
-        usePlacementInteractionStore(
-            state => state.setActiveShipOrigin,
-        );
+    // const setActiveShipOrigin =
+    //     usePlacementInteractionStore(
+    //         state => state.setActiveShipOrigin,
+    //     );
     
     const setOrientation =
         usePlacementInteractionStore(
@@ -144,21 +139,12 @@ export function usePlacementFlow(): PlacementFlow {
 
         if (interaction.shipType) {
             selectShip(interaction.shipType);
-
-            setActiveShipOrigin(
-                interaction.position,
-            );
-        
-            // console.log(
-            //     '[activeShipOrigin]',
-            //     position,
-            // );
-
+            setTargetCell(interaction.position);
             return;
         }
+
         if (!targetCell) {
             setTargetCell(position);
-            setActiveShipOrigin(null); // Revisar redundancia
             return;
         }
 
@@ -217,7 +203,6 @@ export function usePlacementFlow(): PlacementFlow {
     console.log({
         selectedShipType,
         targetCell,
-        activeShipOrigin,
     });
 
     return {
@@ -228,8 +213,6 @@ export function usePlacementFlow(): PlacementFlow {
         orientation,
 
         targetCell,
-
-        activeShipOrigin,
 
         preview,
 

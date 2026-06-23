@@ -15,7 +15,6 @@ export type PlacementFlow = {
     selectedShipType: ShipType | null;
     orientation: Orientation;
     targetCell: Position | null; // Agregar a la documentación
-    activeShipOrigin: Position | null;
     
     // derived
     preview: PlacementPreview | null;
