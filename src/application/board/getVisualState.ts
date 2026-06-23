@@ -8,6 +8,7 @@ export function getVisualState(params: {
         currentState: CellState;
         hasShip: boolean;
         isPreview: boolean;
+        isActiveShip?: boolean;
         previewResult?: 'valid' | 'invalid';
         showShips: boolean;
     }): CellVisualState {
@@ -17,6 +18,7 @@ export function getVisualState(params: {
         currentState,
         hasShip,
         isPreview,
+        isActiveShip,
         previewResult,
         showShips,
     } = params;
@@ -45,9 +47,12 @@ export function getVisualState(params: {
     if (currentState === 'miss') return 'miss';
     if (currentState === 'sunk') return 'sunk';
 
-    // 4. Ship visible
-    if (hasShip && showShips) {
+    if (hasShip && showShips && !isActiveShip) {
         return 'ship';
+    }
+
+    if (isActiveShip) {
+        return 'water';
     }
 
     // 5. Default

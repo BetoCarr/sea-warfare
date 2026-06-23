@@ -61,11 +61,6 @@ export function usePlacementFlow(): PlacementFlow {
             state => state.setTargetCell,
         );
     
-    // const setActiveShipOrigin =
-    //     usePlacementInteractionStore(
-    //         state => state.setActiveShipOrigin,
-    //     );
-    
     const setOrientation =
         usePlacementInteractionStore(
             state => state.setOrientation,
@@ -135,11 +130,20 @@ export function usePlacementFlow(): PlacementFlow {
 
     function onCellPress(interaction: BoardCellInteraction): void {
         
-        const { position } = interaction;
+        const { position, shipType } = interaction;
 
-        if (interaction.shipType) {
-            selectShip(interaction.shipType);
-            setTargetCell(interaction.position);
+        // Already repositioning a ship:
+        // ignore ships on the board and treat the tap
+        // purely as a placement target.
+        if (selectedShipType && shipType) {
+            setTargetCell(position);
+            return;
+        }
+
+        // Start repositioning / selecting a ship from board.
+        if (shipType) {
+            selectShip(shipType);
+            setTargetCell(position);
             return;
         }
 

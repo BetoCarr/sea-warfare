@@ -49,6 +49,7 @@ export const GameStage = ({
         cells: playerBoard,
         playerPlacements: placement.playerPlacements,
         preview: placement.preview,
+        selectedShipType: placement.selectedShipType,
         showShips: true,
     });
 
