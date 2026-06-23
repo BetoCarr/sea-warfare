@@ -9,7 +9,7 @@ import { derivePlacementPresentation } from '../derive/derivePlacementPresentati
 import { upsertShipPlacement } from '@/lib/domain/placement/mutations/upsertShipPlacement';
 import { GamePhase } from '@/lib/domain/game/game-types';
 import type { PlacementFlow } from './placement-flow.types';
-import type { Position } from '@/lib/domain/shared/models/Position';
+import type { BoardCellInteraction } from '../interactions/placement-interaction.types';
 
 export function usePlacementFlow(): PlacementFlow {
 
@@ -40,6 +40,11 @@ export function usePlacementFlow(): PlacementFlow {
             state => state.targetCell,
         );
 
+    const activeShipOrigin =
+        usePlacementInteractionStore(
+            state => state.activeShipOrigin,
+        );
+
     const setPlayerPlacements =
         useGameplayStore(
             state => state.setPlayerPlacements,
@@ -59,6 +64,11 @@ export function usePlacementFlow(): PlacementFlow {
     const setTargetCell =
         usePlacementInteractionStore(
             state => state.setTargetCell,
+        );
+    
+    const setActiveShipOrigin =
+        usePlacementInteractionStore(
+            state => state.setActiveShipOrigin,
         );
     
     const setOrientation =
@@ -128,22 +138,40 @@ export function usePlacementFlow(): PlacementFlow {
         );
     } 
 
-    function onCellPress(position: Position): void {
-            if (!targetCell) {
-                setTargetCell(position);
-                return;
-            }
+    function onCellPress(interaction: BoardCellInteraction): void {
+        
+        const { position } = interaction;
 
-            const isSameCell =
-                targetCell.row === position.row &&
-                targetCell.col === position.col;
+        if (interaction.shipType) {
+            selectShip(interaction.shipType);
 
-            if (!isSameCell) {
-                setTargetCell(position);
-                return;
-            }
+            setActiveShipOrigin(
+                interaction.position,
+            );
+        
+            // console.log(
+            //     '[activeShipOrigin]',
+            //     position,
+            // );
 
-            placeShip();
+            return;
+        }
+        if (!targetCell) {
+            setTargetCell(position);
+            setActiveShipOrigin(null); // Revisar redundancia
+            return;
+        }
+
+        const isSameCell =
+            targetCell.row === position.row &&
+            targetCell.col === position.col;
+
+        if (!isSameCell) {
+            setTargetCell(position);
+            return;
+        }
+
+        placeShip();
     }
 
     function placeShip(): void {
@@ -186,6 +214,12 @@ export function usePlacementFlow(): PlacementFlow {
         setPhase(GamePhase.BATTLE);
     }
 
+    console.log({
+        selectedShipType,
+        targetCell,
+        activeShipOrigin,
+    });
+
     return {
         playerPlacements,
         
@@ -194,6 +228,8 @@ export function usePlacementFlow(): PlacementFlow {
         orientation,
 
         targetCell,
+
+        activeShipOrigin,
 
         preview,
 

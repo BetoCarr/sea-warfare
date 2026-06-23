@@ -16,5 +16,9 @@ export type PlacementInteractionActions = {
         position: Position | null
     ) => void;
 
+    setActiveShipOrigin: (
+        position: Position | null,
+    ) => void;
+
     resetPlacementInteraction: () => void;
 };

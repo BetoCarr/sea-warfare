@@ -4,6 +4,7 @@ import Cell from './Cell';
 import { cn } from '@/lib/utils/utils'; // Utility to combine class names dynamically
 import type { Position } from '@/lib/domain/shared/models/Position';
 import type { BoardViewModel } from '@/application/board/board-types';
+import type { BoardCellInteraction } from '@/application/placement/interactions/placement-interaction.types';
 
 interface BoardProps {
     boardVM: BoardViewModel;
@@ -17,7 +18,7 @@ interface BoardProps {
     onCellLeave?: () => void;
 
     onCellPress?: (
-        position: Position,
+        interaction: BoardCellInteraction
     ) => void;
 }
 
@@ -30,7 +31,7 @@ export default function Board({
     interactive = false,
     onCellHover,
     onCellLeave,
-    onCellPress
+    onCellPress,
 }: BoardProps) {
 
     const size = boardVM.size;
@@ -82,7 +83,28 @@ export default function Board({
                                 position={{ row, col }}
                                 onHover={onCellHover}
                                 onLeave={onCellLeave}
-                                onPress={onCellPress}
+                                onPress={() =>
+                                    onCellPress?.({
+                                        position: {
+                                            row,
+                                            col,
+                                        },
+                                        shipType: vmCell.shipType,
+                                    })
+                                }
+                                // onPress={() => {
+                                //     const interaction = {
+                                //         position: {
+                                //             row,
+                                //             col,
+                                //         },
+                                //         shipType: vmCell.shipType,
+                                //     };
+
+                                //     console.log('[BoardCellInteraction]', interaction);
+
+                                //     onCellPress?.(interaction);
+                                // }}
                             />
                         ))}
                     </React.Fragment>

@@ -1,8 +1,9 @@
+import type { ShipType } from '@/lib/domain/ships/models/ShipType';
+
 export interface BoardCellVM {
     row: number;
     col: number;
-    // Possibly 
-    // shipType?: ShipType;
+    shipType?: ShipType;
     visualState: CellVisualState;
 }
 

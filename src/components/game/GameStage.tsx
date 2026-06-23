@@ -10,7 +10,7 @@ import { useBoardViewModel } from '@/application/board/useBoardViewModel';
 import type { Position } from '@/lib/domain/shared/models/Position';
 import { useGameFlowController } from '@/application/game-flow/useGameFlowController';
 import { usePlacementFlow } from '@/application/placement/hooks/usePlacementFlow';
-import { carrier, destroyer } from '@/application/placement/hooks/testing/placement-test-data';
+import { BoardCellInteraction } from '@/application/placement/interactions/placement-interaction.types';
 
 interface GameStageProps {
     activeMessage: string | null;
@@ -39,7 +39,7 @@ export const GameStage = ({
     const playerBoard = useGameStore(s => s.player.boardState.board);
 
     const placement = usePlacementFlow();
-    // console.log(placement);
+    // console.log(placement.activeShipOrigin);
 
     const flow = useGameFlowController();
 
@@ -52,15 +52,29 @@ export const GameStage = ({
         showShips: true,
     });
 
-    const handleBoardTap = (position: Position) => {
+    // const handleBoardTap = (position: Position) => {
+    //     if (flow.capabilities.canPlaceShip) {
+    //         placement.placeShip();
+    //         return;
+    //     }
+
+    //     onPlayerCellClick(position.row, position.col);
+    // };
+
+    const handleBoardTap = (
+        interaction: BoardCellInteraction,
+    ) => {
         if (flow.capabilities.canPlaceShip) {
             placement.placeShip();
             return;
         }
 
-        onPlayerCellClick(position.row, position.col);
+        onPlayerCellClick(
+            interaction.position.row,
+            interaction.position.col,
+        );
     };
-
+    
     // Keyboard shortcut 'R' for rotation
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {

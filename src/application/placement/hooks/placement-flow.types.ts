@@ -5,6 +5,7 @@ import type { PlacementPreview } from '../derive/placement-preview.types';
 import type { PlacementAvailability } from '../derive/placement-availability.types';
 import type { PlacementPresentation } from '../derive/placement-presentation.types';
 import { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
+import { BoardCellInteraction } from '../interactions/placement-interaction.types';
 
 export type PlacementFlow = {
     // authoritative
@@ -14,6 +15,7 @@ export type PlacementFlow = {
     selectedShipType: ShipType | null;
     orientation: Orientation;
     targetCell: Position | null; // Agregar a la documentación
+    activeShipOrigin: Position | null;
     
     // derived
     preview: PlacementPreview | null;
@@ -32,7 +34,7 @@ export type PlacementFlow = {
     rotate: () => void;
 
     onCellPress( // Agregar a la documentación
-        position: Position,
+        interaction: BoardCellInteraction,
     ): void;
     
     // mutations

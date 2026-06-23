@@ -7,5 +7,13 @@ export type PlacementInteractionState = {
 
     orientation: Orientation;
 
-    targetCell: Position | null;
+    targetCell: Position | null; 
+
+    activeShipOrigin: Position | null; // Agregar a la documentación y test.
+
+};
+
+export type BoardCellInteraction = {
+    position: Position;
+    shipType?: ShipType;
 };

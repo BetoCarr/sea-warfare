@@ -8,4 +8,6 @@ export const initialPlacementInteractionState:
     orientation: 'horizontal',
 
     targetCell: null,
+
+    activeShipOrigin: null
 };

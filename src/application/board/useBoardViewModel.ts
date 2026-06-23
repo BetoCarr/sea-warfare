@@ -51,8 +51,6 @@ export function useBoardViewModel({
                 c.shipType,
             ])
         );
-        
-        console.log('Ship Cell Map:', shipCellMap);
 
         for (let row = 0; row < size; row++) {
             const rowCells: BoardCellVM[] = [];
@@ -69,6 +67,9 @@ export function useBoardViewModel({
                 const isPreview =
                     previewSet.has(cellKey);
 
+                const shipType =
+                    shipCellMap.get(cellKey);
+                
                 let visualState = getVisualState({
                     boardVariant,
                     currentState,
@@ -81,6 +82,7 @@ export function useBoardViewModel({
                 rowCells.push({
                     row,
                     col,
+                    shipType,
                     visualState,
                 });
             }
