@@ -9,7 +9,7 @@ import { OrientationToggle } from './OrientationToggle';
 import { useBoardViewModel } from '@/application/board/useBoardViewModel';
 import { useGameFlowController } from '@/application/game-flow/useGameFlowController';
 import { usePlacementFlow } from '@/application/placement/hooks/usePlacementFlow';
-import { BoardCellInteraction } from '@/application/placement/interactions/placement-interaction.types';
+import { usePlacementKeyboardShortcuts } from '@/application/placement/interactions/usePlacementKeyboardShortcuts';
 
 interface GameStageProps {
     activeMessage: string | null;
@@ -42,16 +42,9 @@ export const GameStage = ({
         showShips: true,
     });
     
-    // Keyboard shortcut 'R' for rotation
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key.toLowerCase() === 'r') {
-                placement.rotate();
-            }
-        };
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [placement.orientation]);
+    usePlacementKeyboardShortcuts({
+        rotate: placement.rotate,
+    });
 
     return (
         <main className={cn(
