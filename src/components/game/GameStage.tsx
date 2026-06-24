@@ -7,7 +7,6 @@ import { ShipPalette } from './ShipPalette';
 import { FeedbackMessage, FeedbackType } from '../hud/FeedbackMessage';
 import { OrientationToggle } from './OrientationToggle';
 import { useBoardViewModel } from '@/application/board/useBoardViewModel';
-import type { Position } from '@/lib/domain/shared/models/Position';
 import { useGameFlowController } from '@/application/game-flow/useGameFlowController';
 import { usePlacementFlow } from '@/application/placement/hooks/usePlacementFlow';
 import { BoardCellInteraction } from '@/application/placement/interactions/placement-interaction.types';
@@ -20,14 +19,6 @@ interface GameStageProps {
     onPlayerCellClick: (row: number, col: number) => void;
 }
 
-/**
- * GameStage
- * ------------------------------------------------------------
- * Manages the main game area, including the Board and 
- * the FeedbackMessage overlay.
- * 
- * Refactored from GameScreen to improve modularity.
- */
 export const GameStage = ({
     activeMessage,
     activeType,
@@ -39,8 +30,6 @@ export const GameStage = ({
     const playerBoard = useGameStore(s => s.player.boardState.board);
 
     const placement = usePlacementFlow();
-    // console.log(placement.activeShipOrigin);
-
     const flow = useGameFlowController();
 
     const boardVM = useBoardViewModel({
@@ -52,29 +41,6 @@ export const GameStage = ({
         selectedShipType: placement.selectedShipType,
         showShips: true,
     });
-
-    // const handleBoardTap = (position: Position) => {
-    //     if (flow.capabilities.canPlaceShip) {
-    //         placement.placeShip();
-    //         return;
-    //     }
-
-    //     onPlayerCellClick(position.row, position.col);
-    // };
-
-    const handleBoardTap = (
-        interaction: BoardCellInteraction,
-    ) => {
-        if (flow.capabilities.canPlaceShip) {
-            placement.placeShip();
-            return;
-        }
-
-        onPlayerCellClick(
-            interaction.position.row,
-            interaction.position.col,
-        );
-    };
     
     // Keyboard shortcut 'R' for rotation
     useEffect(() => {
@@ -119,14 +85,11 @@ export const GameStage = ({
                         }
                         onCellLeave={
                             supportsHover
-                                ? () => placement.setTargetCell(null)
+                                ? placement.onBoardLeave
                                 : undefined
                         }
-                        onCellPress={
-                            supportsHover
-                                ? handleBoardTap
-                                : placement.onCellPress
-                        }                    
+                        onCellPress={placement.onBoardInteraction}
+                    
                     />  
                 </div>
             </div>

@@ -92,19 +92,6 @@ export default function Board({
                                         shipType: vmCell.shipType,
                                     })
                                 }
-                                // onPress={() => {
-                                //     const interaction = {
-                                //         position: {
-                                //             row,
-                                //             col,
-                                //         },
-                                //         shipType: vmCell.shipType,
-                                //     };
-
-                                //     console.log('[BoardCellInteraction]', interaction);
-
-                                //     onCellPress?.(interaction);
-                                // }}
                             />
                         ))}
                     </React.Fragment>

@@ -128,19 +128,24 @@ export function usePlacementFlow(): PlacementFlow {
         );
     } 
 
-    function onCellPress(interaction: BoardCellInteraction): void {
+    function onBoardInteraction(interaction: BoardCellInteraction): void {
         
         const { position, shipType } = interaction;
 
-        // Already repositioning a ship:
-        // ignore ships on the board and treat the tap
-        // purely as a placement target.
-        if (selectedShipType && shipType) {
+        if (selectedShipType) {
+            const isSameCell =
+                targetCell?.row === position.row &&
+                targetCell?.col === position.col;
+
+            if (isSameCell) {
+                placeShip();
+                return;
+            }
+
             setTargetCell(position);
             return;
         }
 
-        // Start repositioning / selecting a ship from board.
         if (shipType) {
             selectShip(shipType);
             setTargetCell(position);
@@ -162,6 +167,15 @@ export function usePlacementFlow(): PlacementFlow {
         }
 
         placeShip();
+    }
+
+    function onBoardLeave(): void {
+
+        if (selectedShipType) {
+            return;
+        }
+
+        setTargetCell(null);
     }
 
     function placeShip(): void {
@@ -230,7 +244,9 @@ export function usePlacementFlow(): PlacementFlow {
 
         rotate,
 
-        onCellPress,
+        onBoardInteraction,
+
+        onBoardLeave,
     
         placeShip,
 
