@@ -20,31 +20,31 @@ export function derivePlacementPresentation({
 
     if (availability.allShipsPlaced) {
         return {
-            message: 'FLEET_READY',
+            message: 'Fleet ready',
         };
     }
 
     if (!selectedShipType) {
         return {
-            message: 'SELECT_SHIP',
+            message: 'Select ship',
         };
     }
 
     if (!preview) {
         return {
-            message: 'SELECT_POSITION',
+            message: 'Select position',
         };
     }
 
     if (preview && !preview.isValid) {
         return {
-            message: 'INVALID_PLACEMENT',
+            message: 'Invalid placement',
 
             validationError: preview.validationError,
         };
     }
 
     return {
-        message: 'PLACE_SHIP',
+        message: 'Place ship',
     };
 }

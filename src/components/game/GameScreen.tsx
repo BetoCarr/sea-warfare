@@ -10,6 +10,7 @@ import { GameStage } from "./GameStage";
 import { GameFooter } from "../hud/GameFooter";
 import { useGameFlowController } from "@/application/game-flow/useGameFlowController";
 import { useSupportsHover } from "@/lib/device/useSupportsHover";
+import { usePlacementFlow } from "@/application/placement/hooks/usePlacementFlow";
 
 export function GameScreen() {
     const [feedback, setFeedback] = useState<string | null>(null);
@@ -19,6 +20,7 @@ export function GameScreen() {
     const supportsHover = useSupportsHover();
 
     const flow = useGameFlowController();
+    const placement = usePlacementFlow()
 
     const {
         playerAttack,
@@ -68,7 +70,7 @@ export function GameScreen() {
         }
     }, [lastAttack]);
 
-    const activeMessage = feedback || flow.presentation.message;
+    const activeMessage = feedback || placement.presentation.message || flow.presentation.message;
     const activeType = feedback ? feedbackType : 'instruction';
 
     const handleInitialize = () => initializeGame({ boardSize: BOARD_SIZE });
