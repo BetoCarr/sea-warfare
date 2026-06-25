@@ -63,13 +63,13 @@ export function useBoardViewModel({
                     shipType === selectedShipType &&
                     preview != null;
 
-                let visualState = getVisualState({
+                const visualState = getVisualState({
                     boardVariant,
-                    currentState: cellState,
-                    hasShip: !!shipType,
+                    cellState: cellState,
+                    shipType,
                     isPreview,
-                    isActiveShip:isActiveShip,
-                    previewResult: preview?.isValid ? 'valid' : 'invalid',
+                    isActiveShip,
+                    previewResult: preview?.isValid ? 'valid' : 'invalid', // revisar
                     showShips,
                 });
 

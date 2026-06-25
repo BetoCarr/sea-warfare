@@ -1,12 +1,13 @@
 
 import { CellState } from "@/lib/utils/types";
+import type { ShipType } from '@/lib/domain/ships/models/ShipType';
 import { CellVisualState } from "./board-types";
 import { BoardVariant } from "./useBoardViewModel";
 
 export function getVisualState(params: {
         boardVariant: BoardVariant;
-        currentState: CellState;
-        hasShip: boolean;
+        cellState: CellState;
+        shipType?: ShipType;
         isPreview: boolean;
         isActiveShip?: boolean;
         previewResult?: 'valid' | 'invalid';
@@ -15,39 +16,29 @@ export function getVisualState(params: {
 
     const {
         boardVariant,
-        currentState,
-        hasShip,
+        cellState,
+        shipType,
         isPreview,
         isActiveShip,
         previewResult,
         showShips,
     } = params;
 
-    // Board enemy visual logic is simpler: solo muestra agua, impactos y fallos (y eventualmente barcos hundidos)
-    if (boardVariant === 'enemy') {
-
-        if (currentState === 'empty') {
-            return 'water';
-        }
-
-        if (currentState === 'hit') {
-            return 'hit';
-        }
-    }
-
-    // 1. Preview
     if (isPreview) {
         return previewResult === 'valid'
             ? 'preview-valid'
             : 'preview-invalid';
     }
 
-    // 3. Estados finales del juego
-    if (currentState === 'hit') return 'hit';
-    if (currentState === 'miss') return 'miss';
-    if (currentState === 'sunk') return 'sunk';
+    if (cellState === 'hit') return 'hit';
+    if (cellState === 'miss') return 'miss';
+    if (cellState === 'sunk') return 'sunk';
 
-    if (hasShip && showShips && !isActiveShip) {
+    if (boardVariant === 'enemy') {
+        return 'water';
+    }
+
+    if (shipType && showShips && !isActiveShip) {
         return 'ship';
     }
 
@@ -55,6 +46,5 @@ export function getVisualState(params: {
         return 'water';
     }
 
-    // 5. Default
     return 'water';
 }
