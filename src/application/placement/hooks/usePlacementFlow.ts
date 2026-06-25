@@ -218,11 +218,6 @@ export function usePlacementFlow(): PlacementFlow {
         setPhase(GamePhase.BATTLE);
     }
 
-    console.log({
-        selectedShipType,
-        targetCell,
-    });
-
     return {
         playerPlacements,
         

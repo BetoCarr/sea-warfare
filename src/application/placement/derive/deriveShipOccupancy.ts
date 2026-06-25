@@ -7,7 +7,7 @@ export type ShipCell = {
     shipType: ShipType;
 };
 
-export function deriveShipOccupancy( // Agregar a documentacion y tests
+export function deriveShipOccupancy(
     placements: ShipPlacement[],
 ): ShipCell[] {
 

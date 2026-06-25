@@ -10,7 +10,7 @@ export type PlacementInteractionState = {
     targetCell: Position | null; 
 };
 
-export type BoardCellInteraction = { // Documentar
+export type BoardCellInteraction = {
     position: Position;
     shipType?: ShipType;
 };
