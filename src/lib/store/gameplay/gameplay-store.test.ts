@@ -1,4 +1,5 @@
-import { GamePhase, GameStatus } from '../../domain/game/game-types';
+import { GamePhase } from '../../domain/game/models/GamePhase';
+import { GameStatus } from '../../domain/game/models/GameStatus';
 import type { ShipPlacement } from '../../domain/placement/models/ShipPlacement';
 import { initialGameplayState } from './gameplay-store.initial';
 import { useGameplayStore } from './gameplay-store';
@@ -28,20 +29,18 @@ describe('useGameplayStore', () => {
         expect(state.enemyPlacements).toEqual([]);
     });
 
-    it('should update phase', () => {
+    it('should replace the game lifecycle state', () => {
         const store = useGameplayStore.getState();
 
-        store.setPhase(GamePhase.BATTLE);
+        store.setGame({
+            phase: GamePhase.BATTLE,
+            status: GameStatus.PLAYER_TURN,
+        });
 
-        expect(useGameplayStore.getState().phase).toBe(GamePhase.BATTLE);
-    });
-
-    it('should update status', () => {
-        const store = useGameplayStore.getState();
-
-        store.setStatus(GameStatus.PLAYER_TURN);
-
-        expect(useGameplayStore.getState().status).toBe(GameStatus.PLAYER_TURN);
+        expect(useGameplayStore.getState()).toMatchObject({
+            phase: GamePhase.BATTLE,
+            status: GameStatus.PLAYER_TURN,
+        });
     });
 
     it('should replace player placements', () => {
@@ -77,8 +76,10 @@ describe('useGameplayStore', () => {
     it('should reset gameplay state to initial values', () => {
         const store = useGameplayStore.getState();
 
-        store.setPhase(GamePhase.BATTLE);
-        store.setStatus(GameStatus.PLAYER_TURN);
+        store.setGame({
+            phase: GamePhase.BATTLE,
+            status: GameStatus.PLAYER_TURN,
+        });
         store.setPlayerPlacements([
             {
                 ship: { type: 'cruiser', size: 3 },
@@ -102,8 +103,10 @@ describe('useGameplayStore', () => {
     it('should always reset to the same initial state', () => {
         const store = useGameplayStore.getState();
 
-        store.setPhase(GamePhase.GAME_OVER);
-        store.setStatus(GameStatus.AI_TURN);
+        store.setGame({
+            phase: GamePhase.GAME_OVER,
+            status: GameStatus.AI_TURN,
+        });
         store.setPlayerPlacements([
             {
                 ship: { type: 'battleship', size: 4 },
@@ -122,8 +125,10 @@ describe('useGameplayStore', () => {
         store.resetGameplay();
         const firstReset = getGameplaySnapshot();
 
-        store.setPhase(GamePhase.BATTLE);
-        store.setStatus(GameStatus.PLAYER_TURN);
+        store.setGame({
+            phase: GamePhase.BATTLE,
+            status: GameStatus.PLAYER_TURN,
+        });
         store.setPlayerPlacements([
             {
                 ship: { type: 'destroyer', size: 2 },

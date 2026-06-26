@@ -1,9 +1,8 @@
 import type { GameplayState } from './gameplay-store.types';
-import { GamePhase, GameStatus } from '../../domain/game/game-types';
+import { initialGameState } from '../../domain/game/models/initialGameState';
 
 export const initialGameplayState: GameplayState = {
-    phase: GamePhase.SETUP,
-    status: GameStatus.IDLE,
+    ...initialGameState,
 
     playerPlacements: [],
     enemyPlacements: [],

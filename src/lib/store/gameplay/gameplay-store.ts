@@ -13,11 +13,8 @@ export const useGameplayStore =
     create<GameplayStore>((set) => ({
         ...initialGameplayState,
 
-        setPhase: (phase) =>
-            set({ phase }),
-
-        setStatus: (status) =>
-            set({ status }),
+        setGame: (game) =>
+            set(game),
 
         setPlayerPlacements: (placements) =>
             set({
