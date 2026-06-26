@@ -32,11 +32,11 @@ export type PlacementFlow = {
 
     rotate: () => void;
 
-    onBoardInteraction( // Agregar a la documentación
+    onBoardInteraction(
         interaction: BoardCellInteraction,
     ): void;
 
-    onBoardLeave(): void; // Agregar a la documentación
+    onBoardLeave(): void;
 
     // mutations
     placeShip: () => void;
