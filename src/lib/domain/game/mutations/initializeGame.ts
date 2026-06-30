@@ -11,7 +11,7 @@ export function initializeGame({
     game,
 }: InitializeGameParams): GameState {
     if (!canInitializeGame(game)) {
-        throw new Error('Cannot execute initializeGame from current lifecycle state.');
+        throw new Error('Cannot execute initializeGame from current lifecycle state');
     }
 
     return {

@@ -31,7 +31,7 @@ describe('game domain mutations', () => {
                 status: GameStatus.FLEET_READY,
             });
 
-            expect(() => initializeGame({ game })).toThrow(/Invalid lifecycle transition/);
+            expect(() => initializeGame({ game })).toThrow('Cannot execute initializeGame from current lifecycle state');
         });
 
         it('does not mutate the original state object', () => {
@@ -65,7 +65,7 @@ describe('game domain mutations', () => {
                 status: GameStatus.PLACING_SHIPS,
             });
 
-            expect(() => confirmFleet({ game })).toThrow(/Invalid lifecycle transition/);
+            expect(() => confirmFleet({ game })).toThrow('Cannot execute confirmFleet from current lifecycle state.');
         });
 
         it('does not mutate the original state object', () => {

@@ -8,8 +8,7 @@ function getGameplaySnapshot() {
     const state = useGameplayStore.getState();
 
     return {
-        phase: state.phase,
-        status: state.status,
+        game: state.game,
         playerPlacements: state.playerPlacements,
         enemyPlacements: state.enemyPlacements,
     };
@@ -23,8 +22,9 @@ describe('useGameplayStore', () => {
     it('should initialize with default gameplay state', () => {
         const state = useGameplayStore.getState();
 
-        expect(state.phase).toBe(GamePhase.SETUP);
-        expect(state.status).toBe(GameStatus.IDLE);
+        expect(state.game.phase).toBe(GamePhase.SETUP);
+        expect(state.game.status).toBe(GameStatus.IDLE);
+
         expect(state.playerPlacements).toEqual([]);
         expect(state.enemyPlacements).toEqual([]);
     });
@@ -37,10 +37,13 @@ describe('useGameplayStore', () => {
             status: GameStatus.PLAYER_TURN,
         });
 
-        expect(useGameplayStore.getState()).toMatchObject({
+        expect(useGameplayStore.getState().game).toEqual({
             phase: GamePhase.BATTLE,
             status: GameStatus.PLAYER_TURN,
         });
+
+        expect(useGameplayStore.getState().playerPlacements).toEqual([]);
+        expect(useGameplayStore.getState().enemyPlacements).toEqual([]);
     });
 
     it('should replace player placements', () => {

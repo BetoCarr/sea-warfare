@@ -14,7 +14,7 @@ export const useGameplayStore =
         ...initialGameplayState,
 
         setGame: (game) =>
-            set(game),
+            set({ game }),
 
         setPlayerPlacements: (placements) =>
             set({

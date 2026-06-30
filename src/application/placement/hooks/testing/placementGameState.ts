@@ -1,8 +1,14 @@
-import { GamePhase, GameStatus } from '@/lib/domain/game/game-types';
 import { initialGameplayState } from '@/lib/store/gameplay/gameplay-store.initial';
+import { initialGameState } from '@/lib/domain/game/models/initialGameState';
+import { GamePhase } from '@/lib/domain/game/models/GamePhase';
+import { GameStatus } from '@/lib/domain/game/models/GameStatus';
 
 export const placementGameState = {
     ...initialGameplayState,
-    phase: GamePhase.PLACEMENT,
-    status: GameStatus.PLACING_SHIPS,
+
+    game: {
+        ...initialGameState,
+        phase: GamePhase.PLACEMENT,
+        status: GameStatus.PLACING_SHIPS,
+    },
 };

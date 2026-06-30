@@ -1,6 +1,6 @@
 import { useGameplayStore } from '@/lib/store/gameplay/gameplay-store';
-import { GamePhase } from '@/lib/domain/game/game-types';
-
+import { GamePhase } from '@/lib/domain/game/models/GamePhase';
+import { GameStatus } from '@/lib/domain/game/models/GameStatus';
 import { executePlacementFlowAction } from '../testing/executePlacementFlowAction';
 import { resetPlacementStores } from '../testing/resetPlacementStores';
 import { placementGameState } from '../testing/placementGameState';
@@ -26,7 +26,11 @@ describe('usePlacementFlow confirmFleet', () => {
             flow.confirmFleet();
         });
 
-        expect(useGameplayStore.getState().phase).toBe(GamePhase.BATTLE);
+        // expect(useGameplayStore.getState().game.phase).toBe(GamePhase.BATTLE);
+        expect(useGameplayStore.getState().game).toEqual({
+            phase: GamePhase.BATTLE,
+            status: GameStatus.PLAYER_TURN,
+        });
     });
 
     it('does not transition when fleet is incomplete', () => {
@@ -39,7 +43,10 @@ describe('usePlacementFlow confirmFleet', () => {
             flow.confirmFleet();
         });
 
-        expect(useGameplayStore.getState().phase).toBe(GamePhase.PLACEMENT);
+        expect(useGameplayStore.getState().game).toEqual({
+            phase: GamePhase.PLACEMENT,
+            status: GameStatus.PLACING_SHIPS,
+        });
     });
 
     it('does not modify placements', () => {

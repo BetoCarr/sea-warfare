@@ -19,37 +19,37 @@ function buildPreview(overrides: Partial<PlacementPreview> = {}): PlacementPrevi
 }
 
 describe('derivePlacementPresentation', () => {
-    it('returns FLEET_READY when all ships are already placed', () => {
+    it('returns "Fleet ready" when all ships are placed', () => {
         const presentation = derivePlacementPresentation({
             selectedShipType: 'destroyer',
             preview: buildPreview(),
             availability: buildAvailability({ allShipsPlaced: true }),
         });
 
-        expect(presentation).toEqual({ message: 'FLEET_READY' });
+        expect(presentation).toEqual({ message: 'Fleet ready'});
     });
 
-    it('returns SELECT_SHIP when no ship is selected', () => {
+    it('returns "Select ship" when no ship is selected', () => {
         const presentation = derivePlacementPresentation({
             selectedShipType: null,
             preview: buildPreview(),
             availability: buildAvailability(),
         });
 
-        expect(presentation).toEqual({ message: 'SELECT_SHIP' });
+        expect(presentation).toEqual({ message: 'Select ship'});
     });
 
-    it('returns SELECT_POSITION when a ship is selected but no preview exists', () => {
+    it('returns "Select position" when a ship is selected but no preview exists', () => {
         const presentation = derivePlacementPresentation({
             selectedShipType: 'destroyer',
             preview: null,
             availability: buildAvailability(),
         });
 
-        expect(presentation).toEqual({ message: 'SELECT_POSITION' });
+        expect(presentation).toEqual({ message: 'Select position' });
     });
 
-    it('returns INVALID_PLACEMENT when a preview exists and is invalid', () => {
+    it('returns "Invalid placement" for an invalid preview', () => {
         const presentation = derivePlacementPresentation({
             selectedShipType: 'destroyer',
             preview: buildPreview({
@@ -60,7 +60,7 @@ describe('derivePlacementPresentation', () => {
         });
 
         expect(presentation).toEqual({
-            message: 'INVALID_PLACEMENT',
+            message: 'Invalid placement',
             validationError: 'OVERLAP',
         });
     });
@@ -75,11 +75,11 @@ describe('derivePlacementPresentation', () => {
             availability: buildAvailability(),
         });
 
-        expect(presentation.message).toBe('INVALID_PLACEMENT');
+        expect(presentation.message).toBe('Invalid placement');
         expect(presentation.validationError).toBe('OUT_OF_BOUNDS');
     });
 
-    it('returns PLACE_SHIP when a valid preview exists', () => {
+    it('returns "Place ship" for a valid preview', () => {
         const presentation = derivePlacementPresentation({
             selectedShipType: 'submarine',
             preview: buildPreview({
@@ -89,7 +89,7 @@ describe('derivePlacementPresentation', () => {
             availability: buildAvailability(),
         });
 
-        expect(presentation).toEqual({ message: 'PLACE_SHIP' });
+        expect(presentation).toEqual({ message: 'Place ship' });
         expect(presentation.validationError).toBeUndefined();
     });
 

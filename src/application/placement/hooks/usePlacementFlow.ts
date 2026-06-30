@@ -7,11 +7,16 @@ import { derivePlacementPreview } from '../derive/derivePlacementPreview';
 import { derivePlacementAvailability } from '../derive/derivePlacementAvailability';
 import { derivePlacementPresentation } from '../derive/derivePlacementPresentation';
 import { upsertShipPlacement } from '@/lib/domain/placement/mutations/upsertShipPlacement';
-import { GamePhase } from '@/lib/domain/game/game-types';
+import { confirmFleet as confirmFleetDomain } from '@/lib/domain/game/mutations/confirmFleet';
 import type { PlacementFlow } from './placement-flow.types';
 import type { BoardCellInteraction } from '../interactions/placement-interaction.types';
-
+import { GamePhase } from '@/lib/domain/game/models/GamePhase';
+import { GameStatus } from '@/lib/domain/game/models/GameStatus';
 export function usePlacementFlow(): PlacementFlow {
+
+    const game = useGameplayStore (
+        state => state.game,
+    )
 
     const playerPlacements = useGameplayStore(
         state => state.playerPlacements,
@@ -44,10 +49,10 @@ export function usePlacementFlow(): PlacementFlow {
         useGameplayStore(
             state => state.setPlayerPlacements,
         );
-    
-    const setPhase =
+
+    const setGame =
         useGameplayStore(
-            state => state.setPhase,
+            state => state.setGame,
         );
     
 
@@ -208,14 +213,28 @@ export function usePlacementFlow(): PlacementFlow {
         setSelectedShipType(null);
 
         setTargetCell(null);
+
+        const updatedAvailability = derivePlacementAvailability({
+            placements: result.placements,
+            requiredFleet: STANDARD_FLEET
+        });
+        
+        if (updatedAvailability.allShipsPlaced) {
+            setGame({
+                phase: GamePhase.PLACEMENT,
+                status: GameStatus.FLEET_READY,
+            });
+        }
     }
 
     function confirmFleet(): void {
         if (!availability.allShipsPlaced) {
             return;
         }
-
-        setPhase(GamePhase.BATTLE);
+        
+        setGame(
+            confirmFleetDomain({ game })
+        );
     }
 
     return {
