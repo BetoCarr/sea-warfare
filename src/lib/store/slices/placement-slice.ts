@@ -4,7 +4,6 @@ import type { Orientation } from "@/lib/domain/placement/models/Orientation";
 import type { ShipType } from "@/lib/domain/ships/models/ShipType";
 import type { Position } from "@/lib/domain/shared/models/Position";
 import type { PlacementIntent, PlacementPreview } from "@/lib/domain/placement/placement-types";
-import { GamePhase } from "@/lib/domain/game/game-types";
 import  { canPlaceShipAt, getShipCoordinates } from "../../domain/ships/ship-placement"
 import { getBaseShipByType } from "../../domain/ships/ship-catalog";
 import { createBoardState } from "@/lib/domain/board/board-sync";
@@ -12,7 +11,8 @@ import type { CompleteGameStore, GameStoreMiddlewares } from "../store-types";
 import type { GameActionResult } from "../game-types";
 import { createShipFromPlacement } from "@/lib/domain/ships/ship-entity";
 import { toShipPlacement } from "@/lib/domain/placement/placement-adapters";
-
+import { GameStatus } from "@/lib/domain/game/models/GameStatus";
+import { GamePhase } from "@/lib/domain/game/models/GamePhase"
 // --- Result Types ---
 export interface PlaceShipResult {
     ship: Ship;

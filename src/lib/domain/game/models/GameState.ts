@@ -3,5 +3,5 @@ import type { GameStatus } from "./GameStatus";
 
 export type GameState = {
     phase: GamePhase;
-    status: GameStatus;
+    status?: GameStatus;
 };

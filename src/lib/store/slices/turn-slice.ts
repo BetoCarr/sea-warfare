@@ -1,5 +1,5 @@
 import type { StateCreator } from "zustand";
-import { GameStatus } from "@/lib/domain/game/game-types";
+import { GameStatus } from "@/lib/domain/game/models/GameStatus";
 import type { CompleteGameStore } from "../store-types";
 
 /**

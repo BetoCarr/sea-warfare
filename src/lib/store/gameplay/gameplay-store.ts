@@ -2,8 +2,8 @@ import { create } from 'zustand';
 
 import type { GameplayState } from './gameplay-store.types';
 import type { GameplayActions } from './gameplay-store.actions';
-
 import { initialGameplayState } from './gameplay-store.initial';
+import { initializeGame as initializeGameDomain } from '@/lib/domain/game/mutations/initializeGame';
 
 export type GameplayStore =
     GameplayState &
@@ -28,4 +28,11 @@ export const useGameplayStore =
 
         resetGameplay: () =>
             set(initialGameplayState),
+
+        initializeGame: () => // Documentar
+            set((state) => ({
+                game: initializeGameDomain({
+                    game: state.game,
+                }),
+            })),
     }));

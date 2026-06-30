@@ -22,8 +22,9 @@ describe('useGameplayStore', () => {
     it('should initialize with default gameplay state', () => {
         const state = useGameplayStore.getState();
 
-        expect(state.game.phase).toBe(GamePhase.SETUP);
-        expect(state.game.status).toBe(GameStatus.IDLE);
+        expect(state.game).toEqual({
+            phase: GamePhase.SETUP,
+        });
 
         expect(state.playerPlacements).toEqual([]);
         expect(state.enemyPlacements).toEqual([]);
@@ -103,7 +104,7 @@ describe('useGameplayStore', () => {
         expect(getGameplaySnapshot()).toEqual(initialGameplayState);
     });
 
-    it('should always reset to the same initial state', () => {
+    it('should always reset to the initial gameplay state', () => {
         const store = useGameplayStore.getState();
 
         store.setGame({

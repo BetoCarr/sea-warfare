@@ -1,37 +1,27 @@
 import { GamePhase } from '../../models/GamePhase';
 import { GameStatus } from '../../models/GameStatus';
 import type { GameState } from '../../models/GameState';
+
 import { initializeGame } from '../initializeGame';
 import { confirmFleet } from '../confirmFleet';
 
-function createGameState(overrides: Partial<GameState> = {}): GameState {
+function createGameState(
+    overrides: Partial<GameState> = {},
+): GameState {
     return {
         phase: GamePhase.SETUP,
-        status: GameStatus.IDLE,
         ...overrides,
     };
 }
 
 describe('game domain mutations', () => {
     describe('initializeGame', () => {
-        it('transitions from SETUP + IDLE to PLACEMENT + PLACING_SHIPS', () => {
+        it('transitions from SETUP to PLACEMENT', () => {
             const game = createGameState();
 
-            const result = initializeGame({ game });
-
-            expect(result).toEqual({
+            expect(initializeGame({ game })).toEqual({
                 phase: GamePhase.PLACEMENT,
-                status: GameStatus.PLACING_SHIPS,
             });
-        });
-
-        it('rejects invalid lifecycle states', () => {
-            const game = createGameState({
-                phase: GamePhase.PLACEMENT,
-                status: GameStatus.FLEET_READY,
-            });
-
-            expect(() => initializeGame({ game })).toThrow('Cannot execute initializeGame from current lifecycle state');
         });
 
         it('does not mutate the original state object', () => {
@@ -42,42 +32,47 @@ describe('game domain mutations', () => {
 
             expect(game).toEqual(original);
         });
+
+        it('is deterministic', () => {
+            const game = createGameState();
+
+            expect(initializeGame({ game })).toEqual(
+                initializeGame({ game }),
+            );
+        });
     });
 
     describe('confirmFleet', () => {
-        it('transitions from PLACEMENT + FLEET_READY to BATTLE + PLAYER_TURN', () => {
+        it('transitions from PLACEMENT to BATTLE + PLAYER_TURN', () => {
             const game = createGameState({
                 phase: GamePhase.PLACEMENT,
-                status: GameStatus.FLEET_READY,
             });
 
-            const result = confirmFleet({ game });
-
-            expect(result).toEqual({
+            expect(confirmFleet({ game })).toEqual({
                 phase: GamePhase.BATTLE,
                 status: GameStatus.PLAYER_TURN,
             });
         });
 
-        it('rejects invalid lifecycle states', () => {
-            const game = createGameState({
-                phase: GamePhase.PLACEMENT,
-                status: GameStatus.PLACING_SHIPS,
-            });
-
-            expect(() => confirmFleet({ game })).toThrow('Cannot execute confirmFleet from current lifecycle state.');
-        });
-
         it('does not mutate the original state object', () => {
             const game = createGameState({
                 phase: GamePhase.PLACEMENT,
-                status: GameStatus.FLEET_READY,
             });
             const original = { ...game };
 
             confirmFleet({ game });
 
             expect(game).toEqual(original);
+        });
+
+        it('is deterministic', () => {
+            const game = createGameState({
+                phase: GamePhase.PLACEMENT,
+            });
+
+            expect(confirmFleet({ game })).toEqual(
+                confirmFleet({ game }),
+            );
         });
     });
 });

@@ -1,4 +1,6 @@
-import { GamePhase, GameStatus } from '@/lib/domain/game/game-types';
+import { GameState } from '@/lib/domain/game/models/GameState';
+import { GamePhase } from '@/lib/domain/game/models/GamePhase';
+import { GameStatus } from '@/lib/domain/game/models/GameStatus';
 
 type GameInteractionCapabilities = {
     canInitializeGame: boolean;
@@ -29,9 +31,11 @@ const DEFAULT_CAPABILITIES: GameInteractionCapabilities = {
 }; 
 
 export function deriveCapabilities(
-    phase: GamePhase,
-    status: GameStatus,
+    game: GameState,
 ): GameInteractionCapabilities {
+
+    const { phase, status } = game;
+
     /**
      * SETUP
      */

@@ -1,5 +1,8 @@
 import type { StateCreator } from "zustand";
-import { GamePhase, GameStatus } from "@/lib/domain/game/game-types";
+// import { GameStatus } from "@/lib/domain/game/game-types";
+// import { GamePhase } from '@/domain/game/models/GamePhase';
+import { GameStatus } from "@/lib/domain/game/models/GameStatus";
+import { GamePhase } from "@/lib/domain/game/models/GamePhase";
 import { processAttack } from "../../domain/board/board-attacks";
 import { chooseAIAttackPosition } from "../../domain/ai/ai-attack";
 import type { CompleteGameStore, GameStoreMiddlewares } from "../store-types";

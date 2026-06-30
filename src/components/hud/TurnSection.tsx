@@ -1,5 +1,5 @@
 import { useGameStore } from "@/lib/store/game-store";
-import { GamePhase } from "@/lib/domain/game/game-types";
+import { GamePhase } from '@/lib/domain/game/models/GamePhase';
 import { useShallow } from "zustand/react/shallow";
 
 /**

@@ -1,6 +1,7 @@
 import { StateCreator } from "zustand";
 import type { GameConfig, GameActionResult } from "../game-types";
-import { GamePhase, GameStatus } from "@/lib/domain/game/game-types";
+import { GameStatus } from "@/lib/domain/game/models/GameStatus";
+import { GamePhase } from "@/lib/domain/game/models/GamePhase"
 import { createInitialGameState } from "../utils/initial-state";
 import { getStartGameBlockerMessage } from "../game-selectors";
 import type { CompleteGameStore, GameStoreMiddlewares } from "../store-types";

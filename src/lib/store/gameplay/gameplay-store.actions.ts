@@ -13,4 +13,6 @@ export type GameplayActions = {
     ) => void;
 
     resetGameplay: () => void;
+
+    initializeGame(): void // Docuemntar/testear
 };

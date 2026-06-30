@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useGameStore } from "@/lib/store/game-store";
+import { useGameplayStore } from "@/lib/store/gameplay/gameplay-store";
 import { BOARD_SIZE } from "@/lib/utils/constants";
 import { GameHUD } from "../hud/GameHUD";
 import { FeedbackType } from "../hud/FeedbackMessage";
@@ -24,17 +25,24 @@ export function GameScreen() {
 
     const {
         playerAttack,
-        initializeGame,
+        // initializeGame,
         lastAttack
     } = useGameStore(
         useShallow((state) => ({
             playerAttack: state.playerAttack,
-            initializeGame: state.initializeGame,
+            // initializeGame: state.initializeGame,
             lastAttack: state.lastAttack,
         }))
     );
 
+    const initializeGame = useGameplayStore(
+        state => state.initializeGame
+    );
 
+    const handleInitialize = () => {
+        initializeGame();
+    };
+    
     // --- Feedback Logic ---
     useEffect(() => {
         if (lastAttack) {
@@ -73,7 +81,7 @@ export function GameScreen() {
     const activeMessage = feedback || placement.presentation.message || flow.presentation.message;
     const activeType = feedback ? feedbackType : 'instruction';
 
-    const handleInitialize = () => initializeGame({ boardSize: BOARD_SIZE });
+    // const handleInitialize = () => initializeGame({ boardSize: BOARD_SIZE });
 
     return (
         <div className="min-h-[100dvh] w-full bg-slate-900 text-slate-100 flex flex-col overflow-hidden relative">

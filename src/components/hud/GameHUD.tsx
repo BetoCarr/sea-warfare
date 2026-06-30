@@ -1,7 +1,3 @@
-
-import { useGameStore } from "@/lib/store/game-store";
-import { GamePhase } from "@/lib/domain/game/game-types";
-import { useShallow } from "zustand/react/shallow";
 import { ReadinessIndicators } from "./ReadinessIndicators";
 import { TurnSection } from "./TurnSection";
 import { Button } from "@/components/ui/Button";
@@ -13,17 +9,9 @@ interface GameHUDProps {
 }
 
 export function GameHUD({ onInitialize, onConfirm }: GameHUDProps) {
-  const { phase, playerReady, aiReady, currentTurn } = useGameStore(
-    useShallow((state) => ({
-      phase: state.phase,
-      playerReady: state.player.isReady,
-      aiReady: state.ai.isReady,
-      currentTurn: state.currentTurn,
-    }))
-  );
-  
-  const flow = useGameFlowController();
 
+  const flow = useGameFlowController();
+  
   const handleConfirmAction = () => {
     if (onConfirm) {
         onConfirm();
@@ -36,7 +24,7 @@ export function GameHUD({ onInitialize, onConfirm }: GameHUDProps) {
         return <span className="text-xs font-bold text-yellow-400 tracking-[0.2em]">BOOT SEQUENCE</span>;
     }
     if (flow.capabilities.canPlaceShip) {
-      console.log("Holaa")
+      // console.log("Holaa")
       return (
         <div className="hidden md:flex items-center gap-4">
           <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">Fleet Setup</span>

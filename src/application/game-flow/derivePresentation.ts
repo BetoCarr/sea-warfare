@@ -1,16 +1,19 @@
-import { GamePhase, GameStatus } from '@/lib/domain/game/game-types';
+import { GameState } from '@/lib/domain/game/models/GameState';
+import { GamePhase } from '@/lib/domain/game/models/GamePhase';
+import { GameStatus } from '@/lib/domain/game/models/GameStatus'
+
 import { GamePresentation } from './game-flow-types';
 
 
 export function derivePresentation(
-    phase: GamePhase,
-    status: GameStatus,
+    game: GameState,
 ): GamePresentation {
+
+    const { phase, status } = game;
 
     /**
      * SETUP
      */
-
     if (
         phase === GamePhase.SETUP &&
         status === GameStatus.IDLE
@@ -24,7 +27,6 @@ export function derivePresentation(
     /**
      * PLACEMENT
      */
-
     if (phase === GamePhase.PLACEMENT && status === GameStatus.PLACING_SHIPS) {
         return {
             message: 'Distribute your fleet across the sector',
@@ -64,7 +66,6 @@ export function derivePresentation(
     /**
      * GAME OVER
      */
-
     if (phase === GamePhase.GAME_OVER) {
         return {
             message: 'Mission terminated.',

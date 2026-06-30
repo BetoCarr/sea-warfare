@@ -1,5 +1,6 @@
 import type { GameState } from './game-types';
-import { GamePhase } from '../domain/game/game-types';
+// import { GamePhase } from '../domain/game/game-types';
+import { GamePhase } from '../domain/game/models/GamePhase';
 
 /**
  * Determines whether the game can transition from PLACEMENT → BATTLE.
