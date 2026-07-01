@@ -52,7 +52,7 @@ export const GameStage = ({
         <main className={cn(
             "flex-1 min-h-0 overflow-hidden flex flex-col items-stretch relative px-4 md:px-8",
             "transition-all duration-700 ease-in-out",
-            flow.capabilities.canPlaceShip && "md:pr-[280px]"
+            placement.canPlaceShip && "md:pr-[280px]"
         )}>
             {/* 1. TOP SLOT: Feedback / Instructions (Stable Height) */}
             <div className="h-20 sm:h-24 flex items-center justify-center shrink-0">
@@ -70,7 +70,7 @@ export const GameStage = ({
                     <Board
                         boardVM={boardVM}
                         interactive={
-                            flow.capabilities.canPlaceShip ||
+                            placement.canPlaceShip ||
                             flow.capabilities.canAttack
                         }
                         onCellHover={
@@ -89,7 +89,7 @@ export const GameStage = ({
                 </div>
             </div>
             {/* 3. BOTTOM SLOT: Ship Palette */}
-            {flow.capabilities.canPlaceShip && (
+            {placement.canPlaceShip && (
                 <div className="shrink-0 flex flex-col gap-2 sm:gap-4 px-1">
                     <div className="flex justify-between items-center">
                         <OrientationToggle

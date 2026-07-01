@@ -12,9 +12,7 @@ interface GameHUDProps {
 export function GameHUD({ onInitialize, onConfirm }: GameHUDProps) {
 
   const flow = useGameFlowController();
-  // const canConfirmFleet = usePlacementFlow().canConfirmFleet;
-  const { canConfirmFleet, confirmFleet } = usePlacementFlow();
-  // console.log(canConfirmFleet, "canConfirmFleet")
+  const { canConfirmFleet, canPlaceShip, confirmFleet } = usePlacementFlow();
 
 
   const handleConfirmAction = () => {
@@ -28,8 +26,7 @@ export function GameHUD({ onInitialize, onConfirm }: GameHUDProps) {
     if (flow.capabilities.canInitializeGame) {
         return <span className="text-xs font-bold text-yellow-400 tracking-[0.2em]">BOOT SEQUENCE</span>;
     }
-    if (flow.capabilities.canPlaceShip) {
-      // console.log("Holaa")
+    if (canPlaceShip) {
       return (
         <div className="hidden md:flex items-center gap-4">
           <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">Fleet Setup</span>
