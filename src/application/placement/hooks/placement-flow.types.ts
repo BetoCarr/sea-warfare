@@ -4,6 +4,7 @@ import type { ShipType } from '@/lib/domain/ships/models/ShipType';
 import type { PlacementPreview } from '../derive/placement-preview.types';
 import type { PlacementAvailability } from '../derive/placement-availability.types';
 import type { PlacementPresentation } from '../derive/placement-presentation.types';
+import type { PlacementState } from '@/lib/domain/placement/models/PlacementState';
 import { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
 import { BoardCellInteraction } from '../interactions/placement-interaction.types';
 
@@ -14,13 +15,15 @@ export type PlacementFlow = {
     // interaction
     selectedShipType: ShipType | null;
     orientation: Orientation;
-    targetCell: Position | null; // Agregar a la documentación
+    targetCell: Position | null;
     
     // derived
     preview: PlacementPreview | null;
     availability: PlacementAvailability;
     presentation: PlacementPresentation;
-    
+    placementState: PlacementState;  // Agregar a la documentación
+    canConfirmFleet: boolean; // TEMPORAL
+
     // interaction api
     selectShip: (
         shipType: ShipType | null,

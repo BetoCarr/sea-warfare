@@ -10,8 +10,8 @@ import { upsertShipPlacement } from '@/lib/domain/placement/mutations/upsertShip
 import { confirmFleet as confirmFleetDomain } from '@/lib/domain/game/mutations/confirmFleet';
 import type { PlacementFlow } from './placement-flow.types';
 import type { BoardCellInteraction } from '../interactions/placement-interaction.types';
-import { GamePhase } from '@/lib/domain/game/models/GamePhase';
-import { GameStatus } from '@/lib/domain/game/models/GameStatus';
+import { PlacementState } from '@/lib/domain/placement/models/PlacementState';
+import { derivePlacementState } from '../derive/derivePlacementState';
 export function usePlacementFlow(): PlacementFlow {
 
     const game = useGameplayStore (
@@ -49,13 +49,7 @@ export function usePlacementFlow(): PlacementFlow {
         useGameplayStore(
             state => state.setPlayerPlacements,
         );
-
-    const setGame =
-        useGameplayStore(
-            state => state.setGame,
-        );
     
-
     const setSelectedShipType =
         usePlacementInteractionStore(
             state => state.setSelectedShipType,
@@ -103,6 +97,17 @@ export function usePlacementFlow(): PlacementFlow {
             }),
         [playerPlacements],
     );
+
+    const placementState = derivePlacementState({
+        placements: playerPlacements,
+        requiredFleetSize: 5, // o STANDARD_FLEET.length
+    });
+
+    //TEMPORAL
+    const canConfirmFleet =
+        placementState === PlacementState.FLEET_READY;
+
+    // console.log(canConfirmFleet)
 
     const presentation = useMemo(
         () =>
@@ -213,29 +218,20 @@ export function usePlacementFlow(): PlacementFlow {
         setSelectedShipType(null);
 
         setTargetCell(null);
-
-        const updatedAvailability = derivePlacementAvailability({
-            placements: result.placements,
-            requiredFleet: STANDARD_FLEET
-        });
-        
-        if (updatedAvailability.allShipsPlaced) {
-            setGame({
-                phase: GamePhase.PLACEMENT,
-                status: GameStatus.FLEET_READY,
-            });
-        }
     }
 
-    function confirmFleet(): void {
-        if (!availability.allShipsPlaced) {
+
+
+    const confirmFleet = () => { // SOLO CONFIRFLEET DEPENDE DE PLACEMENTSTATE
+        if (placementState !== PlacementState.FLEET_READY) {
             return;
         }
-        
-        setGame(
-            confirmFleetDomain({ game })
-        );
-    }
+
+        const nextGame = confirmFleetDomain({ game });
+
+        useGameplayStore.getState().setGame(nextGame);
+    };
+
 
     return {
         playerPlacements,
@@ -251,6 +247,10 @@ export function usePlacementFlow(): PlacementFlow {
         availability,
 
         presentation,
+
+        placementState,
+
+        canConfirmFleet,
 
         selectShip,
 

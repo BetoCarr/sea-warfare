@@ -45,7 +45,6 @@ describe('usePlacementFlow confirmFleet', () => {
 
         expect(useGameplayStore.getState().game).toEqual({
             phase: GamePhase.PLACEMENT,
-            status: GameStatus.PLACING_SHIPS,
         });
     });
 

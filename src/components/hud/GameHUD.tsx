@@ -2,6 +2,7 @@ import { ReadinessIndicators } from "./ReadinessIndicators";
 import { TurnSection } from "./TurnSection";
 import { Button } from "@/components/ui/Button";
 import { useGameFlowController } from "@/application/game-flow/useGameFlowController";
+import { usePlacementFlow } from "@/application/placement/hooks/usePlacementFlow";
 
 interface GameHUDProps {
   onInitialize?: () => void;
@@ -11,10 +12,14 @@ interface GameHUDProps {
 export function GameHUD({ onInitialize, onConfirm }: GameHUDProps) {
 
   const flow = useGameFlowController();
-  
+  // const canConfirmFleet = usePlacementFlow().canConfirmFleet;
+  const { canConfirmFleet, confirmFleet } = usePlacementFlow();
+  // console.log(canConfirmFleet, "canConfirmFleet")
+
+
   const handleConfirmAction = () => {
-    if (onConfirm) {
-        onConfirm();
+    if (canConfirmFleet) {
+      confirmFleet();
     }
   };
 
@@ -33,6 +38,7 @@ export function GameHUD({ onInitialize, onConfirm }: GameHUDProps) {
       );
     }
     if (flow.capabilities.canAttack) {
+      console.log(flow.presentation.message)
       return <TurnSection />;
     }
     if (flow.capabilities.canRestartGame) {
@@ -60,7 +66,7 @@ export function GameHUD({ onInitialize, onConfirm }: GameHUDProps) {
         );
     }
 
-    if (flow.capabilities.canConfirmFleet) {
+    if (canConfirmFleet) {
         return (
             <Button 
                 variant="success"

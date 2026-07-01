@@ -14,5 +14,7 @@ export type GameplayActions = {
 
     resetGameplay: () => void;
 
-    initializeGame(): void // Docuemntar/testear
+    initializeGame(): void; // Docuemntar/testear
+
+    confirmFleet(): void; // Documentar/testear
 };

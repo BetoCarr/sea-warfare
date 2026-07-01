@@ -3,17 +3,17 @@ import { GamePhase } from '@/lib/domain/game/models/GamePhase';
 import { GameStatus } from '@/lib/domain/game/models/GameStatus';
 
 type GameInteractionCapabilities = {
-    canInitializeGame: boolean;
+    canInitializeGame: boolean; // GAME
 
-    canPlaceShip: boolean;
-    canConfirmFleet: boolean;
+    canPlaceShip: boolean; // PLACEMENT
+    canConfirmFleet: boolean; // PLACEMENT
 
-    canAttack: boolean;
+    canAttack: boolean; // BATTLE
 
-    canRestartGame: boolean;
+    canRestartGame: boolean; // GAME 
 
-    canInteractWithBoard: boolean;
-    canInteractWithEnemyBoard: boolean;
+    canInteractWithBoard: boolean; // PLACEMENT | GAME
+    canInteractWithEnemyBoard: boolean; // BATTLE |GAME
 };
 
 const DEFAULT_CAPABILITIES: GameInteractionCapabilities = {
@@ -39,14 +39,9 @@ export function deriveCapabilities(
     /**
      * SETUP
      */
-
-    if (
-        phase === GamePhase.SETUP &&
-        status === GameStatus.IDLE
-    ) {
+    if (phase === GamePhase.SETUP) {
         return {
             ...DEFAULT_CAPABILITIES,
-
             canInitializeGame: true,
         };
     }
@@ -54,29 +49,12 @@ export function deriveCapabilities(
     /**
      * PLACEMENT
      */
-    if (
-        phase === GamePhase.PLACEMENT &&
-        status === GameStatus.PLACING_SHIPS
-    ) {
+    if (phase === GamePhase.PLACEMENT) {
         return {
             ...DEFAULT_CAPABILITIES,
-
             canPlaceShip: true,
-
             canInteractWithBoard: true,
-        };
-    }
-
-    if (
-        phase === GamePhase.PLACEMENT &&
-        status === GameStatus.FLEET_READY
-    ) {
-        return {
-            ...DEFAULT_CAPABILITIES,
-
-            canConfirmFleet: true,
-
-            canInteractWithBoard: true,
+            canConfirmFleet: true, // se refina con placementState en controller
         };
     }
 
@@ -84,26 +62,16 @@ export function deriveCapabilities(
      * BATTLE
      */
 
-    if (
-        phase === GamePhase.BATTLE &&
-        status === GameStatus.PLAYER_TURN
-    ) {
+    if (phase === GamePhase.BATTLE && status === GameStatus.PLAYER_TURN) {
         return {
             ...DEFAULT_CAPABILITIES,
-
             canAttack: true,
-
             canInteractWithEnemyBoard: true,
         };
     }
 
-    if (
-        phase === GamePhase.BATTLE &&
-        status === GameStatus.AI_TURN
-    ) {
-        return {
-            ...DEFAULT_CAPABILITIES,
-        };
+    if (phase === GamePhase.BATTLE && status === GameStatus.AI_TURN) {
+        return DEFAULT_CAPABILITIES;
     }
 
     /**

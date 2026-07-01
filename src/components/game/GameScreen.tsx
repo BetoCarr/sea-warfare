@@ -21,8 +21,10 @@ export function GameScreen() {
     const supportsHover = useSupportsHover();
 
     const flow = useGameFlowController();
+    
     const placement = usePlacementFlow()
-
+    // console.log(placement)
+    
     const {
         playerAttack,
         // initializeGame,

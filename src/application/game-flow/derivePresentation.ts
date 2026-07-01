@@ -15,8 +15,7 @@ export function derivePresentation(
      * SETUP
      */
     if (
-        phase === GamePhase.SETUP &&
-        status === GameStatus.IDLE
+        phase === GamePhase.SETUP  // GAME
     ) {
         return {
             message: 'Initialize combat protocols...',
@@ -24,25 +23,15 @@ export function derivePresentation(
         };
     }
 
-    /**
-     * PLACEMENT
-     */
-    if (phase === GamePhase.PLACEMENT && status === GameStatus.PLACING_SHIPS) {
+    //  NO PERTENECE A GAMEFLOW
+    if (phase === GamePhase.PLACEMENT) {
         return {
             message: 'Distribute your fleet across the sector',
             phaseLabel: 'DEPLOY',
         };
     }
-    if (phase === GamePhase.PLACEMENT && status === GameStatus.FLEET_READY) {
-        return {
-            message: 'Fleet deployment complete. Awaiting orders.',
-            phaseLabel: 'DEPLOY',
-        };
-    }
 
-    /**
-     * BATTLE
-     */
+    //  NO PERTENECE A GAMEFLOW
     if (
         phase === GamePhase.BATTLE &&
         status === GameStatus.PLAYER_TURN
@@ -64,7 +53,7 @@ export function derivePresentation(
     }
 
     /**
-     * GAME OVER
+     * GAME 
      */
     if (phase === GamePhase.GAME_OVER) {
         return {
