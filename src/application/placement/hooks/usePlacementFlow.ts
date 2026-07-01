@@ -6,6 +6,7 @@ import { usePlacementInteractionStore } from '../interactions/placement-interact
 import { derivePlacementPreview } from '../derive/derivePlacementPreview';
 import { derivePlacementAvailability } from '../derive/derivePlacementAvailability';
 import { derivePlacementPresentation } from '../derive/derivePlacementPresentation';
+import { derivePlacementCapabilities } from '../derive/derivePlacementCapabilities';
 import { upsertShipPlacement } from '@/lib/domain/placement/mutations/upsertShipPlacement';
 import { confirmFleet as confirmFleetDomain } from '@/lib/domain/game/mutations/confirmFleet';
 import type { PlacementFlow } from './placement-flow.types';
@@ -100,14 +101,16 @@ export function usePlacementFlow(): PlacementFlow {
 
     const placementState = derivePlacementState({
         placements: playerPlacements,
-        requiredFleetSize: 5, // o STANDARD_FLEET.length
+        requiredFleetSize: STANDARD_FLEET.length
     });
 
-    //TEMPORAL
-    const canConfirmFleet =
-        placementState === PlacementState.FLEET_READY;
-
-    // console.log(canConfirmFleet)
+    const {
+        canPlaceShip,
+        canConfirmFleet,
+        canInteractWithBoard,
+    } = derivePlacementCapabilities(
+        placementState,
+    );
 
     const presentation = useMemo(
         () =>
@@ -222,7 +225,7 @@ export function usePlacementFlow(): PlacementFlow {
 
 
 
-    const confirmFleet = () => { // SOLO CONFIRFLEET DEPENDE DE PLACEMENTSTATE
+    const confirmFleet = () => {
         if (placementState !== PlacementState.FLEET_READY) {
             return;
         }
@@ -250,7 +253,11 @@ export function usePlacementFlow(): PlacementFlow {
 
         placementState,
 
+        canPlaceShip,
+
         canConfirmFleet,
+
+        canInteractWithBoard,
 
         selectShip,
 

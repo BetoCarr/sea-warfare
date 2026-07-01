@@ -22,7 +22,9 @@ export type PlacementFlow = {
     availability: PlacementAvailability;
     presentation: PlacementPresentation;
     placementState: PlacementState;  // Agregar a la documentación
-    canConfirmFleet: boolean; // TEMPORAL
+    canPlaceShip: boolean;
+    canConfirmFleet: boolean;
+    canInteractWithBoard: boolean;
 
     // interaction api
     selectShip: (
