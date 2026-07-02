@@ -1,5 +1,6 @@
 import { ReadinessIndicators } from "./ReadinessIndicators";
 import { TurnSection } from "./TurnSection";
+import { FeedbackMessage } from "./FeedbackMessage";
 import { Button } from "@/components/ui/Button";
 import { useGameFlowController } from "@/application/game-flow/useGameFlowController";
 import { usePlacementFlow } from "@/application/placement/hooks/usePlacementFlow";
@@ -35,7 +36,6 @@ export function GameHUD({ onInitialize, onConfirm }: GameHUDProps) {
       );
     }
     if (flow.capabilities.canAttack) {
-      console.log(flow.presentation.message)
       return <TurnSection />;
     }
     if (flow.capabilities.canRestartGame) {
@@ -114,7 +114,15 @@ export function GameHUD({ onInitialize, onConfirm }: GameHUDProps) {
 
       {/* CENTER: Dynamic Context */}
       <div className="flex-1 flex justify-center mx-4">
-        {renderCenterContent()}
+        <div className="flex flex-wrap items-center justify-center gap-2 text-center">
+          {renderCenterContent()}
+          {flow.presentation.description ? (
+            <FeedbackMessage
+              message={flow.presentation.description}
+              type="instruction"
+            />
+          ) : null}
+        </div>
       </div>
 
       {/* RIGHT: Primary Action */}

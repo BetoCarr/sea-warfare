@@ -15,30 +15,34 @@ export function derivePresentation(
      * SETUP
      */
     if (
-        phase === GamePhase.SETUP  // GAME
+        phase === GamePhase.SETUP
     ) {
         return {
-            message: 'Initialize combat protocols...',
             phaseLabel: 'BOOT',
+            description: 'Combat systems are offline and awaiting initialization.',
         };
     }
 
-    //  NO PERTENECE A GAMEFLOW
+    /**
+     * PLACEMENT
+     */
     if (phase === GamePhase.PLACEMENT) {
         return {
-            message: 'Distribute your fleet across the sector',
             phaseLabel: 'DEPLOY',
+            description: 'Fleet deployment in progress.',
         };
     }
 
-    //  NO PERTENECE A GAMEFLOW
+    /**
+     * BATTLE
+     */
     if (
         phase === GamePhase.BATTLE &&
         status === GameStatus.PLAYER_TURN
     ) {
         return {
-            message: 'Targeting systems active. Select coordinates.',
             phaseLabel: 'COMBAT',
+            description: 'Your fleet has tactical initiative.',
         };
     }
 
@@ -47,8 +51,8 @@ export function derivePresentation(
         status === GameStatus.AI_TURN
     ) {
         return {
-            message: 'Enemy turn... awaiting impact.',
             phaseLabel: 'COMBAT',
+            description: 'Enemy forces are executing their turn.',
         };
     }
 
@@ -57,17 +61,16 @@ export function derivePresentation(
      */
     if (phase === GamePhase.GAME_OVER) {
         return {
-            message: 'Mission terminated.',
             phaseLabel: 'END',
+            description: 'The mission has concluded.',
         };
     }
 
     /**
      * Fallback
      */
-
     return {
-        message: null,
         phaseLabel: '',
+        description: null,
     };
 }

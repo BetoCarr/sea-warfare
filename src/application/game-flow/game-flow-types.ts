@@ -1,5 +1,6 @@
 export type GamePresentation = {
-    message: string | null;
 
     phaseLabel: string;
+
+    description: string | null;
 };
