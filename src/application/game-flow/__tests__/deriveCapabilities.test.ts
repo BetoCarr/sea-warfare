@@ -3,7 +3,7 @@ import { GamePhase } from '@/lib/domain/game/models/GamePhase';
 import { GameStatus } from '@/lib/domain/game/models/GameStatus';
 import type { GameState } from '@/lib/domain/game/models/GameState';
 
-function createGame(
+function createGameState(
     overrides: Partial<GameState> = {},
 ): GameState {
     return {
@@ -15,7 +15,7 @@ function createGame(
 describe('deriveCapabilities', () => {
     it('enables initialization during SETUP', () => {
         const capabilities = deriveCapabilities(
-            createGame(),
+            createGameState(),
         );
 
         expect(capabilities).toEqual({
@@ -28,7 +28,7 @@ describe('deriveCapabilities', () => {
 
     it('enables attack and enemy board interaction during PLAYER_TURN', () => {
         const capabilities = deriveCapabilities(
-            createGame({
+            createGameState({
                 phase: GamePhase.BATTLE,
                 status: GameStatus.PLAYER_TURN,
             }),
@@ -44,7 +44,7 @@ describe('deriveCapabilities', () => {
 
     it('does not enable any abilities during AI_TURN', () => {
         const capabilities = deriveCapabilities(
-            createGame({
+            createGameState({
                 phase: GamePhase.BATTLE,
                 status: GameStatus.AI_TURN,
             }),
@@ -60,7 +60,7 @@ describe('deriveCapabilities', () => {
 
     it('enables restart in GAME_OVER', () => {
         const capabilities = deriveCapabilities(
-            createGame({
+            createGameState({
                 phase: GamePhase.GAME_OVER,
             }),
         );
