@@ -3,10 +3,10 @@ import { GamePhase } from '@/lib/domain/game/models/GamePhase';
 import { GameStatus } from '@/lib/domain/game/models/GameStatus';
 
 type GameInteractionCapabilities = {
-    canInitializeGame: boolean; // GAME
-    canAttack: boolean; // BATTLE
-    canRestartGame: boolean; // GAME
-    canInteractWithEnemyBoard: boolean; // BATTLE
+    canInitializeGame: boolean;
+    canAttack: boolean;
+    canRestartGame: boolean;
+    canInteractWithEnemyBoard: boolean;
 };
 
 const DEFAULT_CAPABILITIES: GameInteractionCapabilities = {
@@ -22,9 +22,6 @@ export function deriveCapabilities(
 
     const { phase, status } = game;
 
-    /**
-     * SETUP
-     */
     if (phase === GamePhase.SETUP) {
         return {
             ...DEFAULT_CAPABILITIES,
@@ -32,9 +29,6 @@ export function deriveCapabilities(
         };
     }
 
-    /**
-     * BATTLE // Futuro cambio a modulo de battle
-     */
     if (phase === GamePhase.BATTLE && status === GameStatus.PLAYER_TURN) {
         return {
             ...DEFAULT_CAPABILITIES,
@@ -47,20 +41,12 @@ export function deriveCapabilities(
         return DEFAULT_CAPABILITIES;
     }
 
-    /**
-     * GAME OVER
-     */
-
     if (phase === GamePhase.GAME_OVER) {
         return {
             ...DEFAULT_CAPABILITIES,
             canRestartGame: true,
         };
     }
-
-    /**
-     * Fallback
-     */
 
     return DEFAULT_CAPABILITIES;
 }
