@@ -15,37 +15,26 @@ export type CanPlaceShipParams = {
 };
 
 /**
- * High-level placement validation rule that composes smaller validation rules.
- * 
- * Pure function that:
- * - Validates board bounds
- * - Validates overlap with existing ships
- * - Returns a validation result indicating success or failure
- * - Has no side effects
- * 
- * Validation responsibilities:
- * - Ensures origin is within board bounds
- * - Ensures ship coordinates stay within board bounds
- * - Ensures no overlap with existing ships
+ * High-level placement validation rule.
+ *
+ * Composes the individual placement rules into a single domain decision.
+ * Returns either a successful validation or the reason the placement is invalid.
  */
 export function canPlaceShip(
     params: CanPlaceShipParams,
 ): PlacementValidationResult {
     const { boardSize, ship, origin, orientation, existingPlacements } = params;
 
-    // Derive the coordinates this ship would occupy
     const shipCoordinates = getShipCoordinates({
         origin,
         size: ship.size,
         orientation,
     });
 
-    // Validate all coordinates stay within board bounds
     if (!areCoordinatesWithinBounds(shipCoordinates, boardSize)) {
         return { valid: false, error: 'OUT_OF_BOUNDS' };
     }
 
-    // Validate no overlap with existing ships
     if (hasPlacementCollision(shipCoordinates, existingPlacements)) {
         return { valid: false, error: 'OVERLAP' };
     }
@@ -53,9 +42,6 @@ export function canPlaceShip(
     return { valid: true };
 }
 
-/**
- * Pure validation rule: All coordinates are within board bounds.
- */
 function areCoordinatesWithinBounds(
     coordinates: Position[],
     boardSize: number,
@@ -73,9 +59,6 @@ function areCoordinatesWithinBounds(
     return true;
 }
 
-/**
- * Pure validation rule: No overlap with existing ships.
- */
 function hasPlacementCollision(
     shipCoordinates: Position[],
     existingPlacements: ShipPlacement[],

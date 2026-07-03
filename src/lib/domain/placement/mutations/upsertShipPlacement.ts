@@ -16,7 +16,7 @@ type UpsertShipPlacementResult =
     }
     | {
         success: false;
-        error: PlacementValidationError; // Revisar el nombre del tipo de error
+        error: PlacementValidationError;
     };
 
 export function upsertShipPlacement({

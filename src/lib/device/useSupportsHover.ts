@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-export function useSupportsHover() { // Planear futuro refactor para un hook global de device capabilities
-    const [supportsHover, setSupportsHover] = // Documentar
+export function useSupportsHover() {
+    const [supportsHover, setSupportsHover] =
         useState(false);
 
     useEffect(() => {

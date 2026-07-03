@@ -9,12 +9,6 @@ export type GetShipCoordinatesParams = {
 
 /**
  * Derives all occupied coordinates for a ship given its origin, size, and orientation.
- * 
- * Pure function that:
- * - Returns deterministic results for the same inputs
- * - Has no side effects
- * - Does not mutate inputs
- * - Works with semantic coordinates (not rendering semantics)
  */
 export function getShipCoordinates(
     params: GetShipCoordinatesParams,
@@ -29,7 +23,6 @@ export function getShipCoordinates(
                 col: origin.col + i,
             });
         } else {
-            // vertical
             coordinates.push({
                 row: origin.row + i,
                 col: origin.col,
