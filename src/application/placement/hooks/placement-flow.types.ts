@@ -9,24 +9,24 @@ import { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
 import { BoardCellInteraction } from '../interactions/placement-interaction.types';
 
 export type PlacementFlow = {
-    // authoritative
+    // authoritative state
     playerPlacements: ShipPlacement[];
 
-    // interaction
+    // interaction state
     selectedShipType: ShipType | null;
     orientation: Orientation;
     targetCell: Position | null;
     
-    // derived
+    // derived state
     preview: PlacementPreview | null;
     availability: PlacementAvailability;
     presentation: PlacementPresentation;
-    placementState: PlacementState;  // Agregar a la documentación
+    placementState: PlacementState;
     canPlaceShip: boolean;
     canConfirmFleet: boolean;
     canInteractWithBoard: boolean;
 
-    // interaction api
+    // interaction actions
     selectShip: (
         shipType: ShipType | null,
     ) => void;
@@ -43,7 +43,7 @@ export type PlacementFlow = {
 
     onBoardLeave(): void;
 
-    // mutations
+    // domain mutations
     placeShip: () => void;
     confirmFleet: () => void;
 };
