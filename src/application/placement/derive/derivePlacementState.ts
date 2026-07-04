@@ -1,4 +1,3 @@
-// import { PlacementState } from './PlacementState';
 import { PlacementState } from '@/lib/domain/placement/models/PlacementState';
 import type { ShipPlacement } from '../../../lib/domain/placement/models/ShipPlacement';
 

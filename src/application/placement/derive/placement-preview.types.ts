@@ -3,8 +3,6 @@ import type { PlacementValidationError } from '../../../lib/domain/placement/mod
 
 export type PlacementPreview = {
     cells: Position[];
-
     isValid: boolean;
-
     validationError?: PlacementValidationError;
 };

@@ -12,13 +12,9 @@ import type { PlacementPreview } from './placement-preview.types';
 
 type DerivePlacementPreviewParams = {
     selectedShip: BaseShip | null;
-
     targetCell: Position | null;
-
     orientation: Orientation;
-    
     existingPlacements: ShipPlacement[];
-
     boardSize?: number;
 };
 

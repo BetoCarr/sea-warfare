@@ -1,4 +1,3 @@
-//DOCUMENTAR
 import { PlacementState } from '@/lib/domain/placement/models/PlacementState';
 
 export type PlacementCapabilities = {
