@@ -1,9 +1,12 @@
-import { useEffect } from 'react'; // Documentar
+import { useEffect } from 'react';
 
 type Params = {
     rotate: () => void;
 };
 
+/**
+ * Placement keyboard interaction adapter.
+ */
 export function usePlacementKeyboardShortcuts({
     rotate,
 }: Params): void {

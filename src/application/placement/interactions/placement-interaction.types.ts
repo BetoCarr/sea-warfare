@@ -4,9 +4,7 @@ import { Orientation } from '@/lib/domain/placement/models/Orientation';
 
 export type PlacementInteractionState = {
     selectedShipType: ShipType | null;
-
     orientation: Orientation;
-
     targetCell: Position | null; 
 };
 
