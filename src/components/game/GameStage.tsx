@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect } from 'react';
-import { useGameStore } from '@/lib/store/game-store';
+// import { useGameStore } from '@/lib/store/game-store';
 import { cn } from '@/lib/utils/utils';
 import Board from './Board';
 import { ShipPalette } from './ShipPalette';
@@ -27,7 +27,7 @@ export const GameStage = ({
     onPlayerCellClick,
 }: GameStageProps) => {
 
-    const playerBoard = useGameStore(s => s.player.boardState.board);
+    // const playerBoard = useGameStore(s => s.player.boardState.board);
 
     const placement = usePlacementFlow();
     const flow = useGameFlowController();

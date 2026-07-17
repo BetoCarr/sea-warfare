@@ -3,7 +3,7 @@ import { getVisualState } from './getVisualState';
 import { deriveShipOccupancy } from '../placement/derive/deriveShipOccupancy';
 import { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
 import type { BoardViewModel, BoardCellVM } from './board-types';
-import type { CellState } from '@/lib/utils/types';
+// import type { CellState } from '@/lib/utils/types';
 import type { PlacementPreview } from '../placement/derive/placement-preview.types';
 import type { ShipType } from '@/lib/domain/ships/models/ShipType';
 
@@ -14,7 +14,7 @@ export type BoardVariant =
 interface UseBoardViewModelParams {
     boardVariant: BoardVariant;
     size: number;
-    cells: CellState[][];
+    // cells: CellState[][];
     playerPlacements: ShipPlacement[];
     preview?: PlacementPreview | null;
     selectedShipType?: ShipType | null;
@@ -25,7 +25,7 @@ interface UseBoardViewModelParams {
 export function useBoardViewModel({
     boardVariant,
     size,
-    cells,
+    // cells,
     playerPlacements,
     preview,
     selectedShipType,

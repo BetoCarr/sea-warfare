@@ -13,10 +13,7 @@ export interface BoardViewModel {
 }
 
 export type CellVisualState =
-    | 'water' 
+    | 'water'
     | 'ship'
-    | 'hit'
-    | 'miss'
-    | 'sunk'
     | 'preview-valid'
     | 'preview-invalid';
