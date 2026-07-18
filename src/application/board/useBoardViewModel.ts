@@ -1,9 +1,8 @@
 import { useMemo } from 'react';
 import { getVisualState } from './getVisualState';
-import { deriveShipOccupancy } from '../placement/derive/deriveShipOccupancy';
+import { deriveLogicalCellInfo } from './derive/deriveLogicalCellInfo';
 import { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
 import type { BoardViewModel, BoardCellVM } from './board-types';
-// import type { CellState } from '@/lib/utils/types';
 import type { PlacementPreview } from '../placement/derive/placement-preview.types';
 import type { ShipType } from '@/lib/domain/ships/models/ShipType';
 
@@ -14,27 +13,22 @@ export type BoardVariant =
 interface UseBoardViewModelParams {
     boardVariant: BoardVariant;
     size: number;
-    // cells: CellState[][];
     playerPlacements: ShipPlacement[];
     preview?: PlacementPreview | null;
     selectedShipType?: ShipType | null;
     showShips: boolean;
 }
 
-
 export function useBoardViewModel({
     boardVariant,
     size,
-    // cells,
     playerPlacements,
     preview,
     selectedShipType,
     showShips,
 }: UseBoardViewModelParams): BoardViewModel {
 
-    const vm = useMemo(() => {
-
-        const shipCells = deriveShipOccupancy(playerPlacements);
+    return useMemo(() => {
 
         const result: BoardCellVM[][] = [];
 
@@ -42,17 +36,12 @@ export function useBoardViewModel({
             const rowCells: BoardCellVM[] = [];
 
             for (let col = 0; col < size; col++) {
-                
-                const cellState = cells[row]?.[col] ?? 'empty';
+                const position = { row, col };
 
-                // find ship in this cell (O(n) but acceptable at 10x10 scale)
-                const shipAtCell = shipCells.find(
-                    c =>
-                        c.position.row === row &&
-                        c.position.col === col,
+                const logicalCell = deriveLogicalCellInfo(
+                    position,
+                    playerPlacements,
                 );
-
-                const shipType = shipAtCell?.shipType;
 
                 const isPreview = preview?.cells?.some(
                     p => p.row === row && p.col === col,
@@ -60,23 +49,29 @@ export function useBoardViewModel({
                 
                 const isActiveShip =
                     selectedShipType != null &&
-                    shipType === selectedShipType &&
+                    logicalCell.shipType === selectedShipType &&
                     preview != null;
+
+                const previewResult =
+                    preview == null
+                        ? undefined
+                        : preview.isValid
+                            ? 'valid'
+                            : 'invalid';
 
                 const visualState = getVisualState({
                     boardVariant,
-                    cellState: cellState,
-                    shipType,
+                    logicalCell,
                     isPreview,
                     isActiveShip,
-                    previewResult: preview?.isValid ? 'valid' : 'invalid', // revisar
+                    previewResult,
                     showShips,
                 });
 
                 rowCells.push({
                     row,
                     col,
-                    shipType: isActiveShip ? undefined : shipType,
+                    shipType: isActiveShip ? undefined : logicalCell.shipType,
                     visualState,
                 });
             }
@@ -89,7 +84,5 @@ export function useBoardViewModel({
             cells: result,
         };
 
-    }, [boardVariant, size, cells, playerPlacements, preview, selectedShipType, showShips]);
-
-    return vm;
+    }, [boardVariant, size, playerPlacements, preview, selectedShipType, showShips]);
 }

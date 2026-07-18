@@ -1,23 +1,19 @@
-
-import { CellState } from "@/lib/utils/types";
-import type { ShipType } from '@/lib/domain/ships/models/ShipType';
-import { CellVisualState } from "./board-types";
-import { BoardVariant } from "./useBoardViewModel";
+import type { LogicalCellInfo } from './derive/deriveLogicalCellInfo';
+import type { CellVisualState } from './board-types';
+import type { BoardVariant } from './useBoardViewModel';
 
 export function getVisualState(params: {
-        boardVariant: BoardVariant;
-        cellState: CellState;
-        shipType?: ShipType;
-        isPreview: boolean;
-        isActiveShip?: boolean;
-        previewResult?: 'valid' | 'invalid';
-        showShips: boolean;
-    }): CellVisualState {
+    boardVariant: BoardVariant;
+    logicalCell: LogicalCellInfo;
+    isPreview: boolean;
+    isActiveShip?: boolean;
+    previewResult?: 'valid' | 'invalid';
+    showShips: boolean;
+}): CellVisualState {
 
     const {
         boardVariant,
-        cellState,
-        shipType,
+        logicalCell,
         isPreview,
         isActiveShip,
         previewResult,
@@ -30,20 +26,19 @@ export function getVisualState(params: {
             : 'preview-invalid';
     }
 
-    if (cellState === 'hit') return 'hit';
-    if (cellState === 'miss') return 'miss';
-    if (cellState === 'sunk') return 'sunk';
-
     if (boardVariant === 'enemy') {
         return 'water';
     }
 
-    if (shipType && showShips && !isActiveShip) {
-        return 'ship';
-    }
-
     if (isActiveShip) {
         return 'water';
+    }
+
+    if (
+        logicalCell.state === 'ship' &&
+        showShips
+    ) {
+        return 'ship';
     }
 
     return 'water';

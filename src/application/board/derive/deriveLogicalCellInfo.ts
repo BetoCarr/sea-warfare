@@ -13,7 +13,7 @@ export type LogicalCellState =
     | 'water'
     | 'ship';
 
-// Documentar y testear
+// Documentar
 export function deriveLogicalCellInfo(
     position: Position,
     placements: ShipPlacement[],

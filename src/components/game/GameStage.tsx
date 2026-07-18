@@ -27,7 +27,6 @@ export const GameStage = ({
     onPlayerCellClick,
 }: GameStageProps) => {
 
-    // const playerBoard = useGameStore(s => s.player.boardState.board);
 
     const placement = usePlacementFlow();
     const flow = useGameFlowController();
@@ -37,7 +36,6 @@ export const GameStage = ({
     const boardVM = useBoardViewModel({
         boardVariant: 'player',
         size: 10,
-        cells: playerBoard,
         playerPlacements: placement.playerPlacements,
         preview: placement.preview,
         selectedShipType: placement.selectedShipType,

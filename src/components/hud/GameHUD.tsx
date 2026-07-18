@@ -1,4 +1,4 @@
-import { ReadinessIndicators } from "./ReadinessIndicators";
+// import { ReadinessIndicators } from "./ReadinessIndicators";
 import { TurnSection } from "./TurnSection";
 import { FeedbackMessage } from "./FeedbackMessage";
 import { Button } from "@/components/ui/Button";
@@ -31,7 +31,7 @@ export function GameHUD({ onInitialize, onConfirm }: GameHUDProps) {
       return (
         <div className="hidden md:flex items-center gap-4">
           <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">Fleet Setup</span>
-          <ReadinessIndicators />
+          {/* <ReadinessIndicators /> */}
         </div>
       );
     }

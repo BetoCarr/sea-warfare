@@ -1,6 +1,6 @@
 import type { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
 import { getShipCoordinates } from '@/lib/domain/placement/rules/getShipCoordinates';
-import { deriveLogicalCellInfo } from '../deriveLogicalCellnfo';
+import { deriveLogicalCellInfo } from '../deriveLogicalCellInfo';
 
 describe('deriveLogicalCellInfo', () => {
     it('returns water when no ship occupies the queried position', () => {
