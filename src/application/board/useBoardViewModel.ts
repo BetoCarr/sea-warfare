@@ -11,7 +11,7 @@ export type BoardVariant =
     | 'player'
     | 'enemy';
 
-interface UseBoardViewModelParams {
+export interface UseBoardViewModelParams {
     boardVariant: BoardVariant;
     size: number;
     playerPlacements: ShipPlacement[];
