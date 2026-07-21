@@ -1,8 +1,8 @@
-import type { LogicalCellInfo } from './derive/deriveLogicalCellInfo';
-import type { CellVisualState } from './board-types';
-import type { BoardVariant } from './useBoardViewModel';
+import type { LogicalCellInfo } from '../derive/deriveLogicalCellInfo';
+import type { CellVisualState } from '../board-types';
+import type { BoardVariant } from '../useBoardViewModel';
 
-export function getVisualState(params: {
+export function deriveCellVisualState(params: {
     boardVariant: BoardVariant;
     logicalCell: LogicalCellInfo;
     isPreview: boolean;

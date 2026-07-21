@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
-import { getVisualState } from './getVisualState';
 import { deriveLogicalCellInfo } from './derive/deriveLogicalCellInfo';
+import { deriveCellVisualState } from './derive/deriveCellVisualState';
+import { deriveCellPresentation } from './derive/deriveCellPresentation';
 import { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
 import type { BoardViewModel, BoardCellVM } from './board-types';
 import type { PlacementPreview } from '../placement/derive/placement-preview.types';
@@ -59,7 +60,7 @@ export function useBoardViewModel({
                             ? 'valid'
                             : 'invalid';
 
-                const visualState = getVisualState({
+                const visualState = deriveCellVisualState({
                     boardVariant,
                     logicalCell,
                     isPreview,
@@ -68,11 +69,18 @@ export function useBoardViewModel({
                     showShips,
                 });
 
+                const presentation =
+                    deriveCellPresentation(
+                        position,
+                        visualState,
+                        logicalCell.shipType,
+                    );
+
                 rowCells.push({
                     row,
                     col,
                     shipType: isActiveShip ? undefined : logicalCell.shipType,
-                    visualState,
+                    presentation,
                 });
             }
 

@@ -79,7 +79,7 @@ export default function Board({
                         {rowData.map((vmCell, col) => (
                             <Cell
                                 key={`${row}-${col}`}
-                                visualState={vmCell.visualState}
+                                presentation={vmCell.presentation}
                                 position={{ row, col }}
                                 onHover={onCellHover}
                                 onLeave={onCellLeave}

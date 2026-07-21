@@ -1,10 +1,28 @@
 import type { ShipType } from '@/lib/domain/ships/models/ShipType';
 
+export type CellVisualState =
+    | 'water'
+    | 'ship'
+    | 'preview-valid'
+    | 'preview-invalid';
+
+export interface CellPresentation {
+    visualState: CellVisualState;
+
+    className: string;
+
+    content: string;
+
+    ariaLabel: string;
+
+    title: string;
+}
+
 export interface BoardCellVM {
     row: number;
     col: number;
     shipType?: ShipType;
-    visualState: CellVisualState;
+    presentation: CellPresentation;
 }
 
 export interface BoardViewModel {
@@ -12,8 +30,48 @@ export interface BoardViewModel {
     cells: BoardCellVM[][];
 }
 
-export type CellVisualState =
-    | 'water'
-    | 'ship'
-    | 'preview-valid'
-    | 'preview-invalid';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ShipPlacement
+//         │
+//         ▼
+// deriveLogicalCellInfo()
+//         │
+//         ▼
+// LogicalCellInfo
+//         │
+//         ▼
+// getVisualState()
+//         │
+//         ▼
+// CellVisualState
+//         │
+//         ▼
+// deriveCellPresentation()
+//         │
+//         ▼
+// CellPresentation
+//         │
+//         ▼
+// BoardCellVM
+//         │
+//         ▼
+// Cell

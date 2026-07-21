@@ -1,6 +1,5 @@
 "use client";
-import React, { useEffect } from 'react';
-// import { useGameStore } from '@/lib/store/game-store';
+import React from 'react';
 import { cn } from '@/lib/utils/utils';
 import Board from './Board';
 import { ShipPalette } from './ShipPalette';
@@ -30,8 +29,6 @@ export const GameStage = ({
 
     const placement = usePlacementFlow();
     const flow = useGameFlowController();
-
-    // console.log(placement.presentation)
 
     const boardVM = useBoardViewModel({
         boardVariant: 'player',
