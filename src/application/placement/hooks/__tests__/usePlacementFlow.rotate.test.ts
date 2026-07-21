@@ -1,7 +1,9 @@
-import { usePlacementInteractionStore } from '../../interactions/placement-interaction.store';
 import { initialPlacementInteractionState } from '../../interactions/placement-interaction.initial';
 
+import { usePlacementInteractionStore } from '../../interactions/placement-interaction.store';
+
 import { executePlacementFlowAction } from '../testing/executePlacementFlowAction';
+
 import { resetPlacementStores } from '../testing/resetPlacementStores';
 
 declare global {

@@ -1,5 +1,8 @@
-import type { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
 import { STANDARD_FLEET } from '@/lib/domain/ships/models/StandardFleet';
+
+
+
+import type { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
 
 export const carrier = STANDARD_FLEET.find(ship => ship.type === 'carrier')!;
 export const battleship = STANDARD_FLEET.find(ship => ship.type === 'battleship')!;

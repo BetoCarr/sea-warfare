@@ -1,11 +1,16 @@
-import { useGameplayStore } from '@/lib/store/gameplay/gameplay-store';
-import { usePlacementInteractionStore } from '../../interactions/placement-interaction.store';
 import { initialPlacementInteractionState } from '../../interactions/placement-interaction.initial';
 
+import { usePlacementInteractionStore } from '../../interactions/placement-interaction.store';
+
 import { executePlacementFlowAction } from '../testing/executePlacementFlowAction';
-import { resetPlacementStores } from '../testing/resetPlacementStores';
-import { placementGameState } from '../testing/placementGameState';
+
 import { carrier, createDestroyerPlacement } from '../testing/placement-test-data';
+
+import { placementGameState } from '../testing/placementGameState';
+
+import { resetPlacementStores } from '../testing/resetPlacementStores';
+
+import { useGameplayStore } from '@/lib/store/gameplay/gameplay-store';
 
 declare global {
     var IS_REACT_ACT_ENVIRONMENT: boolean | undefined;

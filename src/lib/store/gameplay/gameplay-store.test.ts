@@ -1,8 +1,14 @@
 import { GamePhase } from '../../domain/game/models/GamePhase';
+
 import { GameStatus } from '../../domain/game/models/GameStatus';
-import type { ShipPlacement } from '../../domain/placement/models/ShipPlacement';
-import { initialGameplayState } from './gameplay-store.initial';
+
 import { useGameplayStore } from './gameplay-store';
+
+import { initialGameplayState } from './gameplay-store.initial';
+
+
+
+import type { ShipPlacement } from '../../domain/placement/models/ShipPlacement';
 
 function getGameplaySnapshot() {
     const state = useGameplayStore.getState();

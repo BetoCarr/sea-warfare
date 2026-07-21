@@ -1,10 +1,16 @@
-import { useGameplayStore } from '@/lib/store/gameplay/gameplay-store';
-import { GamePhase } from '@/lib/domain/game/models/GamePhase';
-import { GameStatus } from '@/lib/domain/game/models/GameStatus';
 import { executePlacementFlowAction } from '../testing/executePlacementFlowAction';
-import { resetPlacementStores } from '../testing/resetPlacementStores';
-import { placementGameState } from '../testing/placementGameState';
+
 import { createCompleteFleetPlacements, createDestroyerPlacement } from '../testing/placement-test-data';
+
+import { placementGameState } from '../testing/placementGameState';
+
+import { resetPlacementStores } from '../testing/resetPlacementStores';
+
+import { GamePhase } from '@/lib/domain/game/models/GamePhase';
+
+import { GameStatus } from '@/lib/domain/game/models/GameStatus';
+
+import { useGameplayStore } from '@/lib/store/gameplay/gameplay-store';
 
 declare global {
     var IS_REACT_ACT_ENVIRONMENT: boolean | undefined;

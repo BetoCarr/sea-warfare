@@ -1,16 +1,24 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+
 import { useShallow } from "zustand/react/shallow";
-// import { useGameStore } from "@/lib/store/game-store";
-import { useGameplayStore } from "@/lib/store/gameplay/gameplay-store";
-import { GameHUD } from "../hud/GameHUD";
+
+
+
 import { FeedbackType } from "../hud/FeedbackMessage";
+
+import { GameHUD } from "../hud/GameHUD";
+
 import { GameStage } from "./GameStage";
-// import { GameFooter } from "../hud/GameFooter";
+
 import { useGameFlowController } from "@/application/game-flow/useGameFlowController";
-import { useSupportsHover } from "@/lib/device/useSupportsHover";
+
 import { usePlacementFlow } from "@/application/placement/hooks/usePlacementFlow";
+
+import { useSupportsHover } from "@/lib/device/useSupportsHover";
+
+import { useGameplayStore } from "@/lib/store/gameplay/gameplay-store";
 
 export function GameScreen() {
     const [feedback, setFeedback] = useState<string | null>(null);

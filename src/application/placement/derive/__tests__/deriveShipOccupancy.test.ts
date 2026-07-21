@@ -1,4 +1,7 @@
 import { deriveShipOccupancy } from '../deriveShipOccupancy';
+
+
+
 import type { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
 
 describe('deriveShipOccupancy', () => {

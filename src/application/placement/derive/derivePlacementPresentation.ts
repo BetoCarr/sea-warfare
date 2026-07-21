@@ -1,7 +1,10 @@
-import type { ShipType } from '@/lib/domain/ships/models/ShipType';
-import type { PlacementPreview } from './placement-preview.types';
 import type { PlacementAvailability } from './placement-availability.types';
+
 import type { PlacementPresentation } from './placement-presentation.types';
+
+import type { PlacementPreview } from './placement-preview.types';
+
+import type { ShipType } from '@/lib/domain/ships/models/ShipType';
 
 type DerivePlacementPresentationParams = {
     selectedShipType: ShipType | null;

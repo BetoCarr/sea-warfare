@@ -1,9 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { cn } from '@/lib/utils/utils'; // A utility function to combine class names
-import type { Position } from '@/lib/domain/shared/models/Position';
+
+
+
+import { cn } from '@/lib/utils/utils';
+
+
+
 import type { CellPresentation } from '@/application/board/board-types';
+
+import type { Position } from '@/lib/domain/shared/models/Position';
 
 interface CellProps {
     presentation: CellPresentation;

@@ -1,5 +1,6 @@
-import type { Position } from '@/lib/domain/shared/models/Position';
 import type { Orientation } from '../models/Orientation';
+
+import type { Position } from '@/lib/domain/shared/models/Position';
 
 export type GetShipCoordinatesParams = {
     origin: Position;

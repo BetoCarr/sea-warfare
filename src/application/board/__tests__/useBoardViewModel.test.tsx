@@ -1,9 +1,18 @@
 import React from 'react';
+
 import { renderToStaticMarkup } from 'react-dom/server';
+
+
+
 import { useBoardViewModel } from '../useBoardViewModel';
-import type { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
+
+
+
+import type { UseBoardViewModelParams } from '../useBoardViewModel'
+
 import type { PlacementPreview } from '@/application/placement/derive/placement-preview.types';
-import type { UseBoardViewModelParams } from '../useBoardViewModel';
+
+import type { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
 
 function renderHook<Result>(hook: () => Result) {
     let currentResult: Result | undefined;

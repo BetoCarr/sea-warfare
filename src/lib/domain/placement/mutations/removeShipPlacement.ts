@@ -1,4 +1,5 @@
 import type { ShipPlacement } from '../models/ShipPlacement';
+
 import type { ShipType } from '@/lib/domain/ships/models/ShipType';
 
 type RemoveShipPlacementParams = {

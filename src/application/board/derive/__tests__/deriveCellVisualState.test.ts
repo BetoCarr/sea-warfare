@@ -1,5 +1,8 @@
-import type { LogicalCellInfo } from '../deriveLogicalCellInfo';
 import { deriveCellVisualState } from '../deriveCellVisualState';
+
+
+
+import type { LogicalCellInfo } from '../deriveLogicalCellInfo';
 
 function createLogicalCellInfo(state: LogicalCellInfo['state']): LogicalCellInfo {
     return { state };

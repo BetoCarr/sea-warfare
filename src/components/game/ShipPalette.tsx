@@ -1,9 +1,15 @@
 "use client";
-import { cn } from "@/lib/utils/utils";
-import { ShipPaletteItem } from "./ShipPaletteItem";
-import { usePlacementFlow } from "@/application/placement/hooks/usePlacementFlow";
-import { STANDARD_FLEET } from "@/lib/domain/ships/models/StandardFleet";
 import { useMemo } from "react";
+
+
+
+import { ShipPaletteItem } from "./ShipPaletteItem";
+
+import { usePlacementFlow } from "@/application/placement/hooks/usePlacementFlow";
+
+import { STANDARD_FLEET } from "@/lib/domain/ships/models/StandardFleet";
+
+import { cn } from "@/lib/utils/utils";
 
 export function ShipPalette() {
     const {

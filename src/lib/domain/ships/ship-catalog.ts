@@ -1,6 +1,10 @@
-import type { BaseShip } from '@/lib/domain/ships/models/BaseShip';
-import type { ShipType } from '@/lib/domain/ships/models/ShipType';
 import { SHIPS_CONFIG } from '@/lib/utils/constants';
+
+
+
+import type { BaseShip } from '@/lib/domain/ships/models/BaseShip';
+
+import type { ShipType } from '@/lib/domain/ships/models/ShipType';
 
 /**
  * RESPONSIBILITY 1: SHIP CATALOG AND STRUCTURAL DEFINITIONS

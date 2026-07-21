@@ -1,4 +1,5 @@
 import { initialPlacementInteractionState } from './placement-interaction.initial';
+
 import { usePlacementInteractionStore } from './placement-interaction.store';
 
 function getInteractionSnapshot() {

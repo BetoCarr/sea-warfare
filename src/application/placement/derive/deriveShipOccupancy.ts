@@ -1,6 +1,8 @@
-import type { Position } from '@/lib/domain/shared/models/Position';
-import type { ShipType } from '@/lib/domain/ships/models/ShipType';
 import type { ShipPlacement } from '../../../lib/domain/placement/models/ShipPlacement';
+
+import type { Position } from '@/lib/domain/shared/models/Position';
+
+import type { ShipType } from '@/lib/domain/ships/models/ShipType';
 
 export type ShipCell = {
     position: Position;

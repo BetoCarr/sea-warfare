@@ -1,14 +1,25 @@
 "use client";
 import React from 'react';
-import { cn } from '@/lib/utils/utils';
-import Board from './Board';
-import { ShipPalette } from './ShipPalette';
+
+
+
 import { FeedbackMessage, FeedbackType } from '../hud/FeedbackMessage';
+
+import Board from './Board';
+
 import { OrientationToggle } from './OrientationToggle';
+
+import { ShipPalette } from './ShipPalette';
+
 import { useBoardViewModel } from '@/application/board/useBoardViewModel';
+
 import { useGameFlowController } from '@/application/game-flow/useGameFlowController';
+
 import { usePlacementFlow } from '@/application/placement/hooks/usePlacementFlow';
+
 import { usePlacementKeyboardShortcuts } from '@/application/placement/interactions/usePlacementKeyboardShortcuts';
+
+import { cn } from '@/lib/utils/utils';
 
 interface GameStageProps {
     activeMessage: string | null;

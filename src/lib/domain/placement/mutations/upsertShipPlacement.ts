@@ -1,7 +1,12 @@
-import type { ShipPlacement } from '../models/ShipPlacement';
-import type { PlacementValidationError } from '../models/PlacementValidationError';
 import { canPlaceShip } from '../rules/canPlaceShip';
+
 import { DEFAULT_BOARD_SIZE } from '@/lib/domain/board/models/BoardConfig';
+
+
+
+import type { PlacementValidationError } from '../models/PlacementValidationError';
+
+import type { ShipPlacement } from '../models/ShipPlacement';
 
 type UpsertShipPlacementParams = {
     existingPlacements: ShipPlacement[];

@@ -1,7 +1,12 @@
-import type { Ship } from '@/lib/utils/types';
-import type { PlacementIntent } from '@/lib/domain/placement/placement-types';
-import { SHIPS_CONFIG } from '@/lib/utils/constants';
 import { generateShipId } from './ship-catalog';
+
+import { SHIPS_CONFIG } from '@/lib/utils/constants';
+
+
+
+import type { PlacementIntent } from '@/lib/domain/placement/placement-types';
+
+import type { Ship } from '@/lib/utils/types';
 
 /**
  * RESPONSIBILITY: COMBAT ENTITY CONSTRUCTION AND MANAGEMENT

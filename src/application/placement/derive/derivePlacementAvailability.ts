@@ -1,9 +1,10 @@
-import type { BaseShip } from '@/lib/domain/ships/models/BaseShip';
-import type { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
-
 import type {
     PlacementAvailability,
 } from './placement-availability.types';
+
+import type { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
+
+import type { BaseShip } from '@/lib/domain/ships/models/BaseShip';
 
 type DerivePlacementAvailabilityParams = {
     placements: ShipPlacement[];

@@ -1,6 +1,8 @@
-import { ShipType } from '@/lib/domain/ships/models/ShipType';
-import { Position } from '@/lib/domain/shared/models/Position';
 import { Orientation } from '@/lib/domain/placement/models/Orientation';
+
+import { Position } from '@/lib/domain/shared/models/Position';
+
+import { ShipType } from '@/lib/domain/ships/models/ShipType';
 
 export type PlacementInteractionState = {
     selectedShipType: ShipType | null;

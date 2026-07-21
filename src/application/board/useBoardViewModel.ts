@@ -1,10 +1,21 @@
 import { useMemo } from 'react';
-import { deriveLogicalCellInfo } from './derive/deriveLogicalCellInfo';
-import { deriveCellVisualState } from './derive/deriveCellVisualState';
+
+
+
 import { deriveCellPresentation } from './derive/deriveCellPresentation';
+
+import { deriveCellVisualState } from './derive/deriveCellVisualState';
+
+import { deriveLogicalCellInfo } from './derive/deriveLogicalCellInfo';
+
 import { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
-import type { BoardViewModel, BoardCellVM } from './board-types';
+
+
+
 import type { PlacementPreview } from '../placement/derive/placement-preview.types';
+
+import type { BoardViewModel, BoardCellVM } from './board-types';
+
 import type { ShipType } from '@/lib/domain/ships/models/ShipType';
 
 export type BoardVariant =

@@ -1,5 +1,9 @@
-import type { ShipType } from '@/lib/domain/ships/models/ShipType';
 import { ShipCells } from "./ShipCells";
+
+
+
+import type { ShipType } from '@/lib/domain/ships/models/ShipType';
+
 interface ShipPaletteItemProps {
     type: ShipType;
     size: number; // REVISAR si es necesario, o si se puede inferir del spec

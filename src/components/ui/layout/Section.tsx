@@ -1,7 +1,8 @@
 "use client";
 
-import { Badge } from "@/components/ui/Badge";
 import { FlexCol } from "./FlexCol";
+
+import { Badge } from "@/components/ui/Badge";
 
 type SectionProps = {
   title: string;

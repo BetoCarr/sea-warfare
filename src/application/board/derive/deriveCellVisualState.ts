@@ -1,5 +1,7 @@
-import type { LogicalCellInfo } from '../derive/deriveLogicalCellInfo';
 import type { CellVisualState } from '../board-types';
+
+import type { LogicalCellInfo } from '../derive/deriveLogicalCellInfo';
+
 import type { BoardVariant } from '../useBoardViewModel';
 
 export function deriveCellVisualState(params: {

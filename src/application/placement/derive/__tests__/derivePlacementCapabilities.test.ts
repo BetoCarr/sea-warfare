@@ -1,4 +1,5 @@
 import { derivePlacementCapabilities } from '../derivePlacementCapabilities';
+
 import { PlacementState } from '@/lib/domain/placement/models/PlacementState';
 
 describe('derivePlacementCapabilities', () => {

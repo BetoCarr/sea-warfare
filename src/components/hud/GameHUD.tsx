@@ -1,9 +1,13 @@
 // import { ReadinessIndicators } from "./ReadinessIndicators";
-import { TurnSection } from "./TurnSection";
 import { FeedbackMessage } from "./FeedbackMessage";
-import { Button } from "@/components/ui/Button";
+
+import { TurnSection } from "./TurnSection";
+
 import { useGameFlowController } from "@/application/game-flow/useGameFlowController";
+
 import { usePlacementFlow } from "@/application/placement/hooks/usePlacementFlow";
+
+import { Button } from "@/components/ui/Button";
 
 interface GameHUDProps {
   onInitialize?: () => void;

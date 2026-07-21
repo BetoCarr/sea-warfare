@@ -1,5 +1,8 @@
-import type { ShipType } from '@/lib/domain/ships/models/ShipType';
 import { deriveCellPresentation } from '../deriveCellPresentation';
+
+
+
+import type { ShipType } from '@/lib/domain/ships/models/ShipType';
 
 describe('deriveCellPresentation', () => {
     it('builds the water presentation with the expected classes and metadata', () => {

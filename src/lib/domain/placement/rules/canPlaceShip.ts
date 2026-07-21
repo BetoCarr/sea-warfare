@@ -1,10 +1,18 @@
-import type { BaseShip } from '@/lib/domain/ships/models/BaseShip';
-import type { Position } from '@/lib/domain/shared/models/Position';
-import type { Orientation } from '../models/Orientation';
-import type { ShipPlacement } from '../models/ShipPlacement';
-import type { PlacementValidationResult } from '../models/PlacementValidationError';
 import { getShipCoordinates } from './getShipCoordinates';
+
 import { shipsOverlap } from './shipsOverlap';
+
+
+
+import type { Orientation } from '../models/Orientation';
+
+import type { PlacementValidationResult } from '../models/PlacementValidationError';
+
+import type { ShipPlacement } from '../models/ShipPlacement';
+
+import type { Position } from '@/lib/domain/shared/models/Position';
+
+import type { BaseShip } from '@/lib/domain/ships/models/BaseShip';
 
 export type CanPlaceShipParams = {
     boardSize: number;

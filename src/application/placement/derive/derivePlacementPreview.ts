@@ -1,14 +1,20 @@
 import { DEFAULT_BOARD_SIZE } from '@/lib/domain/board/models/BoardConfig';
-import { Position } from '@/lib/domain/shared/models/Position';
+
 import { Orientation } from '@/lib/domain/placement/models/Orientation';
 
 import { canPlaceShip } from '@/lib/domain/placement/rules/canPlaceShip';
+
 import { getShipCoordinates } from '@/lib/domain/placement/rules/getShipCoordinates';
 
-import type { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
-import type { BaseShip } from '@/lib/domain/ships/models/BaseShip';
+import { Position } from '@/lib/domain/shared/models/Position';
+
+
+
 import type { PlacementPreview } from './placement-preview.types';
 
+import type { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
+
+import type { BaseShip } from '@/lib/domain/ships/models/BaseShip';
 
 type DerivePlacementPreviewParams = {
     selectedShip: BaseShip | null;

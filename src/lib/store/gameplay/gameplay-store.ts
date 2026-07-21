@@ -1,10 +1,18 @@
 import { create } from 'zustand';
 
-import type { GameplayState } from './gameplay-store.types';
-import type { GameplayActions } from './gameplay-store.actions';
+
+
 import { initialGameplayState } from './gameplay-store.initial';
-import { initializeGame as initializeGameDomain } from '@/lib/domain/game/mutations/initializeGame';
+
 import { confirmFleet as confirmFleetDomain} from '@/lib/domain/game/mutations/confirmFleet';
+
+import { initializeGame as initializeGameDomain } from '@/lib/domain/game/mutations/initializeGame';
+
+
+
+import type { GameplayActions } from './gameplay-store.actions';
+
+import type { GameplayState } from './gameplay-store.types';
 
 export type GameplayStore =
     GameplayState &
