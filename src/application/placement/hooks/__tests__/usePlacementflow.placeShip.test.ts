@@ -10,7 +10,7 @@ import { placementGameState } from '../testing/placementGameState';
 
 import { resetPlacementStores } from '../testing/resetPlacementStores';
 
-import { useGameplayStore } from '@/lib/store/gameplay/gameplay-store';
+import { useGameplayStore } from '@/lib/store/gameplay-store';
 
 declare global {
     var IS_REACT_ACT_ENVIRONMENT: boolean | undefined;

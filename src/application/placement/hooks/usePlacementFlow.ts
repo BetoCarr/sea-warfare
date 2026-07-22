@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 
 import { STANDARD_FLEET } from '../../../lib/domain/ships/models/StandardFleet';
 
-import { useGameplayStore } from '../../../lib/store/gameplay/gameplay-store';
+import { useGameplayStore } from '../../../lib/store/gameplay-store';
 
 import { derivePlacementAvailability } from '../derive/derivePlacementAvailability';
 

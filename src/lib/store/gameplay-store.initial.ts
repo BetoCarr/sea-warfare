@@ -1,4 +1,4 @@
-import { initialGameState } from '../../domain/game/models/initialGameState';
+import { initialGameState } from '../domain/game/models/initialGameState';
 
 
 

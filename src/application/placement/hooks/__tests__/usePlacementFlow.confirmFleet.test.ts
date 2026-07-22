@@ -10,7 +10,7 @@ import { GamePhase } from '@/lib/domain/game/models/GamePhase';
 
 import { GameStatus } from '@/lib/domain/game/models/GameStatus';
 
-import { useGameplayStore } from '@/lib/store/gameplay/gameplay-store';
+import { useGameplayStore } from '@/lib/store/gameplay-store';
 
 declare global {
     var IS_REACT_ACT_ENVIRONMENT: boolean | undefined;

@@ -1,4 +1,4 @@
-import { getShipCoordinates, type GetShipCoordinatesParams } from './getShipCoordinates';
+import { getShipCoordinates, type GetShipCoordinatesParams } from '../getShipCoordinates';
 
 describe('getShipCoordinates', () => {
     describe('horizontal placement', () => {

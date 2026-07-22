@@ -1,8 +1,8 @@
-import { canPlaceShip } from './canPlaceShip';
+import { canPlaceShip } from '../canPlaceShip';
 
 
 
-import type { ShipPlacement } from '../models/ShipPlacement';
+import type { ShipPlacement } from '../../models/ShipPlacement';
 
 import type { BaseShip } from '@/lib/domain/ships/models/BaseShip';
 

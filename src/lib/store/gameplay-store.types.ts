@@ -1,4 +1,4 @@
-import { ShipPlacement } from '../../domain/placement/models/ShipPlacement';
+import { ShipPlacement } from '../domain/placement/models/ShipPlacement';
 
 import { GameState } from '@/lib/domain/game/models/GameState';
 

@@ -18,7 +18,7 @@ import { usePlacementFlow } from "@/application/placement/hooks/usePlacementFlow
 
 import { useSupportsHover } from "@/lib/device/useSupportsHover";
 
-import { useGameplayStore } from "@/lib/store/gameplay/gameplay-store";
+import { useGameplayStore } from "@/lib/store/gameplay-store";
 
 export function GameScreen() {
     const [feedback, setFeedback] = useState<string | null>(null);

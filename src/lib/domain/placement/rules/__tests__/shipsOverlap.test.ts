@@ -1,4 +1,4 @@
-import { shipsOverlap } from './shipsOverlap';
+import { shipsOverlap } from '../shipsOverlap';
 
 describe('shipsOverlap', () => {
     describe('overlap detection', () => {

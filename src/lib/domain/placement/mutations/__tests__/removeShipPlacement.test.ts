@@ -1,8 +1,8 @@
-import { removeShipPlacement } from './removeShipPlacement';
+import { removeShipPlacement } from '../removeShipPlacement';
 
 
 
-import type { ShipPlacement } from '../models/ShipPlacement';
+import type { ShipPlacement } from '../../models/ShipPlacement';
 
 import type { BaseShip } from '@/lib/domain/ships/models/BaseShip';
 

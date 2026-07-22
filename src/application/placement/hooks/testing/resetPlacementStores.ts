@@ -2,9 +2,9 @@ import { initialPlacementInteractionState } from '../../interactions/placement-i
 
 import { usePlacementInteractionStore } from '../../interactions/placement-interaction.store';
 
-import { useGameplayStore } from '@/lib/store/gameplay/gameplay-store';
+import { useGameplayStore } from '@/lib/store/gameplay-store';
 
-import { initialGameplayState } from '@/lib/store/gameplay/gameplay-store.initial';
+import { initialGameplayState } from '@/lib/store/gameplay-store.initial';
 
 export function resetPlacementStores(): void {
     useGameplayStore.setState({

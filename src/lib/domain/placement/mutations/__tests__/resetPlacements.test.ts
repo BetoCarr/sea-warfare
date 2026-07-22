@@ -1,4 +1,4 @@
-import { resetPlacements } from './resetPlacements';
+import { resetPlacements } from '../resetPlacements';
 
 describe('resetPlacements', () => {
     describe('returns empty array', () => {
