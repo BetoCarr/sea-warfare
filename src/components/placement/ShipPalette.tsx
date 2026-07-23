@@ -55,7 +55,7 @@ export function ShipPalette() {
                                 isSelected={
                                     selectedShipType === ship.type
                                 }
-                                selectShip={() =>
+                                onSelect={() =>
                                     selectShip(ship.type)
                                 }
                             />

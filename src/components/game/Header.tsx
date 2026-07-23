@@ -1,7 +1,7 @@
 // import { ReadinessIndicators } from "./ReadinessIndicators";
-import { FeedbackMessage } from "./FeedbackMessage";
+import { FeedbackMessage } from "./GameStage/FeedbackMessage";
 
-import { TurnSection } from "./TurnSection";
+// import { TurnSection } from "./TurnSection";
 
 import { useGameFlowController } from "@/application/game-flow/useGameFlowController";
 
@@ -9,12 +9,12 @@ import { usePlacementFlow } from "@/application/placement/hooks/usePlacementFlow
 
 import { Button } from "@/components/ui/Button";
 
-interface GameHUDProps {
+interface HeaderProps {
   onInitialize?: () => void;
   onConfirm?: () => { success: boolean, message?: string };
 }
 
-export function GameHUD({ onInitialize, onConfirm }: GameHUDProps) {
+export function Header({ onInitialize, onConfirm }: HeaderProps) {
 
   const flow = useGameFlowController();
   const { canConfirmFleet, canPlaceShip, confirmFleet } = usePlacementFlow();
@@ -39,9 +39,9 @@ export function GameHUD({ onInitialize, onConfirm }: GameHUDProps) {
         </div>
       );
     }
-    if (flow.capabilities.canAttack) {
-      return <TurnSection />;
-    }
+    // if (flow.capabilities.canAttack) {
+    //   return <TurnSection />;
+    // }
     if (flow.capabilities.canRestartGame) {
       return <span className="text-xs font-bold text-yellow-400 tracking-[0.2em]">MATCH ENDED</span>;
     }

@@ -6,11 +6,11 @@ import { useShallow } from "zustand/react/shallow";
 
 
 
-import { FeedbackType } from "../hud/FeedbackMessage";
+import { FeedbackType } from "./GameStage/FeedbackMessage";
 
-import { GameHUD } from "../hud/GameHUD";
+import { Header } from "./Header";
 
-import { GameStage } from "./GameStage";
+import { GameStage } from "./GameStage/GameStage";
 
 import { useGameFlowController } from "@/application/game-flow/useGameFlowController";
 
@@ -45,7 +45,7 @@ export function GameScreen() {
 
     return (
         <div className="min-h-[100dvh] w-full bg-slate-900 text-slate-100 flex flex-col overflow-hidden relative">
-            <GameHUD 
+            <Header 
                 onInitialize={handleInitialize} 
             />
             <GameStage 
@@ -57,7 +57,6 @@ export function GameScreen() {
                     // playerAttack({ row: r, col: c });
                 }}
             />
-            {/* <GameFooter /> */}
         </div>
     );
 }
