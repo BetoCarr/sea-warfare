@@ -1,52 +1,18 @@
-// import { ReadinessIndicators } from "./ReadinessIndicators";
-import { FeedbackMessage } from "./GameStage/FeedbackMessage";
-
-// import { TurnSection } from "./TurnSection";
+import { Button } from "@/components/ui/Button";
 
 import { useGameFlowController } from "@/application/game-flow/useGameFlowController";
 
 import { usePlacementFlow } from "@/application/placement/hooks/usePlacementFlow";
 
-import { Button } from "@/components/ui/Button";
 
 interface HeaderProps {
   onInitialize?: () => void;
-  onConfirm?: () => { success: boolean, message?: string };
 }
 
-export function Header({ onInitialize, onConfirm }: HeaderProps) {
+export function Header({ onInitialize }: HeaderProps) {
 
   const flow = useGameFlowController();
-  const { canConfirmFleet, canPlaceShip, confirmFleet } = usePlacementFlow();
-
-
-  const handleConfirmAction = () => {
-    if (canConfirmFleet) {
-      confirmFleet();
-    }
-  };
-
-  // --- Dynamic Content Selectors ---
-  const renderCenterContent = () => {
-    if (flow.capabilities.canInitializeGame) {
-        return <span className="text-xs font-bold text-yellow-400 tracking-[0.2em]">BOOT SEQUENCE</span>;
-    }
-    if (canPlaceShip) {
-      return (
-        <div className="hidden md:flex items-center gap-4">
-          <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">Fleet Setup</span>
-          {/* <ReadinessIndicators /> */}
-        </div>
-      );
-    }
-    // if (flow.capabilities.canAttack) {
-    //   return <TurnSection />;
-    // }
-    if (flow.capabilities.canRestartGame) {
-      return <span className="text-xs font-bold text-yellow-400 tracking-[0.2em]">MATCH ENDED</span>;
-    }
-    return null;
-  };
+  const { canConfirmFleet, confirmFleet } = usePlacementFlow(); // Revisar si se puede recibir mediante props
 
   const renderAction = () => {
     if (flow.capabilities.canInitializeGame) {
@@ -71,7 +37,7 @@ export function Header({ onInitialize, onConfirm }: HeaderProps) {
         return (
             <Button 
                 variant="success"
-                onClick={handleConfirmAction}
+                onClick={confirmFleet}
                 pulse={true}
             >
                 <span className="sm:hidden">
@@ -88,9 +54,9 @@ export function Header({ onInitialize, onConfirm }: HeaderProps) {
     if (flow.capabilities.canRestartGame) {
         return (
             <Button 
-                variant="secondary"
-                onClick={() => window.location.reload()}
-            >
+              variant="secondary"
+              onClick={() => window.location.reload()} // TODO:
+            >                                          // Replace full page reload with a proper game reset action
                 REMATCH
             </Button>
         );
@@ -111,22 +77,6 @@ export function Header({ onInitialize, onConfirm }: HeaderProps) {
           </span>
         </div>
         <div className="h-4 w-px bg-slate-700 mx-1" />
-        <span className="text-[10px] font-bold text-cyan-400 bg-cyan-950/30 px-2 py-0.5 rounded border border-cyan-500/20">
-          {flow.presentation.phaseLabel}
-        </span>
-      </div>
-
-      {/* CENTER: Dynamic Context */}
-      <div className="flex-1 flex justify-center mx-4">
-        <div className="flex flex-wrap items-center justify-center gap-2 text-center">
-          {renderCenterContent()}
-          {flow.presentation.description ? (
-            <FeedbackMessage
-              message={flow.presentation.description}
-              type="instruction"
-            />
-          ) : null}
-        </div>
       </div>
 
       {/* RIGHT: Primary Action */}

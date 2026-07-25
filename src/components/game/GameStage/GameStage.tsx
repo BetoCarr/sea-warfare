@@ -7,6 +7,8 @@ import { FeedbackMessage, FeedbackType } from './FeedbackMessage';
 
 import Board from '../../board/Board';
 
+import PlayerSection from '../../game/GameStage/PlayerSection/PlayerSection';
+
 import { OrientationToggle } from '../../placement/OrientationToggle';
 
 import { ShipPalette } from '../../placement/ShipPalette';
@@ -41,7 +43,7 @@ export const GameStage = ({
     const placement = usePlacementFlow();
     const flow = useGameFlowController();
 
-    console.log(flow)
+    console.log(placement)
 
     const boardVM = useBoardViewModel({
         boardVariant: 'player',
@@ -72,31 +74,26 @@ export const GameStage = ({
                 />
             </div>
 
-            {/* 2. CENTER SLOT: The Main Engagement Area (Board) */}
-            <div className="w-full max-w-full flex items-center justify-center transition-transform duration-500">
-                <div className="flex-1 min-h-0 flex items-center justify-center py-2 sm:py-4">                                
-                    <Board
-                        boardVM={boardVM}
-                        interactive={
-                            placement.canPlaceShip ||
-                            flow.capabilities.canAttack
-                        }
-                        onCellHover={
-                            supportsHover
-                                ? placement.setTargetCell
-                                : undefined
-                        }
-                        onCellLeave={
-                            supportsHover
-                                ? placement.onBoardLeave
-                                : undefined
-                        }
-                        onCellPress={placement.onBoardInteraction}
-                    
-                    />  
-                </div>
-            </div>
-            
+            < PlayerSection
+                boardVM={boardVM}
+
+                interactive={
+                    placement.canPlaceShip ||
+                    flow.capabilities.canAttack
+                }
+                onCellHover={
+                    supportsHover
+                        ? placement.setTargetCell
+                        : undefined
+                }
+                onCellLeave={
+                    supportsHover
+                        ? placement.onBoardLeave
+                        : undefined
+                }
+                onCellPress={placement.onBoardInteraction}
+            />
+
             {flow.capabilities.canAttack && (  
                 <div className="w-full max-w-full flex items-center justify-center transition-transform duration-500">
                     <div className="flex-1 min-h-0 flex items-center justify-center py-2 sm:py-4">                                
@@ -123,7 +120,7 @@ export const GameStage = ({
                 </div>
             )}
             {/* 3. BOTTOM SLOT: Ship Palette */}
-            {placement.canPlaceShip && (
+            {!flow.capabilities.canInitializeGame && (
                 <div className="shrink-0 flex flex-col gap-2 sm:gap-4 px-1">
                     <div className="flex justify-between items-center">
                         <OrientationToggle
