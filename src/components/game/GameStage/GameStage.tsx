@@ -43,7 +43,7 @@ export const GameStage = ({
     const placement = usePlacementFlow();
     const flow = useGameFlowController();
 
-    console.log(placement)
+    console.log(flow)
 
     const boardVM = useBoardViewModel({
         boardVariant: 'player',
@@ -120,7 +120,7 @@ export const GameStage = ({
                 </div>
             )}
             {/* 3. BOTTOM SLOT: Ship Palette */}
-            {!flow.capabilities.canInitializeGame && (
+            {flow.capabilities.canPlaceShip && (
                 <div className="shrink-0 flex flex-col gap-2 sm:gap-4 px-1">
                     <div className="flex justify-between items-center">
                         <OrientationToggle

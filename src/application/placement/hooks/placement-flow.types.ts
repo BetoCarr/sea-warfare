@@ -12,7 +12,6 @@ import type { PlacementPreview } from '../derive/placement-preview.types';
 
 import type { Orientation } from '@/lib/domain/placement/models/Orientation';
 
-import type { PlacementState } from '@/lib/domain/placement/models/PlacementState';
 
 import type { Position } from '@/lib/domain/shared/models/Position';
 
@@ -31,10 +30,6 @@ export type PlacementFlow = {
     preview: PlacementPreview | null;
     availability: PlacementAvailability;
     presentation: PlacementPresentation;
-    placementState: PlacementState;
-    canPlaceShip: boolean;
-    canConfirmFleet: boolean;
-    canInteractWithBoard: boolean;
 
     // interaction actions
     selectShip: (

@@ -8,19 +8,16 @@ import { useGameplayStore } from '../../../lib/store/gameplay-store';
 
 import { derivePlacementAvailability } from '../derive/derivePlacementAvailability';
 
-import { derivePlacementCapabilities } from '../derive/derivePlacementCapabilities';
 
 import { derivePlacementPresentation } from '../derive/derivePlacementPresentation';
 
 import { derivePlacementPreview } from '../derive/derivePlacementPreview';
 
-import { derivePlacementState } from '../derive/derivePlacementState';
 
 import { usePlacementInteractionStore } from '../interactions/placement-interaction.store';
 
 import { confirmFleet as confirmFleetDomain } from '@/lib/domain/game/mutations/confirmFleet';
 
-import { PlacementState } from '@/lib/domain/placement/models/PlacementState';
 
 import { upsertShipPlacement } from '@/lib/domain/placement/mutations/upsertShipPlacement';
 
@@ -118,18 +115,6 @@ export function usePlacementFlow(): PlacementFlow {
         [playerPlacements],
     );
 
-    const placementState = derivePlacementState({
-        placements: playerPlacements,
-        requiredFleetSize: STANDARD_FLEET.length
-    });
-
-    const {
-        canPlaceShip,
-        canConfirmFleet,
-        canInteractWithBoard,
-    } = derivePlacementCapabilities(
-        placementState,
-    );
 
     const presentation = useMemo(
         () =>
@@ -242,15 +227,8 @@ export function usePlacementFlow(): PlacementFlow {
         setTargetCell(null);
     }
 
-
-
     const confirmFleet = () => {
-        if (placementState !== PlacementState.FLEET_READY) {
-            return;
-        }
-
         const nextGame = confirmFleetDomain({ game });
-
         useGameplayStore.getState().setGame(nextGame);
     };
 
@@ -269,14 +247,6 @@ export function usePlacementFlow(): PlacementFlow {
         availability,
 
         presentation,
-
-        placementState,
-
-        canPlaceShip,
-
-        canConfirmFleet,
-
-        canInteractWithBoard,
 
         selectShip,
 
