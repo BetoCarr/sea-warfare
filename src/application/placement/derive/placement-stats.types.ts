@@ -1,6 +1,6 @@
 import type { ShipType } from '@/lib/domain/ships/models/ShipType';
 
-export type PlacementAvailability = {
+export type PlacementStats = {
+    remainingShips: number;
     remainingShipTypes: ShipType[];
-    allShipsPlaced: boolean;
 };

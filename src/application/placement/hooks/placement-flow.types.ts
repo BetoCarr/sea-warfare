@@ -4,7 +4,7 @@ import { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
 
 
 
-import type { PlacementAvailability } from '../derive/placement-availability.types';
+import type { PlacementAvailability } from '../derive/placement-stats.types';
 
 import type { PlacementPresentation } from '../derive/placement-presentation.types';
 

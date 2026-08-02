@@ -1,20 +1,20 @@
 import type {
-    PlacementAvailability,
-} from './placement-availability.types';
+    PlacementStats,
+} from './placement-stats.types';
 
 import type { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
 
 import type { BaseShip } from '@/lib/domain/ships/models/BaseShip';
 
-type DerivePlacementAvailabilityParams = {
+type DerivePlacementStatsParams = {
     placements: ShipPlacement[];
     requiredFleet: BaseShip[];
 };
 
-export function derivePlacementAvailability({
+export function derivePlacementStats({
     placements,
     requiredFleet,
-}: DerivePlacementAvailabilityParams): PlacementAvailability {
+}: DerivePlacementStatsParams): PlacementStats {
 
     const placedShipTypes = new Set(
         placements.map(
@@ -29,9 +29,7 @@ export function derivePlacementAvailability({
         );
 
     return {
-        remainingShipTypes,
-
-        allShipsPlaced:
-            remainingShipTypes.length === 0,
+        remainingShips: remainingShipTypes.length,
+        remainingShipTypes
     };
 }

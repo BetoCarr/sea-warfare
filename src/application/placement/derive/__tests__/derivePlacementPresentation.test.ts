@@ -2,7 +2,7 @@ import { derivePlacementPresentation } from '../derivePlacementPresentation';
 
 
 
-import type { PlacementAvailability } from '../placement-availability.types';
+import type { PlacementAvailability } from '../placement-stats.types';
 
 import type { PlacementPreview } from '../placement-preview.types';
 

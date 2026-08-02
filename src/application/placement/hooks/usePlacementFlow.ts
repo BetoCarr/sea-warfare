@@ -6,7 +6,7 @@ import { STANDARD_FLEET } from '../../../lib/domain/ships/models/StandardFleet';
 
 import { useGameplayStore } from '../../../lib/store/gameplay-store';
 
-import { derivePlacementAvailability } from '../derive/derivePlacementAvailability';
+import { derivePlacementAvailability } from '../derive/derivePlacementStats';
 
 
 import { derivePlacementPresentation } from '../derive/derivePlacementPresentation';

@@ -1,4 +1,4 @@
-import type { PlacementAvailability } from './placement-availability.types';
+import type { PlacementAvailability } from './placement-stats.types';
 
 import type { PlacementPresentation } from './placement-presentation.types';
 

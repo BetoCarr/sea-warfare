@@ -1,4 +1,4 @@
-import { derivePlacementAvailability } from '../derivePlacementAvailability';
+import { derivePlacementStats } from '../derivePlacementStats';
 
 
 
@@ -47,7 +47,7 @@ function buildPlacement(ship: BaseShip, row: number, col: number): ShipPlacement
     };
 }
 
-describe('derivePlacementAvailability', () => {
+describe('derivePlacementStats', () => {
     it('should return all ship types as remaining when no placements exist', () => {
         const availability = derivePlacementAvailability({
             placements: [],
