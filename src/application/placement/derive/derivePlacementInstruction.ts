@@ -1,6 +1,5 @@
-import type { PlacementAvailability } from './placement-stats.types';
 
-import type { PlacementInstruction } from './placement-presentation.types';
+import type { PlacementInstruction } from './placement-instruction.types';
 
 import type { PlacementPreview } from './placement-preview.types';
 
