@@ -24,7 +24,7 @@ import { usePlacementKeyboardShortcuts } from '@/application/placement/interacti
 import { cn } from '@/lib/utils/utils';
 
 interface GameStageProps {
-    activeMessage: string | null;
+        // activeMessage: string | null;
     activeType: FeedbackType;
     supportsHover: boolean;
     onDismissFeedback: () => void;  
@@ -32,7 +32,7 @@ interface GameStageProps {
 }
 
 export const GameStage = ({
-    activeMessage,
+    // activeMessage,
     activeType,
     supportsHover,
     onDismissFeedback,
@@ -62,12 +62,11 @@ export const GameStage = ({
         <main className={cn(
             "flex-1 min-h-0 overflow-hidden flex flex-col items-stretch relative px-4 md:px-8",
             "transition-all duration-700 ease-in-out",
-            placement.canPlaceShip && "md:pr-[280px]"
         )}>
             {/* 1. TOP SLOT: Feedback / Instructions (Stable Height) */}
             <div className="h-20 sm:h-24 flex items-center justify-center shrink-0">
                 <FeedbackMessage 
-                    message={activeMessage} 
+                    // message={activeMessage} 
                     type={activeType} 
                     onDismiss={onDismissFeedback}
                     className="pointer-events-auto shadow-xl backdrop-blur-md ring-1 ring-white/10"

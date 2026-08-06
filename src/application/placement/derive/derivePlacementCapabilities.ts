@@ -1,10 +1,6 @@
 import { PlacementState } from '@/lib/domain/placement/models/PlacementState';
 
-export type PlacementCapabilities = {
-    canPlaceShip: boolean;
-    canConfirmFleet: boolean;
-    canInteractWithBoard: boolean;
-};
+import type { PlacementCapabilities } from '../derive/placement-capabilites.types';
 
 export function derivePlacementCapabilities(
     placementState: PlacementState,

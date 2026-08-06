@@ -1,6 +1,6 @@
 import type { PlacementOutcome } from '@/lib/domain/placement/models/PlacementOutcome';
 
-import type { PlacementValidationError } from '@/lib/domain/placement/models/PlacementValidationError';
+import type { PlacementFeedback } from './placement-feedback.types';
 
 import type { PlacementPreview } from './placement-preview.types';
 
@@ -8,17 +8,7 @@ type DerivePlacementFeedbackParams = {
     preview: PlacementPreview | null;
     outcome: PlacementOutcome | null;
 };
-export type PlacementFeedback =
-    | {
-        type: 'invalid-placement';
-        validationError: PlacementValidationError;
-    }
-    | {
-        type: 'ship-placed';
-    }
-    | {
-        type: 'ship-repositioned';
-    };
+
 
 export function derivePlacementFeedback({
     preview,
