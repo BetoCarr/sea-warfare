@@ -44,6 +44,7 @@ describe('upsertShipPlacement', () => {
             expect(result.success).toBe(true);
             if (result.success) {
                 expect(result.placements).toHaveLength(1);
+                expect(result.outcome).toBe('placed');
             }
         });
 
@@ -197,6 +198,7 @@ describe('upsertShipPlacement', () => {
                 expect(result.placements).toHaveLength(1);
                 expect(result.placements).not.toContain(existingCarrier);
                 expect(result.placements).toContain(replacementCarrier);
+                expect(result.outcome).toBe('repositioned');
             }
         });
 

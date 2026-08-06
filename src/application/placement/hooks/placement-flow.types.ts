@@ -4,9 +4,9 @@ import { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
 
 
 
-import type { PlacementAvailability } from '../derive/placement-stats.types';
+// import type { PlacementAvailability } from '../derive/placement-stats.types';
 
-import type { PlacementPresentation } from '../derive/placement-instruction.types';
+// import type { PlacementPresentation } from '../derive/placement-instruction.types';
 
 import type { PlacementPreview } from '../derive/placement-preview.types';
 
@@ -28,8 +28,8 @@ export type PlacementFlow = {
     
     // derived state
     preview: PlacementPreview | null;
-    availability: PlacementAvailability;
-    presentation: PlacementPresentation;
+    // availability: PlacementAvailability;
+    // presentation: PlacementPresentation;
 
     // interaction actions
     selectShip: (

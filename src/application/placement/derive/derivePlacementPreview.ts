@@ -57,11 +57,16 @@ export function derivePlacementPreview({
         existingPlacements: placementsForValidation,
     });
 
+    if (!validation.valid) {
+        return {
+            cells,
+            isValid: false,
+            validationError: validation.error,
+        };
+    }
+
     return {
         cells,
-        isValid: validation.valid,
-        validationError: validation.valid
-            ? undefined
-            : validation.error,
+        isValid: true,
     };
 }

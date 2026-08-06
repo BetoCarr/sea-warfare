@@ -6,10 +6,10 @@ import { STANDARD_FLEET } from '../../../lib/domain/ships/models/StandardFleet';
 
 import { useGameplayStore } from '../../../lib/store/gameplay-store';
 
-import { derivePlacementAvailability } from '../derive/derivePlacementStats';
+// import { derivePlacementAvailability } from '../derive/derivePlacementStats';
 
 
-import { derivePlacementPresentation } from '../derive/derivePlacementPresentation';
+// import { derivePlacementPresentation } from '../derive/derivePlacementPresentation';
 
 import { derivePlacementPreview } from '../derive/derivePlacementPreview';
 
@@ -104,31 +104,31 @@ export function usePlacementFlow(): PlacementFlow {
         ],
     );
 
-    const availability = useMemo(
-        () =>
-            derivePlacementAvailability({
-                placements:
-                    playerPlacements,
+    // const availability = useMemo(
+    //     () =>
+    //         derivePlacementAvailability({
+    //             placements:
+    //                 playerPlacements,
 
-                requiredFleet: STANDARD_FLEET,
-            }),
-        [playerPlacements],
-    );
+    //             requiredFleet: STANDARD_FLEET,
+    //         }),
+    //     [playerPlacements],
+    // );
 
 
-    const presentation = useMemo(
-        () =>
-            derivePlacementPresentation({
-                selectedShipType,
-                preview,
-                availability,
-            }),
-        [
-            selectedShipType,
-            preview,
-            availability,
-        ],
-    );
+    // const presentation = useMemo(
+    //     () =>
+    //         derivePlacementPresentation({
+    //             selectedShipType,
+    //             preview,
+    //             availability,
+    //         }),
+    //     [
+    //         selectedShipType,
+    //         preview,
+    //         availability,
+    //     ],
+    // );
 
     function selectShip(
         shipType: ShipType | null,
@@ -244,9 +244,9 @@ export function usePlacementFlow(): PlacementFlow {
 
         preview,
 
-        availability,
+        // availability,
 
-        presentation,
+        // presentation,
 
         selectShip,
 

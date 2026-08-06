@@ -2,8 +2,13 @@ import type { PlacementValidationError } from '../../../lib/domain/placement/mod
 
 import type { Position} from '../../../lib/domain/shared/models/Position';
 
-export type PlacementPreview = {
-    cells: Position[];
-    isValid: boolean;
-    validationError?: PlacementValidationError;
-};
+export type PlacementPreview =
+    | {
+        isValid: true;
+        cells: Position[];
+    }
+    | {
+        isValid: false;
+        cells: Position[];
+        validationError: PlacementValidationError;
+    };

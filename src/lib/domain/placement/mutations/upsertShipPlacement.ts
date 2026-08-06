@@ -2,7 +2,7 @@ import { canPlaceShip } from '../rules/canPlaceShip';
 
 import { DEFAULT_BOARD_SIZE } from '@/lib/domain/board/models/BoardConfig';
 
-
+import type { PlacementOutcome } from '../models/PlacementOutcome';
 
 import type { PlacementValidationError } from '../models/PlacementValidationError';
 
@@ -18,6 +18,7 @@ type UpsertShipPlacementResult =
     | {
         success: true;
         placements: ShipPlacement[];
+        outcome: PlacementOutcome;
     }
     | {
         success: false;
@@ -30,10 +31,15 @@ export function upsertShipPlacement({
     boardSize = DEFAULT_BOARD_SIZE,
 }: UpsertShipPlacementParams): UpsertShipPlacementResult {
 
+    const existingPlacement = existingPlacements.find(
+        currentPlacement =>
+            currentPlacement.ship.type === placement.ship.type,
+    );
+
     const authoritativePlacements =
         existingPlacements.filter(
-            existingPlacement =>
-                existingPlacement.ship.type !==
+            currentPlacement =>
+                currentPlacement.ship.type !==
                 placement.ship.type,
         );
 
@@ -59,5 +65,8 @@ export function upsertShipPlacement({
             ...authoritativePlacements,
             placement,
         ],
+        outcome: existingPlacement == null
+            ? 'placed'
+            : 'repositioned',
     };
 }

@@ -39,7 +39,7 @@ export function GameScreen() {
         initializeGame();
     };
 
-    const activeMessage = feedback || placement.presentation.message || flow.presentation.description;
+    // const activeMessage = feedback || placement.presentation.message || flow.presentation.description;
     const activeType = feedback ? feedbackType : 'instruction';
 
 
@@ -49,7 +49,7 @@ export function GameScreen() {
                 onInitialize={handleInitialize} 
             />
             <GameStage 
-                activeMessage={activeMessage}
+                // activeMessage={activeMessage}
                 activeType={activeType}
                 supportsHover={supportsHover}
                 onDismissFeedback={() => setFeedback(null)}
