@@ -21,32 +21,14 @@ export type PlacementFlow = {
     // authoritative state
     playerPlacements: ShipPlacement[];
 
-    // interaction state
-    selectedShipType: ShipType | null;
-    orientation: Orientation;
-    targetCell: Position | null;
+
     
     // derived state
     preview: PlacementPreview | null;
     // availability: PlacementAvailability;
     // presentation: PlacementPresentation;
 
-    // interaction actions
-    selectShip: (
-        shipType: ShipType | null,
-    ) => void;
 
-    setTargetCell: (
-        position: Position | null,
-    ) => void;
-
-    rotate: () => void;
-
-    onBoardInteraction(
-        interaction: BoardCellInteraction,
-    ): void;
-
-    onBoardLeave(): void;
 
     // domain mutations
     placeShip: () => void;
