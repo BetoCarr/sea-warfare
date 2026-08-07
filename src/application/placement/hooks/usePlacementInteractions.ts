@@ -3,17 +3,27 @@ import { usePlacementInteractionStore } from '../interactions/placement-interact
 import { BoardCellInteraction } from '../interactions/placement-interaction.types';
 
 
-import type { PlacementInteractions } from './placement-interactions.types';
+import type { PlacementInteractionsContract } from './placement-interactions-contract.types';
 
 import { ShipType } from '@/lib/domain/ships/models/ShipType';
 
+import { STANDARD_FLEET } from '../../../lib/domain/ships/models/StandardFleet';
 
-export function usePlacementInteractions(): PlacementInteractions {
+
+export function usePlacementInteractions(): PlacementInteractionsContract {
 
     const selectedShipType =
         usePlacementInteractionStore(
             state => state.selectedShipType,
         );
+    
+    const selectedShip =
+        selectedShipType == null
+            ? null
+            : STANDARD_FLEET.find(
+                ship =>
+                    ship.type === selectedShipType,
+            ) ?? null;
 
     const orientation =
         usePlacementInteractionStore(
@@ -106,6 +116,7 @@ export function usePlacementInteractions(): PlacementInteractions {
 
     return {
         selectedShipType,
+        selectedShip,
         orientation,
         targetCell,
 

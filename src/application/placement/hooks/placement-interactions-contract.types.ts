@@ -5,13 +5,17 @@ import type { Orientation } from '@/lib/domain/placement/models/Orientation';
 
 import type { Position } from '@/lib/domain/shared/models/Position';
 
+
+import { BaseShip } from '@/lib/domain/ships/models/BaseShip';
+
 import type { ShipType } from '@/lib/domain/ships/models/ShipType';
 
 
-export type PlacementInteractions = {
+export type PlacementInteractionsContract = {
 
     // interaction state
     selectedShipType: ShipType | null;
+    selectedShip: BaseShip | null;
     orientation: Orientation;
     targetCell: Position | null;
 
