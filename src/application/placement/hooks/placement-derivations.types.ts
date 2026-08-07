@@ -5,13 +5,12 @@ import type { PlacementPreview } from '../derive/placement-preview.types';
 import type { PlacementStats } from '../derive/placement-stats.types';
 
 export type PlacementDerivations = {
-    preview: PlacementPreview | null;
-
-    capabilities: PlacementCapabilities;
-
-    instruction: PlacementInstruction;
-
-    feedback: PlacementFeedback | null;
 
     stats: PlacementStats;
+    capabilities: PlacementCapabilities;
+
+    preview: PlacementPreview | null;
+    instruction: PlacementInstruction;
+    feedback: PlacementFeedback | null;
+
 };

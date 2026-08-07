@@ -16,7 +16,7 @@ import type { PlacementDerivations } from './placement-derivations.types';
 import type { PlacementInteractionsContract } from './placement-interactions-contract.types';
 
 type UsePlacementDerivationsParams = {
-    interactions: PlacementInteractionsContract;
+    interaction: PlacementInteractionsContract;
 
     playerPlacements: ShipPlacement[];
 
@@ -24,26 +24,10 @@ type UsePlacementDerivationsParams = {
 };
 
 export function usePlacementDerivations({
-    interactions,
+    interaction,
     playerPlacements,
     outcome = null,
 }: UsePlacementDerivationsParams): PlacementDerivations {
-
-    const preview = useMemo(
-        () =>
-            derivePlacementPreview({
-                selectedShip: interactions.selectedShip,
-                targetCell: interactions.targetCell,
-                orientation: interactions.orientation,
-                existingPlacements: playerPlacements,
-            }),
-        [
-            interactions.selectedShip,
-            interactions.targetCell,
-            interactions.orientation,
-            playerPlacements,
-        ],
-    );
 
     const stats = useMemo(
         () =>
@@ -54,29 +38,41 @@ export function usePlacementDerivations({
         [playerPlacements],
     );
 
-    // const capabilities = useMemo(
-    //     () =>
-    //         derivePlacementCapabilities({
-    //             preview,
-    //             stats,
-    //         }),
-    //     [
-    //         preview,
-    //         stats,
-    //     ],
-    // );
+    const capabilities = useMemo(
+        () =>
+            derivePlacementCapabilities(
+                stats
+            ),
+        [
+            stats,
+        ],
+    );
+
+    const preview = useMemo(
+        () =>
+            derivePlacementPreview({
+                selectedShip: interaction.selectedShip,
+                targetCell: interaction.targetCell,
+                orientation: interaction.orientation,
+                existingPlacements: playerPlacements,
+            }),
+        [
+            interaction.selectedShip,
+            interaction.targetCell,
+            interaction.orientation,
+            playerPlacements,
+        ],
+    );
 
     const instruction = useMemo(
         () =>
             derivePlacementInstruction({
-                selectedShipType: interactions.selectedShipType,
+                selectedShipType: interaction.selectedShipType,
                 preview,
-                capabilities,
             }),
         [
-            interactions.selectedShipType,
+            interaction.selectedShipType,
             preview,
-            capabilities,
         ],
     );
 
@@ -93,10 +89,11 @@ export function usePlacementDerivations({
     );
 
     return {
-        preview,
+        stats,
         capabilities,
+
+        preview,
         instruction,
         feedback,
-        stats,
     };
 }
