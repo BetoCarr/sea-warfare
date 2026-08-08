@@ -2,7 +2,7 @@ import { act } from 'react';
 
 
 
-import { usePlacementFlow } from '../usePlacementFlow';
+import { usePlacementFlow } from '../usePlacement';
 
 import { createPlacementFlowHarness } from './createPlacementFlowHarness';
 

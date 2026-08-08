@@ -4,13 +4,11 @@ import { GameState } from '@/lib/domain/game/models/GameState';
 
 import { GameStatus } from '@/lib/domain/game/models/GameStatus';
 
-import { PlacementState } from '@/lib/domain/placement/models/PlacementState';
-
-import { derivePlacementCapabilities } from '../placement/derive/derivePlacementCapabilities';
+import { PlacementCapabilities } from '@/application/placement/derive/placement-capabilites.types';
 
 type GameInteractionCapabilities = {
     canInitializeGame: boolean;
-    canPlaceShip: boolean;
+    canPlaceFleet: boolean;
     canConfirmFleet: boolean;
     canInteractWithBoard: boolean;
     canAttack: boolean;
@@ -20,7 +18,7 @@ type GameInteractionCapabilities = {
 
 const DEFAULT_CAPABILITIES: GameInteractionCapabilities = {
     canInitializeGame: false,
-    canPlaceShip: false,
+    canPlaceFleet: false,
     canConfirmFleet: false,
     canInteractWithBoard: false,
     canAttack: false,
@@ -30,7 +28,7 @@ const DEFAULT_CAPABILITIES: GameInteractionCapabilities = {
 
 export function deriveCapabilities(
     game: GameState,
-    placementState: PlacementState,
+    placementCapabilities: PlacementCapabilities
 ): GameInteractionCapabilities {
 
     const { phase, status } = game;
@@ -43,12 +41,11 @@ export function deriveCapabilities(
     }
 
     if (phase === GamePhase.PLACEMENT) {
-        const placementCapabilities =
-            derivePlacementCapabilities(placementState);
-
         return {
             ...DEFAULT_CAPABILITIES,
-            ...placementCapabilities,
+            canPlaceFleet: true,
+            canConfirmFleet:
+                placementCapabilities.canConfirmFleet,
         };
     }
 

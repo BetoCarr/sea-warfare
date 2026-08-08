@@ -6,7 +6,7 @@ import { createRoot } from 'react-dom/client';
 
 import { PlacementFlow } from '../placement-flow.types';
 
-import { usePlacementFlow } from '../usePlacementFlow';
+import { usePlacementFlow } from '../usePlacement';
 
 export type PlacementFlowHarness = {
     getCurrent: () => PlacementFlow;

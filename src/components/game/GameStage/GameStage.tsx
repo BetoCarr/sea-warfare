@@ -17,9 +17,7 @@ import { useBoardViewModel } from '@/application/board/useBoardViewModel';
 
 import { useGameFlowController } from '@/application/game-flow/useGameFlowController';
 
-// import { usePlacementFlow } from '@/application/placement/hooks/usePlacementFlow';
-
-import { usePlacementInteractions } from '@/application/placement/hooks/usePlacementInteractions';
+import { usePlacement } from '@/application/placement/hooks/usePlacement';
 
 import { usePlacementKeyboardShortcuts } from '@/application/placement/interactions/usePlacementKeyboardShortcuts';
 
@@ -42,23 +40,23 @@ export const GameStage = ({
 }: GameStageProps) => {
 
 
-    const placement = usePlacementInteractions();
+    const placement = usePlacement();
     const flow = useGameFlowController();
 
     console.log(placement);
 
-    // const boardVM = useBoardViewModel({
-    //     boardVariant: 'player',
-    //     size: 10,
-    //     playerPlacements: placement.playerPlacements,
-    //     preview: placement.preview,
-    //     selectedShipType: placement.selectedShipType,
-    //     showShips: true,
-    // });
+    const boardVM = useBoardViewModel({
+        boardVariant: 'player',
+        size: 10,
+        playerPlacements: placement.playerPlacements,
+        preview: placement.preview,
+        selectedShipType: placement.interaction.selectedShipType,
+        showShips: true,
+    });
     
-    // usePlacementKeyboardShortcuts({
-    //     rotate: placement.rotate,
-    // });
+    usePlacementKeyboardShortcuts({
+        rotate: placement.interaction.rotate,
+    });
 
     return (
         <main className={cn(
@@ -66,33 +64,33 @@ export const GameStage = ({
             "transition-all duration-700 ease-in-out",
         )}>
             {/* 1. TOP SLOT: Feedback / Instructions (Stable Height) */}
-            <div className="h-20 sm:h-24 flex items-center justify-center shrink-0">
+            {/* <div className="h-20 sm:h-24 flex items-center justify-center shrink-0">
                 <FeedbackMessage 
                     // message={activeMessage} 
                     type={activeType} 
                     onDismiss={onDismissFeedback}
                     className="pointer-events-auto shadow-xl backdrop-blur-md ring-1 ring-white/10"
                 />
-            </div>
+            </div> */}
 
             < PlayerSection
                 boardVM={boardVM}
 
                 interactive={
-                    placement.canPlaceShip ||
+                    flow.capabilities.canPlaceFleet ||
                     flow.capabilities.canAttack
                 }
                 onCellHover={
                     supportsHover
-                        ? placement.setTargetCell
+                        ? placement.interaction.setTargetCell
                         : undefined
                 }
                 onCellLeave={
                     supportsHover
-                        ? placement.onBoardLeave
+                        ? placement.interaction.onBoardLeave
                         : undefined
                 }
-                onCellPress={placement.onBoardInteraction}
+                onCellPress={placement.interaction.onBoardInteraction}
             />
 
             {flow.capabilities.canAttack && (  
@@ -101,32 +99,32 @@ export const GameStage = ({
                         <Board
                             boardVM={boardVM}
                             interactive={
-                                placement.canPlaceShip ||
+                                flow.capabilities.canPlaceFleet ||
                                 flow.capabilities.canAttack
                             }
                             onCellHover={
                                 supportsHover
-                                    ? placement.setTargetCell
+                                    ? placement.interaction.setTargetCell
                                     : undefined
                             }
                             onCellLeave={
                                 supportsHover
-                                    ? placement.onBoardLeave
+                                    ? placement.interaction.onBoardLeave
                                     : undefined
                             }
-                            onCellPress={placement.onBoardInteraction}
+                            onCellPress={placement.interaction.onBoardInteraction}
                         
                         />  
                     </div>
                 </div>
             )}
             {/* 3. BOTTOM SLOT: Ship Palette */}
-            {flow.capabilities.canPlaceShip && (
+            {flow.capabilities.canPlaceFleet && (
                 <div className="shrink-0 flex flex-col gap-2 sm:gap-4 px-1">
                     <div className="flex justify-between items-center">
                         <OrientationToggle
-                            orientation={placement.orientation} 
-                            onToggle={placement.rotate} 
+                            orientation={placement.interaction.orientation} 
+                            onToggle={placement.interaction.rotate} 
                         />
                     </div>
                     <ShipPalette /> 

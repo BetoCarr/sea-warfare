@@ -5,26 +5,28 @@ import { useMemo } from "react";
 
 import { ShipPaletteItem } from "./ShipPaletteItem";
 
-import { usePlacementFlow } from "@/application/placement/hooks/usePlacementFlow";
+import { usePlacement } from "@/application/placement/hooks/usePlacement";
 
 import { STANDARD_FLEET } from "@/lib/domain/ships/models/StandardFleet";
 
 import { cn } from "@/lib/utils/utils";
 
 export function ShipPalette() {
-    const {
-        availability,
-        selectedShipType,
-        selectShip,
-    } = usePlacementFlow();
+    // const {
+    //     availability,
+    //     selectedShipType,
+    //     selectShip,
+    // } = usePlacementFlow();
+
+    const placement = usePlacement();
 
     const remainingShipTypes =
         useMemo(
             () =>
                 new Set(
-                    availability.remainingShipTypes,
+                    placement.contract.stats.remainingShipTypes,
                 ),
-            [availability.remainingShipTypes],
+            [placement.contract.stats.remainingShipTypes],
         );
 
     const remainingShips =
@@ -53,10 +55,10 @@ export function ShipPalette() {
                                 type={ship.type}
                                 size={ship.size}
                                 isSelected={
-                                    selectedShipType === ship.type
+                                    placement.interaction.selectedShipType === ship.type
                                 }
                                 onSelect={() =>
-                                    selectShip(ship.type)
+                                    placement.interaction.selectShip(ship.type)
                                 }
                             />
                         ))
