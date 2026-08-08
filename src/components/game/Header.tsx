@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/Button";
 
 import { useGameFlowController } from "@/application/game-flow/useGameFlowController";
 
-import { usePlacementFlow } from "@/application/placement/hooks/usePlacementFlow";
+// import { usePlacementFlow } from "@/application/placement/hooks/usePlacementFlow";
 
 
 interface HeaderProps {
@@ -12,7 +12,7 @@ interface HeaderProps {
 export function Header({ onInitialize }: HeaderProps) {
 
   const flow = useGameFlowController();
-  const { canConfirmFleet, confirmFleet } = usePlacementFlow(); // Revisar si se puede recibir mediante props
+//   const { canConfirmFleet, confirmFleet } = usePlacementFlow(); // Revisar si se puede recibir mediante props
 
   const renderAction = () => {
     if (flow.capabilities.canInitializeGame) {
@@ -33,23 +33,23 @@ export function Header({ onInitialize }: HeaderProps) {
         );
     }
 
-    if (canConfirmFleet) {
-        return (
-            <Button 
-                variant="success"
-                onClick={confirmFleet}
-                pulse={true}
-            >
-                <span className="sm:hidden">
-                    CONFIRM
-                </span>
+    // if (canConfirmFleet) {
+    //     return (
+    //         <Button 
+    //             variant="success"
+    //             onClick={confirmFleet}
+    //             pulse={true}
+    //         >
+    //             <span className="sm:hidden">
+    //                 CONFIRM
+    //             </span>
 
-                <span className="hidden sm:inline">
-                    CONFIRM FLEET
-                </span>
-            </Button>
-        );
-    }
+    //             <span className="hidden sm:inline">
+    //                 CONFIRM FLEET
+    //             </span>
+    //         </Button>
+    //     );
+    // }
 
     if (flow.capabilities.canRestartGame) {
         return (

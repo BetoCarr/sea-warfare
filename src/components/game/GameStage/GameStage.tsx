@@ -17,7 +17,9 @@ import { useBoardViewModel } from '@/application/board/useBoardViewModel';
 
 import { useGameFlowController } from '@/application/game-flow/useGameFlowController';
 
-import { usePlacementFlow } from '@/application/placement/hooks/usePlacementFlow';
+// import { usePlacementFlow } from '@/application/placement/hooks/usePlacementFlow';
+
+import { usePlacementInteractions } from '@/application/placement/hooks/usePlacementInteractions';
 
 import { usePlacementKeyboardShortcuts } from '@/application/placement/interactions/usePlacementKeyboardShortcuts';
 
@@ -40,23 +42,23 @@ export const GameStage = ({
 }: GameStageProps) => {
 
 
-    const placement = usePlacementFlow();
+    const placement = usePlacementInteractions();
     const flow = useGameFlowController();
 
-    console.log(flow)
+    console.log(placement);
 
-    const boardVM = useBoardViewModel({
-        boardVariant: 'player',
-        size: 10,
-        playerPlacements: placement.playerPlacements,
-        preview: placement.preview,
-        selectedShipType: placement.selectedShipType,
-        showShips: true,
-    });
+    // const boardVM = useBoardViewModel({
+    //     boardVariant: 'player',
+    //     size: 10,
+    //     playerPlacements: placement.playerPlacements,
+    //     preview: placement.preview,
+    //     selectedShipType: placement.selectedShipType,
+    //     showShips: true,
+    // });
     
-    usePlacementKeyboardShortcuts({
-        rotate: placement.rotate,
-    });
+    // usePlacementKeyboardShortcuts({
+    //     rotate: placement.rotate,
+    // });
 
     return (
         <main className={cn(

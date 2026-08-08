@@ -14,7 +14,7 @@ import { GameStage } from "./GameStage/GameStage";
 
 import { useGameFlowController } from "@/application/game-flow/useGameFlowController";
 
-import { usePlacementFlow } from "@/application/placement/hooks/usePlacementFlow";
+// import { usePlacementFlow } from "@/application/placement/hooks/usePlacementFlow";
 
 import { useSupportsHover } from "@/lib/device/useSupportsHover";
 
@@ -28,7 +28,7 @@ export function GameScreen() {
 
     const flow = useGameFlowController();
     
-    const placement = usePlacementFlow()
+    // const placement = usePlacementFlow()
 
 
     const initializeGame = useGameplayStore(
