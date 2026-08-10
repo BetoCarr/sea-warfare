@@ -1,4 +1,4 @@
-import { BoardCellInteraction } from '../interactions/placement-interaction.types';
+import { BoardCellInteraction, PlacementInteractionResult } from '../interactions/placement-interaction.types';
 
 import type { Orientation } from '@/lib/domain/placement/models/Orientation';
 
@@ -32,7 +32,7 @@ export type PlacementInteractionsContract = {
 
     onBoardInteraction(
         interaction: BoardCellInteraction,
-    ): void;
+    ): PlacementInteractionResult;
 
     onBoardLeave(): void;
 }

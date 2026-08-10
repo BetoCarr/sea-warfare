@@ -1,6 +1,6 @@
 import { usePlacementInteractionStore } from '../interactions/placement-interaction.store';
 
-import { BoardCellInteraction } from '../interactions/placement-interaction.types';
+import { BoardCellInteraction, PlacementInteractionResult } from '../interactions/placement-interaction.types';
 
 
 import type { PlacementInteractionsContract } from './placement-interactions-contract.types';
@@ -67,7 +67,7 @@ export function usePlacementInteractions(): PlacementInteractionsContract {
 
     function onBoardInteraction(
         interaction: BoardCellInteraction,
-    ): void {
+    ): PlacementInteractionResult {
 
         const { position, shipType } = interaction;
 
@@ -78,22 +78,22 @@ export function usePlacementInteractions(): PlacementInteractionsContract {
                 targetCell?.col === position.col;
 
             if (isSameCell) {
-                return;
+                return { type: 'place-ship' };
             }
 
             setTargetCell(position);
-            return;
+            return null;
         }
 
         if (shipType) {
             selectShip(shipType);
             setTargetCell(position);
-            return;
+            return null;
         }
 
         if (!targetCell) {
             setTargetCell(position);
-            return;
+            return null;
         }
 
         const isSameCell =
@@ -103,6 +103,8 @@ export function usePlacementInteractions(): PlacementInteractionsContract {
         if (!isSameCell) {
             setTargetCell(position);
         }
+
+        return null;
     }
 
     function onBoardLeave(): void {

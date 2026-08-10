@@ -43,7 +43,7 @@ export const GameStage = ({
     const placement = usePlacement();
     const flow = useGameFlowController();
 
-    console.log(placement);
+    // console.log(placement);
 
     const boardVM = useBoardViewModel({
         boardVariant: 'player',
