@@ -1,9 +1,10 @@
-import type { PlacementOutcome } from '@/lib/domain/placement/models/PlacementOutcome';
 
+import type { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
 
+import { UpsertShipPlacementResult } from '@/lib/domain/placement/models/UpsertShipPlacementResult';
 
 export type PlacementMutations = {
-    placeShip: () => PlacementOutcome | null;
+    placeShip: (placement: ShipPlacement) => UpsertShipPlacementResult;
 
     confirmFleet: () => void;
 };

@@ -2,28 +2,15 @@ import { canPlaceShip } from '../rules/canPlaceShip';
 
 import { DEFAULT_BOARD_SIZE } from '@/lib/domain/board/models/BoardConfig';
 
-import type { PlacementOutcome } from '../models/PlacementOutcome';
-
-import type { PlacementValidationError } from '../models/PlacementValidationError';
-
 import type { ShipPlacement } from '../models/ShipPlacement';
+
+import type { UpsertShipPlacementResult } from '../models/UpsertShipPlacementResult';
 
 type UpsertShipPlacementParams = {
     existingPlacements: ShipPlacement[];
     placement: ShipPlacement;
     boardSize?: number;
 };
-
-type UpsertShipPlacementResult =
-    | {
-        success: true;
-        placements: ShipPlacement[];
-        outcome: PlacementOutcome;
-    }
-    | {
-        success: false;
-        error: PlacementValidationError;
-    };
 
 export function upsertShipPlacement({
     existingPlacements,
