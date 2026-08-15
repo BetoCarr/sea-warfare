@@ -1,34 +1,34 @@
-import type { PlacementOutcome } from '@/lib/domain/placement/models/PlacementOutcome';
-
+import type { UpsertShipPlacementResult } from '@/lib/domain/placement/models/UpsertShipPlacementResult';
 import type { PlacementFeedback } from './placement-feedback.types';
 
-import type { PlacementPreview } from './placement-preview.types';
 
 type DerivePlacementFeedbackParams = {
-    preview: PlacementPreview | null;
-    outcome: PlacementOutcome | null;
+    mutationResult: UpsertShipPlacementResult | null;
 };
 
 
 export function derivePlacementFeedback({
-    preview,
-    outcome,
+    mutationResult
 }: DerivePlacementFeedbackParams): PlacementFeedback | null {
 
-    if (preview && !preview.isValid) {
+    if (!mutationResult) {
+        return null;
+    }
+
+    if (!mutationResult.success) {
         return {
             type: 'invalid-placement',
-            validationError: preview.validationError,
+            validationError: mutationResult.error,
         };
     }
 
-    if (outcome === 'placed') {
+    if (mutationResult.outcome === 'placed') {
         return {
             type: 'ship-placed',
         };
     }
 
-    if (outcome === 'repositioned') {
+    if (mutationResult.outcome === 'repositioned') {
         return {
             type: 'ship-repositioned',
         };

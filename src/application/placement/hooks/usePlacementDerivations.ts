@@ -3,12 +3,10 @@ import { useMemo } from 'react';
 import { STANDARD_FLEET } from '@/lib/domain/ships/models/StandardFleet';
 
 import { derivePlacementCapabilities } from '../derive/derivePlacementCapabilities';
-import { derivePlacementFeedback } from '../derive/derivePlacementFeedback';
 import { derivePlacementInstruction } from '../derive/derivePlacementInstruction';
 import { derivePlacementPreview } from '../derive/derivePlacementPreview';
 import { derivePlacementStats } from '../derive/derivePlacementStats';
 
-import type { PlacementOutcome } from '@/lib/domain/placement/models/PlacementOutcome';
 import type { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
 
 import type { PlacementDerivations } from './placement-derivations.types';
@@ -17,16 +15,12 @@ import type { PlacementInteractionsContract } from './placement-interactions-con
 
 type UsePlacementDerivationsParams = {
     interaction: PlacementInteractionsContract;
-
     playerPlacements: ShipPlacement[];
-
-    outcome?: PlacementOutcome | null;
 };
 
 export function usePlacementDerivations({
     interaction,
     playerPlacements,
-    outcome = null,
 }: UsePlacementDerivationsParams): PlacementDerivations {
 
     const stats = useMemo(
@@ -76,17 +70,7 @@ export function usePlacementDerivations({
         ],
     );
 
-    const feedback = useMemo(
-        () =>
-            derivePlacementFeedback({
-                preview,
-                outcome,
-            }),
-        [
-            preview,
-            outcome,
-        ],
-    );
+
 
     return {
         stats,
@@ -94,6 +78,5 @@ export function usePlacementDerivations({
 
         preview,
         instruction,
-        feedback,
     };
 }
