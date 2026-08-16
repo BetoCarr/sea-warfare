@@ -1,6 +1,7 @@
-import type { UpsertShipPlacementResult } from '@/lib/domain/placement/models/UpsertShipPlacementResult';
-import type { PlacementFeedback } from './placement-feedback.types';
 
+import type { UpsertShipPlacementResult } from '@/lib/domain/placement/models/UpsertShipPlacementResult';
+
+import type { PlacementFeedback } from './placement-feedback.types';
 
 type DerivePlacementFeedbackParams = {
     mutationResult: UpsertShipPlacementResult | null;

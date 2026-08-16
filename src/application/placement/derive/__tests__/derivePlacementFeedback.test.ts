@@ -1,43 +1,67 @@
 import { derivePlacementFeedback } from '../derivePlacementFeedback';
 
 describe('derivePlacementFeedback', () => {
-    it('returns invalid placement feedback for invalid preview', () => {
+    it('returns null when there is no mutation result', () => {
         const feedback = derivePlacementFeedback({
-            preview: {
-                cells: [{ row: 0, col: 0 }],
-                isValid: false,
-                validationError: 'OVERLAP',
+            mutationResult: null,
+        });
+
+        expect(feedback).toBeNull();
+    });
+
+    it('returns invalid placement feedback when the mutation fails due to overlap', () => {
+        const feedback = derivePlacementFeedback({
+            mutationResult: {
+                success: false,
+                error: 'OVERLAP',
             },
-            outcome: null,
         });
 
         expect(feedback).toEqual({
-            message: 'Invalid placement',
+            type: 'invalid-placement',
             validationError: 'OVERLAP',
         });
     });
 
-    it('returns placed feedback for a placed outcome', () => {
+    it('returns invalid placement feedback when the mutation fails due to out of bounds', () => {
         const feedback = derivePlacementFeedback({
-            preview: {
-                cells: [{ row: 0, col: 0 }],
-                isValid: true,
+            mutationResult: {
+                success: false,
+                error: 'OUT_OF_BOUNDS',
             },
-            outcome: 'placed',
         });
 
-        expect(feedback).toEqual({ message: 'Ship placed successfully' });
+        expect(feedback).toEqual({
+            type: 'invalid-placement',
+            validationError: 'OUT_OF_BOUNDS',
+        });
     });
 
-    it('returns repositioned feedback for a repositioned outcome', () => {
+    it('returns ship placed feedback when the mutation succeeds with placed outcome', () => {
         const feedback = derivePlacementFeedback({
-            preview: {
-                cells: [{ row: 0, col: 0 }],
-                isValid: true,
+            mutationResult: {
+                success: true,
+                placements: [],
+                outcome: 'placed',
             },
-            outcome: 'repositioned',
         });
 
-        expect(feedback).toEqual({ message: 'Ship repositioned' });
+        expect(feedback).toEqual({
+            type: 'ship-placed',
+        });
+    });
+
+    it('returns ship repositioned feedback when the mutation succeeds with repositioned outcome', () => {
+        const feedback = derivePlacementFeedback({
+            mutationResult: {
+                success: true,
+                placements: [],
+                outcome: 'repositioned',
+            },
+        });
+
+        expect(feedback).toEqual({
+            type: 'ship-repositioned',
+        });
     });
 });

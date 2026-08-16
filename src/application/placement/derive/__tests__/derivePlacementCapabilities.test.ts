@@ -1,28 +1,27 @@
 import { derivePlacementCapabilities } from '../derivePlacementCapabilities';
 
-import { PlacementState } from '@/lib/domain/placement/models/PlacementState';
+import type { PlacementStats } from '../placement-stats.types';
 
 describe('derivePlacementCapabilities', () => {
-    it('enables ship placement and board interaction while placing ships', () => {
-        expect(derivePlacementCapabilities(PlacementState.PLACING_SHIPS)).toEqual({
-            canPlaceShip: true,
-            canConfirmFleet: false,
-            canInteractWithBoard: true,
-        });
-    });
+    it('allows fleet confirmation when there are no remaining ships', () => {
+        const stats: PlacementStats = {
+            remainingShips: 0,
+            remainingShipTypes: [],
+        };
 
-    it('enables fleet confirmation and board interaction when fleet is ready', () => {
-        expect(derivePlacementCapabilities(PlacementState.FLEET_READY)).toEqual({
-            canPlaceShip: false,
+        expect(derivePlacementCapabilities(stats)).toEqual({
             canConfirmFleet: true,
-            canInteractWithBoard: true,
         });
     });
 
-    it('is deterministic for identical placement states', () => {
-        const first = derivePlacementCapabilities(PlacementState.FLEET_READY);
-        const second = derivePlacementCapabilities(PlacementState.FLEET_READY);
+    it('does not allow fleet confirmation when ships remain', () => {
+        const stats: PlacementStats = {
+            remainingShips: 2,
+            remainingShipTypes: ['carrier', 'destroyer'],
+        };
 
-        expect(first).toEqual(second);
+        expect(derivePlacementCapabilities(stats)).toEqual({
+            canConfirmFleet: false,
+        });
     });
 });
