@@ -42,7 +42,7 @@ describe('usePlacementInteractionStore', () => {
         expect(usePlacementInteractionStore.getState().orientation).toBe('horizontal');
     });
 
-    it('should update and clear the hovered cell', () => {
+    it('should update and clear the target cell', () => {
         const store = usePlacementInteractionStore.getState();
         const targetCell = { row: 2, col: 4 };
 

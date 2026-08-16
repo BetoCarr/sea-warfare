@@ -115,4 +115,101 @@ describe('usePlacementInteractions', () => {
 
         harness.unmount();
     });
+
+    it('selects a ship and clears the target cell when selectShip is called', () => {
+        usePlacementInteractionStore.setState({
+            ...initialPlacementInteractionState,
+            selectedShipType: 'destroyer',
+            targetCell: { row: 2, col: 3 },
+        });
+
+        const harness = createHookHarness();
+
+        act(() => {
+            harness.getCurrent().selectShip('carrier');
+        });
+
+        expect(usePlacementInteractionStore.getState().selectedShipType).toBe('carrier');
+        expect(usePlacementInteractionStore.getState().targetCell).toBeNull();
+
+        harness.unmount();
+    });
+
+    it('clears the interaction when selectShip(null) is called', () => {
+        usePlacementInteractionStore.setState({
+            ...initialPlacementInteractionState,
+            selectedShipType: 'carrier',
+            targetCell: { row: 2, col: 3 },
+        });
+
+        const harness = createHookHarness();
+
+        act(() => {
+            harness.getCurrent().selectShip(null);
+        });
+
+        expect(usePlacementInteractionStore.getState().selectedShipType).toBeNull();
+        expect(usePlacementInteractionStore.getState().targetCell).toBeNull();
+
+        harness.unmount();
+    });
+
+    it('toggles orientation between horizontal and vertical with rotate()', () => {
+        usePlacementInteractionStore.setState({
+            ...initialPlacementInteractionState,
+            orientation: 'horizontal',
+        });
+
+        const harness = createHookHarness();
+
+        act(() => {
+            harness.getCurrent().rotate();
+        });
+        expect(usePlacementInteractionStore.getState().orientation).toBe('vertical');
+
+        act(() => {
+            harness.getCurrent().rotate();
+        });
+        expect(usePlacementInteractionStore.getState().orientation).toBe('horizontal');
+
+        harness.unmount();
+    });
+
+    it('clears the target cell when leaving the board without a selected ship', () => {
+        usePlacementInteractionStore.setState({
+            ...initialPlacementInteractionState,
+            selectedShipType: null,
+            targetCell: { row: 2, col: 3 },
+        });
+
+        const harness = createHookHarness();
+
+        act(() => {
+            harness.getCurrent().onBoardLeave();
+        });
+
+        expect(usePlacementInteractionStore.getState().targetCell).toBeNull();
+
+        harness.unmount();
+    });
+
+    it('preserves the target cell when leaving the board while a ship is selected', () => {
+        const targetCell = { row: 2, col: 3 };
+
+        usePlacementInteractionStore.setState({
+            ...initialPlacementInteractionState,
+            selectedShipType: 'carrier',
+            targetCell,
+        });
+
+        const harness = createHookHarness();
+
+        act(() => {
+            harness.getCurrent().onBoardLeave();
+        });
+
+        expect(usePlacementInteractionStore.getState().targetCell).toEqual(targetCell);
+
+        harness.unmount();
+    });
 });
