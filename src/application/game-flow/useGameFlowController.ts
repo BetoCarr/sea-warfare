@@ -6,7 +6,7 @@ import { deriveCapabilities } from "./deriveCapabilities";
 
 import { derivePresentation } from "./derivePresentation";
 
-import { derivePlacementState } from "../placement/derive/derivePlacementState";
+// import { derivePlacementState } from "../placement/derive/derivePlacementState";
 
 import { useGameplayStore } from "@/lib/store/gameplay-store";
 

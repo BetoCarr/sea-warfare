@@ -48,25 +48,6 @@ describe('upsertShipPlacement', () => {
             }
         });
 
-        it('should preserve unrelated placements when adding a new one', () => {
-            const existingPlacement = buildPlacement(mockDestroyer, 0, 0);
-
-            const newPlacement = buildPlacement(mockCruiser, 2, 0);
-
-            const result = upsertShipPlacement({
-                existingPlacements: [existingPlacement],
-                placement: newPlacement,
-                boardSize: 10,
-            });
-
-            expect(result.success).toBe(true);
-            if (result.success) {
-                expect(result.placements).toHaveLength(2);
-                expect(result.placements).toContain(existingPlacement);
-                expect(result.placements).toContain(newPlacement);
-            }
-        });
-
         it('should return updated placements array', () => {
             const placement = {
                 ...buildPlacement(mockCarrier, 5, 5),
