@@ -1,24 +1,25 @@
 
 import type { PlacementInstruction } from './placement-instruction.types';
 
-import type { PlacementPreview } from './placement-preview.types';
+import type { Position } from '@/lib/domain/shared/models/Position';
 
 import type { ShipType } from '@/lib/domain/ships/models/ShipType';
 
 type DerivePlacementInstructionParams = {
     selectedShipType: ShipType | null;
-    preview: PlacementPreview | null;
+    targetCell: Position | null;
 };
 
 export function derivePlacementInstruction({
     selectedShipType,
-    preview,
+    targetCell,
 }: DerivePlacementInstructionParams): PlacementInstruction {
+
     if (!selectedShipType) {
         return 'Select ship';
     }
 
-    if (!preview) {
+    if (!targetCell) {
         return 'Select position';
     }
 
