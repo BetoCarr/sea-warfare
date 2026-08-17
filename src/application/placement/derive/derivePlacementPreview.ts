@@ -32,7 +32,6 @@ export function derivePlacementPreview({
     boardSize = DEFAULT_BOARD_SIZE,
 }: DerivePlacementPreviewParams): PlacementPreview | null {
 
-
     if (!selectedShip || !targetCell) {
         return null;
     }
@@ -59,14 +58,14 @@ export function derivePlacementPreview({
 
     if (!validation.valid) {
         return {
-            cells,
             isValid: false,
+            cells,
             validationError: validation.error,
         };
     }
 
     return {
-        cells,
         isValid: true,
+        cells,
     };
 }
