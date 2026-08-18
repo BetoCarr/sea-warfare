@@ -116,7 +116,5 @@ export function usePlacement() {
         preview: derivations.preview,
 
         contract,
-
-        mutations,
     };
 }
