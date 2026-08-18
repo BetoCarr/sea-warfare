@@ -5,6 +5,5 @@ import { UpsertShipPlacementResult } from '@/lib/domain/placement/models/UpsertS
 
 export type PlacementMutations = {
     placeShip: (placement: ShipPlacement) => UpsertShipPlacementResult;
-
     confirmFleet: () => void;
 };

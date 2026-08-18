@@ -31,7 +31,6 @@ export function usePlacementMutations({
         );
 
     function placeShip(placement: ShipPlacement) {
-
         const result = upsertShipPlacement({
             existingPlacements: playerPlacements,
             placement,
@@ -49,7 +48,6 @@ export function usePlacementMutations({
     }
 
     function confirmFleet() {
-
         const nextGame =
             confirmFleetDomain({
                 game,
