@@ -62,20 +62,18 @@ export function usePlacementDerivations({
         () =>
             derivePlacementInstruction({
                 selectedShipType: interaction.selectedShipType,
-                preview,
+                targetCell: interaction.targetCell,
             }),
         [
             interaction.selectedShipType,
-            preview,
+            interaction.targetCell,
         ],
     );
-
 
 
     return {
         stats,
         capabilities,
-
         preview,
         instruction,
     };

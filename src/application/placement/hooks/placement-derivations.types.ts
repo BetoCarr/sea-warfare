@@ -4,11 +4,8 @@ import type { PlacementPreview } from '../derive/placement-preview.types';
 import type { PlacementStats } from '../derive/placement-stats.types';
 
 export type PlacementDerivations = {
-
     stats: PlacementStats;
     capabilities: PlacementCapabilities;
-
     preview: PlacementPreview | null;
     instruction: PlacementInstruction;
-
 };
