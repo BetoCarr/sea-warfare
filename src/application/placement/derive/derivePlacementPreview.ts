@@ -1,12 +1,10 @@
 import { DEFAULT_BOARD_SIZE } from '@/lib/domain/board/models/BoardConfig';
 
 import { Orientation } from '@/lib/domain/placement/models/Orientation';
-
 import { canPlaceShip } from '@/lib/domain/placement/rules/canPlaceShip';
-
 import { getShipCoordinates } from '@/lib/domain/placement/rules/getShipCoordinates';
 
-import { Position } from '@/lib/domain/shared/models/Position';
+import type { Position } from '@/lib/domain/shared/models/Position';
 
 
 

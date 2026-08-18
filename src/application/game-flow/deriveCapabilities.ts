@@ -1,12 +1,10 @@
 import { GamePhase } from '@/lib/domain/game/models/GamePhase';
-
-import { GameState } from '@/lib/domain/game/models/GameState';
-
 import { GameStatus } from '@/lib/domain/game/models/GameStatus';
 
 import { GameInteractionCapabilities } from './game-flow-types';
 
-import { PlacementCapabilities } from '@/application/placement/derive/placement-capabilites.types';
+import type { GameState } from '@/lib/domain/game/models/GameState';
+import type { PlacementCapabilities } from '@/application/placement/derive/placement-capabilites.types';
 
 const DEFAULT_CAPABILITIES: GameInteractionCapabilities = {
     canInitializeGame: false,

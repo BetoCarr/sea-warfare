@@ -2,14 +2,9 @@
 
 import { useState } from 'react';
 
-
-
 import { cn } from '@/lib/utils/utils';
 
-
-
 import type { CellPresentation } from '@/application/board/board-types';
-
 import type { Position } from '@/lib/domain/shared/models/Position';
 
 interface CellProps {

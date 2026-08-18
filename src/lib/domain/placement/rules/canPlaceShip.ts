@@ -1,8 +1,5 @@
 import { getShipCoordinates } from './getShipCoordinates';
-
 import { shipsOverlap } from './shipsOverlap';
-
-
 
 import type { Orientation } from '../models/Orientation';
 

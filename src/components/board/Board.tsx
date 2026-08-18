@@ -1,18 +1,11 @@
 'use client';
 import React from 'react';
 
-
-
 import Cell from './Cell';
-
 import { cn } from '@/lib/utils/utils';
 
-
-
 import type { BoardViewModel } from '@/application/board/board-types';
-
 import type { BoardCellInteraction } from '@/application/placement/interactions/placement-interaction.types';
-
 import type { Position } from '@/lib/domain/shared/models/Position';
 
 interface BoardProps {

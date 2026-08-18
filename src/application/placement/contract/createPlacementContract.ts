@@ -1,4 +1,4 @@
-import { PlacementContract } from './placement-contract.types';
+import type { PlacementContract } from './placement-contract.types';
 
 export function createPlacementContract(
     params: PlacementContract,

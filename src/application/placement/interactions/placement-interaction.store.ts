@@ -1,13 +1,8 @@
 import { create } from 'zustand';
 
-
-
 import { initialPlacementInteractionState } from './placement-interaction.initial';
 
-
-
 import type { PlacementInteractionActions } from './placement-interaction.actions';
-
 import type { PlacementInteractionState } from './placement-interaction.types';
 
 type PlacementInteractionStore =

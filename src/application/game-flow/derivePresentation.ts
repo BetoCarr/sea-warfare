@@ -1,10 +1,8 @@
-import { GamePresentation } from './game-flow-types';
-
 import { GamePhase } from '@/lib/domain/game/models/GamePhase';
+import { GameStatus } from '@/lib/domain/game/models/GameStatus';
 
-import { GameState } from '@/lib/domain/game/models/GameState';
-
-import { GameStatus } from '@/lib/domain/game/models/GameStatus'
+import type { GameState } from '@/lib/domain/game/models/GameState';
+import type { GamePresentation } from './game-flow-types';
 
 export function derivePresentation(
     game: GameState,

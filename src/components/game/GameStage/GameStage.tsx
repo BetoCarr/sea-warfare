@@ -1,10 +1,7 @@
 "use client";
 import React from 'react';
 
-
-
 import { FeedbackMessage, FeedbackType } from './FeedbackMessage';
-
 import Board from '../../board/Board';
 
 import PlayerSection from '../../game/GameStage/PlayerSection/PlayerSection';
