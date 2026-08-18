@@ -4,17 +4,9 @@ import { GameState } from '@/lib/domain/game/models/GameState';
 
 import { GameStatus } from '@/lib/domain/game/models/GameStatus';
 
-import { PlacementCapabilities } from '@/application/placement/derive/placement-capabilites.types';
+import { GameInteractionCapabilities } from './game-flow-types';
 
-type GameInteractionCapabilities = {
-    canInitializeGame: boolean;
-    canPlaceFleet: boolean;
-    canConfirmFleet: boolean;
-    canInteractWithBoard: boolean;
-    canAttack: boolean;
-    canRestartGame: boolean;
-    canInteractWithEnemyBoard: boolean;
-};
+import { PlacementCapabilities } from '@/application/placement/derive/placement-capabilites.types';
 
 const DEFAULT_CAPABILITIES: GameInteractionCapabilities = {
     canInitializeGame: false,
