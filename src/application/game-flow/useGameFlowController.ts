@@ -1,6 +1,4 @@
 
-import { usePlacement } from "@/application/placement/hooks/usePlacement";
-
 import { deriveCapabilities } from "./deriveCapabilities";
 
 import { derivePresentation } from "./derivePresentation";
@@ -8,13 +6,18 @@ import { derivePresentation } from "./derivePresentation";
 
 import { useGameplayStore } from "@/lib/store/gameplay-store";
 
-export function useGameFlowController() {
-    
+import type { PlacementCapabilities } from '@/application/placement/derive/placement-capabilites.types';
+
+interface UseGameFlowControllerProps {
+    placementCapabilities: PlacementCapabilities;
+}
+
+export function useGameFlowController({
+    placementCapabilities,
+}: UseGameFlowControllerProps) {
     const game = useGameplayStore(state => state.game);
-    const placement = usePlacement();
 
-
-    const capabilities = deriveCapabilities(game, placement.contract.capabilities);
+    const capabilities = deriveCapabilities(game, placementCapabilities);
     const presentation = derivePresentation(game);
 
     return {

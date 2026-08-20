@@ -1,6 +1,7 @@
 export type GamePresentation = {
     phaseLabel: string;
     description: string | null;
+    instruction: string | null;
 };
 
 export type GameInteractionCapabilities = {

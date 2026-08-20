@@ -5,6 +5,7 @@ import { FeedbackMessage, FeedbackType } from './FeedbackMessage';
 import Board from '../../board/Board';
 
 import PlayerSection from '../../game/GameStage/PlayerSection/PlayerSection';
+import InformationPanel from './InformationPanel/InformationPanel';
 
 import { OrientationToggle } from '../../placement/OrientationToggle';
 
@@ -36,9 +37,11 @@ export const GameStage = ({
     onPlayerCellClick,
 }: GameStageProps) => {
 
-
     const placement = usePlacement();
-    const flow = useGameFlowController();
+    
+    const flow = useGameFlowController({
+        placementCapabilities: placement.contract.capabilities,
+    });
 
     const boardVM = useBoardViewModel({
         boardVariant: 'player',
@@ -53,21 +56,16 @@ export const GameStage = ({
         rotate: placement.interaction.rotate,
     });
 
+    const instruction =
+        flow.capabilities.canPlaceFleet
+            ? placement.contract.instruction
+            : flow.presentation.instruction;
+
     return (
         <main className={cn(
             "flex-1 min-h-0 overflow-hidden flex flex-col items-stretch relative px-4 md:px-8",
             "transition-all duration-700 ease-in-out",
         )}>
-            {/* 1. TOP SLOT: Feedback / Instructions (Stable Height) */}
-            {/* <div className="h-20 sm:h-24 flex items-center justify-center shrink-0">
-                <FeedbackMessage 
-                    // message={activeMessage} 
-                    type={activeType} 
-                    onDismiss={onDismissFeedback}
-                    className="pointer-events-auto shadow-xl backdrop-blur-md ring-1 ring-white/10"
-                />
-            </div> */}
-
             < PlayerSection
                 boardVM={boardVM}
 
@@ -87,6 +85,19 @@ export const GameStage = ({
                 }
                 onCellPress={placement.interaction.onBoardInteraction}
             />
+
+            {/* 3. BOTTOM SLOT: Ship Palette */}
+            {flow.capabilities.canPlaceFleet && (
+                <div className="shrink-0 flex flex-col gap-2 sm:gap-4 px-1">
+                    <div className="flex justify-between items-center">
+                        <OrientationToggle
+                            orientation={placement.interaction.orientation} 
+                            onToggle={placement.interaction.rotate} 
+                        />
+                    </div>
+                    <ShipPalette /> 
+                </div>
+            )}
 
             {flow.capabilities.canAttack && (  
                 <div className="w-full max-w-full flex items-center justify-center transition-transform duration-500">
@@ -113,17 +124,18 @@ export const GameStage = ({
                     </div>
                 </div>
             )}
-            {/* 3. BOTTOM SLOT: Ship Palette */}
-            {flow.capabilities.canPlaceFleet && (
-                <div className="shrink-0 flex flex-col gap-2 sm:gap-4 px-1">
-                    <div className="flex justify-between items-center">
-                        <OrientationToggle
-                            orientation={placement.interaction.orientation} 
-                            onToggle={placement.interaction.rotate} 
-                        />
-                    </div>
-                    <ShipPalette /> 
-                </div>
+
+            {instruction && (
+                <InformationPanel
+                    phaseLabel={flow.presentation.phaseLabel}
+                    description={flow.presentation.description}
+                    instruction={instruction}
+                    stats={
+                        flow.capabilities.canPlaceFleet
+                            ? `Remaining ships: ${placement.contract.stats.remainingShips}`
+                            : undefined
+                    }
+                />
             )}
         </main>
     );

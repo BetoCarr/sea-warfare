@@ -26,6 +26,7 @@ describe('derivePresentation', () => {
         expect(presentation).toEqual({
             phaseLabel: 'BOOT',
             description: 'Combat systems are offline and awaiting initialization.',
+            instruction: 'Initialize the game.'
         });
     });
 
@@ -39,6 +40,7 @@ describe('derivePresentation', () => {
         expect(presentation).toEqual({
             phaseLabel: 'DEPLOY',
             description: 'Fleet deployment in progress.',
+            instruction: null
         });
     });
 
@@ -47,12 +49,14 @@ describe('derivePresentation', () => {
             createGameState({
                 phase: GamePhase.BATTLE,
                 status: GameStatus.PLAYER_TURN,
+                
             }),
         );
 
         expect(presentation).toEqual({
             phaseLabel: 'COMBAT',
             description: 'Your fleet has tactical initiative.',
+            instruction: null
         });
     });
 
@@ -67,6 +71,7 @@ describe('derivePresentation', () => {
         expect(presentation).toEqual({
             phaseLabel: 'COMBAT',
             description: 'Enemy forces are executing their turn.',
+            instruction: null
         });
     });
 
@@ -80,6 +85,7 @@ describe('derivePresentation', () => {
         expect(presentation).toEqual({
             phaseLabel: 'END',
             description: 'The mission has concluded.',
+            instruction: null
         });
     });
 
@@ -93,6 +99,7 @@ describe('derivePresentation', () => {
         expect(presentation).toEqual({
             phaseLabel: '',
             description: null,
+            instruction: null
         });
     });
 });

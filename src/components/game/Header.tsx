@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/Button";
 
 import { useGameFlowController } from "@/application/game-flow/useGameFlowController";
+import { usePlacement } from "@/application/placement/hooks/usePlacement";
 
 // import { usePlacementFlow } from "@/application/placement/hooks/usePlacementFlow";
 
@@ -11,7 +12,10 @@ interface HeaderProps {
 
 export function Header({ onInitialize }: HeaderProps) {
 
-  const flow = useGameFlowController();
+  const placement = usePlacement();
+  const flow = useGameFlowController({
+    placementCapabilities: placement.contract.capabilities,
+  });
 //   const { canConfirmFleet, confirmFleet } = usePlacementFlow(); // Revisar si se puede recibir mediante props
 
   const renderAction = () => {
