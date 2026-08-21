@@ -103,9 +103,7 @@ describe('usePlacement', () => {
                 orientation: 'horizontal',
             },
         ]);
-        expect(harness.getCurrent().contract.feedback).toEqual({
-            type: 'ship-placed',
-        });
+        expect(harness.getCurrent().contract.feedback).toBe('Ship placed successfully.');
         expect(harness.getCurrent().interaction.selectedShipType).toBeNull();
         expect(harness.getCurrent().interaction.targetCell).toBeNull();
 
@@ -137,9 +135,7 @@ describe('usePlacement', () => {
                 orientation: 'horizontal',
             },
         ]);
-        expect(harness.getCurrent().contract.feedback).toEqual({
-            type: 'ship-repositioned',
-        });
+        expect(harness.getCurrent().contract.feedback).toBe('Ship repositioned successfully.');
         expect(harness.getCurrent().interaction.selectedShipType).toBeNull();
 
         harness.unmount();
@@ -163,10 +159,7 @@ describe('usePlacement', () => {
         triggerPlacementAt(harness, 'carrier', { row: 0, col: 0 });
 
         expect(useGameplayStore.getState().playerPlacements).toEqual([existingDestroyer]);
-        expect(harness.getCurrent().contract.feedback).toEqual({
-            type: 'invalid-placement',
-            validationError: 'OVERLAP',
-        });
+        expect(harness.getCurrent().contract.feedback).toBe('The ship overlaps another ship.');
         expect(harness.getCurrent().interaction.selectedShipType).toBe('carrier');
 
         harness.unmount();
@@ -190,10 +183,7 @@ describe('usePlacement', () => {
         triggerPlacementAt(harness, 'carrier', { row: 0, col: 6 });
 
         expect(useGameplayStore.getState().playerPlacements).toEqual([existingCarrier]);
-        expect(harness.getCurrent().contract.feedback).toEqual({
-            type: 'invalid-placement',
-            validationError: 'OUT_OF_BOUNDS',
-        });
+        expect(harness.getCurrent().contract.feedback).toBe('The ship does not fit on the board.');
         expect(harness.getCurrent().interaction.selectedShipType).toBe('carrier');
 
         harness.unmount();
@@ -204,9 +194,7 @@ describe('usePlacement', () => {
 
         triggerPlacementAt(harness, 'carrier', { row: 0, col: 0 });
 
-        expect(harness.getCurrent().contract.feedback).toEqual({
-            type: 'ship-placed',
-        });
+        expect(harness.getCurrent().contract.feedback).toBe('Ship placed successfully.');
 
         act(() => {
             jest.advanceTimersByTime(4000);
@@ -221,9 +209,7 @@ describe('usePlacement', () => {
         const harness = createHookHarness();
 
         triggerPlacementAt(harness, 'carrier', { row: 0, col: 0 });
-        expect(harness.getCurrent().contract.feedback).toEqual({
-            type: 'ship-placed',
-        });
+        expect(harness.getCurrent().contract.feedback).toBe('Ship placed successfully.');
 
         act(() => {
             jest.advanceTimersByTime(1000);
@@ -231,9 +217,7 @@ describe('usePlacement', () => {
 
         triggerPlacementAt(harness, 'carrier', { row: 5, col: 2 });
 
-        expect(harness.getCurrent().contract.feedback).toEqual({
-            type: 'ship-repositioned',
-        });
+        expect(harness.getCurrent().contract.feedback).toBe('Ship repositioned successfully.');
 
         harness.unmount();
     });
@@ -253,9 +237,7 @@ describe('usePlacement', () => {
             jest.advanceTimersByTime(3000);
         });
 
-        expect(harness.getCurrent().contract.feedback).toEqual({
-            type: 'ship-repositioned',
-        });
+        expect(harness.getCurrent().contract.feedback).toBe('Ship repositioned successfully.');
 
         act(() => {
             jest.advanceTimersByTime(1000);

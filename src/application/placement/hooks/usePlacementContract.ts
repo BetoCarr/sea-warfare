@@ -4,11 +4,10 @@ import { createPlacementContract } from '../contract/createPlacementContract';
 
 import type { PlacementContract } from '../contract/placement-contract.types';
 import type { PlacementDerivations } from './placement-derivations.types';
-import type { PlacementFeedback } from '../derive/placement-feedback.types';
 
 export function usePlacementContract(
     derivations: PlacementDerivations,
-    feedback: PlacementFeedback | null
+    feedback: string | null
 ): PlacementContract {
     return useMemo(
         () => createPlacementContract({

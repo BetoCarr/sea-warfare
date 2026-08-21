@@ -9,7 +9,7 @@ describe('derivePlacementFeedback', () => {
         expect(feedback).toBeNull();
     });
 
-    it('returns invalid placement feedback when the mutation fails due to overlap', () => {
+    it('returns an overlap message when the mutation fails due to overlap', () => {
         const feedback = derivePlacementFeedback({
             mutationResult: {
                 success: false,
@@ -17,13 +17,10 @@ describe('derivePlacementFeedback', () => {
             },
         });
 
-        expect(feedback).toEqual({
-            type: 'invalid-placement',
-            validationError: 'OVERLAP',
-        });
+        expect(feedback).toBe('The ship overlaps another ship.');
     });
 
-    it('returns invalid placement feedback when the mutation fails due to out of bounds', () => {
+    it('returns an out of bounds message when the mutation fails due to out of bounds', () => {
         const feedback = derivePlacementFeedback({
             mutationResult: {
                 success: false,
@@ -31,10 +28,7 @@ describe('derivePlacementFeedback', () => {
             },
         });
 
-        expect(feedback).toEqual({
-            type: 'invalid-placement',
-            validationError: 'OUT_OF_BOUNDS',
-        });
+        expect(feedback).toBe('The ship does not fit on the board.');
     });
 
     it('returns ship placed feedback when the mutation succeeds with placed outcome', () => {
@@ -46,9 +40,7 @@ describe('derivePlacementFeedback', () => {
             },
         });
 
-        expect(feedback).toEqual({
-            type: 'ship-placed',
-        });
+        expect(feedback).toBe('Ship placed successfully.');
     });
 
     it('returns ship repositioned feedback when the mutation succeeds with repositioned outcome', () => {
@@ -60,8 +52,6 @@ describe('derivePlacementFeedback', () => {
             },
         });
 
-        expect(feedback).toEqual({
-            type: 'ship-repositioned',
-        });
+        expect(feedback).toBe('Ship repositioned successfully.');
     });
 });

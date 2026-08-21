@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 
-import { FeedbackMessage, FeedbackType } from './FeedbackMessage';
+import { FeedbackMessage } from './FeedbackMessage';
 import Board from '../../board/Board';
 
 import PlayerSection from '../../game/GameStage/PlayerSection/PlayerSection';
@@ -22,18 +22,12 @@ import { usePlacementKeyboardShortcuts } from '@/application/placement/interacti
 import { cn } from '@/lib/utils/utils';
 
 interface GameStageProps {
-        // activeMessage: string | null;
-    activeType: FeedbackType;
     supportsHover: boolean;
-    onDismissFeedback: () => void;  
     onPlayerCellClick: (row: number, col: number) => void;
 }
 
 export const GameStage = ({
-    // activeMessage,
-    activeType,
     supportsHover,
-    onDismissFeedback,
     onPlayerCellClick,
 }: GameStageProps) => {
 
@@ -66,6 +60,11 @@ export const GameStage = ({
             "flex-1 min-h-0 overflow-hidden flex flex-col items-stretch relative px-4 md:px-8",
             "transition-all duration-700 ease-in-out",
         )}>
+        
+            {placement.contract.feedback && (
+                <FeedbackMessage message={placement.contract.feedback} />
+            )}
+
             < PlayerSection
                 boardVM={boardVM}
 
