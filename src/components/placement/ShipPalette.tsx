@@ -1,45 +1,20 @@
 "use client";
-import { useMemo } from "react";
-
-
-
 import { ShipPaletteItem } from "./ShipPaletteItem";
-
-import { usePlacement } from "@/application/placement/hooks/usePlacement";
-
-import { STANDARD_FLEET } from "@/lib/domain/ships/models/StandardFleet";
-
 import { cn } from "@/lib/utils/utils";
+import { ShipType } from '@/lib/domain/ships/models/ShipType';
+import { BaseShip } from '@/lib/domain/ships/models/BaseShip';
 
-export function ShipPalette() {
-    // const {
-    //     availability,
-    //     selectedShipType,
-    //     selectShip,
-    // } = usePlacementFlow();
+interface ShipPaletteProps {
+    ships: BaseShip[];
+    selectedShipType: ShipType | null;
+    onSelectShip: (shipType: ShipType) => void;
+}
 
-    const placement = usePlacement();
-
-    const remainingShipTypes =
-        useMemo(
-            () =>
-                new Set(
-                    placement.contract.stats.remainingShipTypes,
-                ),
-            [placement.contract.stats.remainingShipTypes],
-        );
-
-    const remainingShips =
-        useMemo(
-            () =>
-                STANDARD_FLEET.filter(ship =>
-                    remainingShipTypes.has(
-                        ship.type,
-                    ),
-                ),
-            [remainingShipTypes],
-        );
-    
+export default function ShipPalette({
+    ships,
+    selectedShipType,
+    onSelectShip,
+}: ShipPaletteProps) {
     return (
         <div 
             className={cn(
@@ -49,16 +24,16 @@ export function ShipPalette() {
             <div className="relative flex flex-row flex-wrap gap-2 sm:gap-4">
                 {/* Internal Ship List */}
                     {
-                        remainingShips.map(ship => (
+                        ships.map(ship => (
                             <ShipPaletteItem
                                 key={ship.type}
                                 type={ship.type}
                                 size={ship.size}
                                 isSelected={
-                                    placement.interaction.selectedShipType === ship.type
+                                    selectedShipType === ship.type
                                 }
                                 onSelect={() =>
-                                    placement.interaction.selectShip(ship.type)
+                                    onSelectShip(ship.type)
                                 }
                             />
                         ))

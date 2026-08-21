@@ -6,7 +6,6 @@ import { BoardCellInteraction } from '@/application/placement/interactions/place
 
 import { Position } from '@/lib/domain/shared/models/Position';
 
-
 interface PlayerSectionProps {
     boardVM: BoardViewModel;
 

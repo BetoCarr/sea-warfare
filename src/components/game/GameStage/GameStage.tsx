@@ -5,11 +5,9 @@ import { FeedbackMessage } from './FeedbackMessage';
 import Board from '../../board/Board';
 
 import PlayerSection from '../../game/GameStage/PlayerSection/PlayerSection';
+import PlacementBar from './PlacementBar/PlacementBar';
 import InformationPanel from './InformationPanel/InformationPanel';
 
-import { OrientationToggle } from '../../placement/OrientationToggle';
-
-import { ShipPalette } from '../../placement/ShipPalette';
 
 import { useBoardViewModel } from '@/application/board/useBoardViewModel';
 
@@ -54,7 +52,7 @@ export const GameStage = ({
         flow.capabilities.canPlaceFleet
             ? placement.contract.instruction
             : flow.presentation.instruction;
-
+    
     return (
         <main className={cn(
             "flex-1 min-h-0 overflow-hidden flex flex-col items-stretch relative px-4 md:px-8",
@@ -87,15 +85,12 @@ export const GameStage = ({
 
             {/* 3. BOTTOM SLOT: Ship Palette */}
             {flow.capabilities.canPlaceFleet && (
-                <div className="shrink-0 flex flex-col gap-2 sm:gap-4 px-1">
-                    <div className="flex justify-between items-center">
-                        <OrientationToggle
-                            orientation={placement.interaction.orientation} 
-                            onToggle={placement.interaction.rotate} 
-                        />
-                    </div>
-                    <ShipPalette /> 
-                </div>
+                <PlacementBar 
+                    remainingShipTypes={placement.contract.stats.remainingShipTypes}
+                    selectedShipType={placement.interaction.selectedShipType}
+                    onSelectShip={placement.interaction.selectShip}
+                
+                />
             )}
 
             {flow.capabilities.canAttack && (  
