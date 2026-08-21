@@ -36,9 +36,6 @@ export function GameScreen() {
             />
             <GameStage 
                 supportsHover={supportsHover}
-                onPlayerCellClick={(r, c) => {
-                    // playerAttack({ row: r, col: c });
-                }}
             />
         </div>
     );

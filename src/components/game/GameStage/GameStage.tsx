@@ -21,12 +21,10 @@ import { cn } from '@/lib/utils/utils';
 
 interface GameStageProps {
     supportsHover: boolean;
-    onPlayerCellClick: (row: number, col: number) => void;
 }
 
 export const GameStage = ({
     supportsHover,
-    onPlayerCellClick,
 }: GameStageProps) => {
 
     const placement = usePlacement();
@@ -88,8 +86,9 @@ export const GameStage = ({
                 <PlacementBar 
                     remainingShipTypes={placement.contract.stats.remainingShipTypes}
                     selectedShipType={placement.interaction.selectedShipType}
+                    orientation={placement.interaction.orientation}
                     onSelectShip={placement.interaction.selectShip}
-                
+                    onRotate={placement.interaction.rotate}
                 />
             )}
 
