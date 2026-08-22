@@ -1,7 +1,7 @@
 import React, { act } from 'react';
 import { createRoot } from 'react-dom/client';
 
-import { usePlacement } from '../usePlacement';
+import { usePlacementController } from '../usePlacementController';
 import { resetPlacementStores } from '../testing/resetPlacementStores';
 
 import { useGameplayStore } from '@/lib/store/gameplay-store';
@@ -13,7 +13,7 @@ declare global {
 }
 
 type HookHarness = {
-    getCurrent: () => ReturnType<typeof usePlacement>;
+    getCurrent: () => ReturnType<typeof usePlacementController>;
     unmount: () => void;
 };
 
@@ -22,12 +22,12 @@ function createHookHarness(): HookHarness {
     document.body.appendChild(container);
 
     const root = createRoot(container);
-    const hookState: { current: ReturnType<typeof usePlacement> | null } = {
+    const hookState: { current: ReturnType<typeof usePlacementController> | null } = {
         current: null,
     };
 
     function TestComponent(): null {
-        hookState.current = usePlacement();
+        hookState.current = usePlacementController();
         return null;
     }
 

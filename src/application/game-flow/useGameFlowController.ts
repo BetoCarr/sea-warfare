@@ -7,6 +7,7 @@ import { derivePresentation } from "./derivePresentation";
 import { useGameplayStore } from "@/lib/store/gameplay-store";
 
 import type { PlacementCapabilities } from '@/application/placement/derive/placement-capabilites.types';
+import type { GameFlowController } from "@/application/game-flow/game-flow-types";
 
 interface UseGameFlowControllerProps {
     placementCapabilities: PlacementCapabilities;
@@ -14,7 +15,7 @@ interface UseGameFlowControllerProps {
 
 export function useGameFlowController({
     placementCapabilities,
-}: UseGameFlowControllerProps) {
+}: UseGameFlowControllerProps): GameFlowController {
     const game = useGameplayStore(state => state.game);
 
     const capabilities = deriveCapabilities(game, placementCapabilities);

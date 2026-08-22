@@ -13,3 +13,8 @@ export type GameInteractionCapabilities = {
     canRestartGame: boolean;
     canInteractWithEnemyBoard: boolean;
 };
+
+export type GameFlowController = {
+    capabilities: GameInteractionCapabilities;
+    presentation: GamePresentation;
+};

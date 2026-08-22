@@ -8,30 +8,29 @@ import PlayerSection from '../../game/GameStage/PlayerSection/PlayerSection';
 import PlacementBar from './PlacementBar/PlacementBar';
 import InformationPanel from './InformationPanel/InformationPanel';
 
-
 import { useBoardViewModel } from '@/application/board/useBoardViewModel';
-
-import { useGameFlowController } from '@/application/game-flow/useGameFlowController';
-
-import { usePlacement } from '@/application/placement/hooks/usePlacement';
-
 import { usePlacementKeyboardShortcuts } from '@/application/placement/interactions/usePlacementKeyboardShortcuts';
+
+import type { GameInteractionCapabilities } from "@/application/game-flow/game-flow-types";
+import type { PlacementController } from '@/application/placement/hooks/placement-controller.types';
+import type { GameFlowController } from "@/application/game-flow/game-flow-types";
 
 import { cn } from '@/lib/utils/utils';
 
 interface GameStageProps {
+    capabilites: GameInteractionCapabilities;
+    placement: PlacementController;
+    flow: GameFlowController;
     supportsHover: boolean;
 }
 
 export const GameStage = ({
+    capabilites,
+    placement,
+    flow,
     supportsHover,
 }: GameStageProps) => {
 
-    const placement = usePlacement();
-    
-    const flow = useGameFlowController({
-        placementCapabilities: placement.contract.capabilities,
-    });
 
     const boardVM = useBoardViewModel({
         boardVariant: 'player',
@@ -47,7 +46,7 @@ export const GameStage = ({
     });
 
     const instruction =
-        flow.capabilities.canPlaceFleet
+        capabilites.canPlaceFleet
             ? placement.contract.instruction
             : flow.presentation.instruction;
     
@@ -82,7 +81,7 @@ export const GameStage = ({
             />
 
             {/* 3. BOTTOM SLOT: Ship Palette */}
-            {flow.capabilities.canPlaceFleet && (
+            {capabilites.canPlaceFleet && (
                 <PlacementBar 
                     remainingShipTypes={placement.contract.stats.remainingShipTypes}
                     selectedShipType={placement.interaction.selectedShipType}
@@ -92,14 +91,14 @@ export const GameStage = ({
                 />
             )}
 
-            {flow.capabilities.canAttack && (  
+            {capabilites.canAttack && (  
                 <div className="w-full max-w-full flex items-center justify-center transition-transform duration-500">
                     <div className="flex-1 min-h-0 flex items-center justify-center py-2 sm:py-4">                                
                         <Board
                             boardVM={boardVM}
                             interactive={
-                                flow.capabilities.canPlaceFleet ||
-                                flow.capabilities.canAttack
+                                capabilites.canPlaceFleet ||
+                                capabilites.canAttack
                             }
                             onCellHover={
                                 supportsHover

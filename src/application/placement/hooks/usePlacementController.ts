@@ -10,12 +10,13 @@ import { derivePlacementFeedback } from '../derive/derivePlacementFeedback';
 import type { BoardCellInteraction, PlacementInteractionResult } from '../interactions/placement-interaction.types';
 
 import type { UpsertShipPlacementResult } from '@/lib/domain/placement/models/UpsertShipPlacementResult';
+import type { PlacementController } from '@/application/placement/hooks/placement-controller.types';
 
 import { useGameplayStore } from '@/lib/store/gameplay-store';
 
 const FEEDBACK_DURATION = 4000;
 
-export function usePlacement() {
+export function usePlacementController(): PlacementController {
 
     const playerPlacements = useGameplayStore(
         state => state.playerPlacements,
@@ -110,11 +111,8 @@ export function usePlacement() {
 
     return {
         playerPlacements,
-
         interaction: coordinatedInteraction,
-
         preview: derivations.preview,
-
         contract,
     };
 }
