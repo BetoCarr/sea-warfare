@@ -3,18 +3,13 @@ import Board from '../../../board/Board';
 import type { BoardViewModel } from '@/application/board/board-types';
 
 import { BoardCellInteraction } from '@/application/placement/interactions/placement-interaction.types';
-
 import { Position } from '@/lib/domain/shared/models/Position';
 
 interface PlayerSectionProps {
     boardVM: BoardViewModel;
-
     interactive: boolean;
-
     onCellHover?: (position: Position) => void;
-
     onCellLeave?: () => void;
-
     onCellPress?: (interaction: BoardCellInteraction) => void;
 }
 

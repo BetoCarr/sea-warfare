@@ -16,7 +16,7 @@ export type BoardVariant =
 export interface UseBoardViewModelParams {
     boardVariant: BoardVariant;
     size: number;
-    playerPlacements: ShipPlacement[];
+    playerPlacements?: ShipPlacement[];
     preview?: PlacementPreview | null;
     selectedShipType?: ShipType | null;
     showShips: boolean;
@@ -43,31 +43,31 @@ export function useBoardViewModel({
 
                 const logicalCell = deriveLogicalCellInfo(
                     position,
-                    playerPlacements,
+                    playerPlacements ?? [],
                 );
 
                 const isPreview = preview?.cells?.some(
                     p => p.row === row && p.col === col,
                 ) ?? false;
                 
-                const isActiveShip =
-                    selectedShipType != null &&
-                    logicalCell.shipType === selectedShipType &&
-                    preview != null;
-
                 const previewResult =
                     preview == null
                         ? undefined
                         : preview.isValid
                             ? 'valid'
                             : 'invalid';
+                            
+                const isActiveShip =
+                    selectedShipType != null &&
+                    logicalCell.shipType === selectedShipType &&
+                    preview != null;
 
                 const visualState = deriveCellVisualState({
                     boardVariant,
                     logicalCell,
                     isPreview,
-                    isActiveShip,
                     previewResult,
+                    isActiveShip,
                     showShips,
                 });
 

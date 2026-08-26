@@ -1,22 +1,17 @@
 import { getShipCoordinates } from '@/lib/domain/placement/rules/getShipCoordinates';
 
-
-
 import type { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
-
 import type { Position } from '@/lib/domain/shared/models/Position';
-
 import type { ShipType } from '@/lib/domain/ships/models/ShipType';
-
-export interface LogicalCellInfo {
-    state: LogicalCellState;
-    shipType?: ShipType;
-}
 
 export type LogicalCellState =
     | 'water'
     | 'ship';
 
+export interface LogicalCellInfo {
+    state: LogicalCellState;
+    shipType?: ShipType;
+}
 export function deriveLogicalCellInfo(
     position: Position,
     placements: ShipPlacement[],

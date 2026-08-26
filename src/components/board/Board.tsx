@@ -83,6 +83,7 @@ export default function Board({
                                 key={`${row}-${col}`}
                                 presentation={vmCell.presentation}
                                 position={{ row, col }}
+                                disabled={!interactive}
                                 onHover={onCellHover}
                                 onLeave={onCellLeave}
                                 onPress={() =>

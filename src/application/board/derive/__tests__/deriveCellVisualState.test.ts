@@ -1,7 +1,4 @@
 import { deriveCellVisualState } from '../deriveCellVisualState';
-
-
-
 import type { LogicalCellInfo } from '../deriveLogicalCellInfo';
 
 function createLogicalCellInfo(state: LogicalCellInfo['state']): LogicalCellInfo {
@@ -9,17 +6,17 @@ function createLogicalCellInfo(state: LogicalCellInfo['state']): LogicalCellInfo
 }
 
 describe('deriveCellVisualState', () => {
-    it('gives preview states highest priority even when other cell data suggests a ship', () => {
+    it('treats enemy cells as water before evaluating preview state', () => {
         const result = deriveCellVisualState({
             boardVariant: 'enemy',
             logicalCell: createLogicalCellInfo('ship'),
             isPreview: true,
-            isActiveShip: true,
             previewResult: 'valid',
+            isActiveShip: true,
             showShips: false,
         });
 
-        expect(result).toBe('preview-valid');
+        expect(result).toBe('water');
     });
 
     it('returns preview-invalid when preview is present and the preview result is invalid', () => {
@@ -27,8 +24,8 @@ describe('deriveCellVisualState', () => {
             boardVariant: 'player',
             logicalCell: createLogicalCellInfo('ship'),
             isPreview: true,
-            isActiveShip: false,
             previewResult: 'invalid',
+            isActiveShip: false,
             showShips: true,
         });
 
@@ -40,8 +37,8 @@ describe('deriveCellVisualState', () => {
             boardVariant: 'player',
             logicalCell: createLogicalCellInfo('ship'),
             isPreview: true,
-            isActiveShip: false,
             previewResult: undefined,
+            isActiveShip: false,
             showShips: true,
         });
 

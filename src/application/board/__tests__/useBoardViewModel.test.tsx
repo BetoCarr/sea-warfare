@@ -1,17 +1,10 @@
 import React from 'react';
 
 import { renderToStaticMarkup } from 'react-dom/server';
-
-
-
 import { useBoardViewModel } from '../useBoardViewModel';
 
-
-
 import type { UseBoardViewModelParams } from '../useBoardViewModel'
-
 import type { PlacementPreview } from '@/application/placement/derive/placement-preview.types';
-
 import type { ShipPlacement } from '@/lib/domain/placement/models/ShipPlacement';
 
 function renderHook<Result>(hook: () => Result) {
@@ -71,6 +64,15 @@ describe('useBoardViewModel', () => {
         const cell = result.current.cells[0][0];
 
         expect(cell.presentation.visualState).toBe('water');
+    });
+
+    it('allows enemy boards without player placements', () => {
+        const { result } = renderBoard({
+            boardVariant: 'enemy',
+            playerPlacements: undefined,
+        });
+
+        expect(result.current.cells[0][0].presentation.visualState).toBe('water');
     });
 
     it('generates ship presentations for occupied cells', () => {
@@ -146,10 +148,10 @@ describe('useBoardViewModel', () => {
         const preview: PlacementPreview = {
             isValid: false,
             cells: [{ row: 0, col: 2 }],
+            validationError: 'OVERLAP',
         };
 
         const { result } = renderBoard({ preview });
-
         const cell = result.current.cells[0][2];
 
         expect(cell.presentation.visualState).toBe('preview-invalid');

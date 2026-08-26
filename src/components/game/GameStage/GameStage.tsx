@@ -2,9 +2,9 @@
 import React from 'react';
 
 import { FeedbackMessage } from './FeedbackMessage';
-import Board from '../../board/Board';
 
 import PlayerSection from '../../game/GameStage/PlayerSection/PlayerSection';
+import EnemySection from './EnemySection/EnemySection';
 import PlacementBar from './PlacementBar/PlacementBar';
 import InformationPanel from './InformationPanel/InformationPanel';
 
@@ -40,6 +40,12 @@ export const GameStage = ({
         selectedShipType: placement.interaction.selectedShipType,
         showShips: true,
     });
+
+    const enemyBoardVM = useBoardViewModel({
+        boardVariant: 'enemy',
+        size: 10,
+        showShips: false,
+    });
     
     usePlacementKeyboardShortcuts({
         rotate: placement.interaction.rotate,
@@ -64,9 +70,9 @@ export const GameStage = ({
                 boardVM={boardVM}
 
                 interactive={
-                    flow.capabilities.canPlaceFleet ||
-                    flow.capabilities.canAttack
+                    flow.capabilities.canPlaceFleet 
                 }
+                
                 onCellHover={
                     supportsHover
                         ? placement.interaction.setTargetCell
@@ -91,30 +97,8 @@ export const GameStage = ({
                 />
             )}
 
-            {capabilites.canAttack && (  
-                <div className="w-full max-w-full flex items-center justify-center transition-transform duration-500">
-                    <div className="flex-1 min-h-0 flex items-center justify-center py-2 sm:py-4">                                
-                        <Board
-                            boardVM={boardVM}
-                            interactive={
-                                capabilites.canPlaceFleet ||
-                                capabilites.canAttack
-                            }
-                            onCellHover={
-                                supportsHover
-                                    ? placement.interaction.setTargetCell
-                                    : undefined
-                            }
-                            onCellLeave={
-                                supportsHover
-                                    ? placement.interaction.onBoardLeave
-                                    : undefined
-                            }
-                            onCellPress={placement.interaction.onBoardInteraction}
-                        
-                        />  
-                    </div>
-                </div>
+            {capabilites.canAttack && (
+                <EnemySection boardVM={enemyBoardVM} />
             )}
 
             {instruction && (

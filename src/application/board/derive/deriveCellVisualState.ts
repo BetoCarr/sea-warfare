@@ -1,15 +1,13 @@
 import type { CellVisualState } from '../board-types';
-
 import type { LogicalCellInfo } from '../derive/deriveLogicalCellInfo';
-
 import type { BoardVariant } from '../useBoardViewModel';
 
 export function deriveCellVisualState(params: {
     boardVariant: BoardVariant;
     logicalCell: LogicalCellInfo;
     isPreview: boolean;
-    isActiveShip?: boolean;
     previewResult?: 'valid' | 'invalid';
+    isActiveShip?: boolean;
     showShips: boolean;
 }): CellVisualState {
 
@@ -17,19 +15,19 @@ export function deriveCellVisualState(params: {
         boardVariant,
         logicalCell,
         isPreview,
-        isActiveShip,
         previewResult,
+        isActiveShip,
         showShips,
     } = params;
+
+    if (boardVariant === 'enemy') {
+        return 'water';
+    }
 
     if (isPreview) {
         return previewResult === 'valid'
             ? 'preview-valid'
             : 'preview-invalid';
-    }
-
-    if (boardVariant === 'enemy') {
-        return 'water';
     }
 
     if (isActiveShip) {

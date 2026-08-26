@@ -8,13 +8,9 @@ export type CellVisualState =
 
 export interface CellPresentation {
     visualState: CellVisualState;
-
     className: string;
-
     content: string;
-
     ariaLabel: string;
-
     title: string;
 }
 
