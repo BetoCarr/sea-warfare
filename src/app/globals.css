@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* TODO: Review and remove leftover Next.js template styles:
+ * --background, --foreground, prefers-color-scheme, and body font-family.
+ * Revisit after establishing the final design system from the wireframes.
+ */
 :root {
   --background: #ffffff;
   --foreground: #171717;

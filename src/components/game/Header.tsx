@@ -59,15 +59,13 @@ export function Header({capabilites, onInitialize, onConfirmFleet }: HeaderProps
         };
 
     return (
-        <header className="h-14 flex-none flex items-center justify-between px-3 md:px-6 border-b border-slate-700/50 bg-slate-900 shadow-xl relative z-[60]">
+        <header className="h-22 flex-none flex items-center justify-between px-3 md:px-6 border-b border-slate-700/50 bg-slate-800 shadow-xl relative z-[60]">
             {/* LEFT: Identity */}
             <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2">
-                    <span className="text-lg filter drop-shadow-sm">⚓</span>
-                    <span className="text-sm font-black tracking-tighter text-slate-100 hidden sm:block">
-                        SEA WARFARE
-                    </span>
-                </div>
+                <span className="text-lg filter drop-shadow-sm">⚓</span>
+                <span className="text-sm font-black tracking-tighter text-slate-100 hidden sm:block">
+                    SEA WARFARE
+                </span>
                 <div className="h-4 w-px bg-slate-700 mx-1" />
             </div>
 

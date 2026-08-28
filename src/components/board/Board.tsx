@@ -45,6 +45,7 @@ export default function Board({
                 "max-w-[320px] max-h-[40vh]",
                 "sm:max-w-[380px] sm:max-h-[45vh]",
                 "md:max-w-[450px] md:max-h-[65vh]",
+                "lg:max-w-[500px] lg:max-h-[500px]",
                 // className
             )}
         >
