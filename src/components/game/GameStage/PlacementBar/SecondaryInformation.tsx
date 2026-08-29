@@ -11,9 +11,14 @@ export default function SecondaryInformation({
     orientation,
 }: SecondaryInformationProps) {
     return (
-        <div>
-            <div>Selected ship: {selectedShipType ?? 'None'}</div>
-            <div>Orientation: {orientation}</div>
+        <div className="pt-4 text-xs font-mono text-slate-400">
+            <div>
+                Selected ship: {selectedShipType ?? 'None'}
+            </div>
+
+            <div>
+                Orientation: {orientation}
+            </div>
         </div>
     );
 }

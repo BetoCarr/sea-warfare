@@ -26,7 +26,7 @@ export default function PlacementBar({
     );
 
     return (
-        <div className="w-full">
+        <div className="w-[219px] h-[500px] flex flex-col bg-gray-800 p-2">
             <ShipPalette
                 ships={remainingShips}
                 selectedShipType={selectedShipType}

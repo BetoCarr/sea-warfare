@@ -16,12 +16,8 @@ export default function ShipPalette({
     onSelectShip,
 }: ShipPaletteProps) {
     return (
-        <div 
-            className={cn(
-                "w-full h-full min-h-0 min-w-0 flex flex-row gap-4",
-            )}
-        >
-            <div className="relative flex flex-row flex-wrap gap-2 sm:gap-4">
+        <div className="flex-1 min-h-0 w-full flex flex-col">
+            <div className="relative flex flex-col gap-2">
                 {/* Internal Ship List */}
                     {
                         ships.map(ship => (
@@ -38,9 +34,6 @@ export default function ShipPalette({
                             />
                         ))
                     }
-                {/* Scroll shadows for mobile hint */}
-                <div className="md:hidden pointer-events-none absolute bottom-0 right-0 h-12 w-20 bg-gradient-to-l from-slate-950 via-slate-900/80 to-transparent z-10" />
-                <div className="md:hidden pointer-events-none absolute bottom-0 left-0 h-12 w-8 bg-gradient-to-r from-slate-950/50 to-transparent z-10" />
             </div>
         </div>
     );

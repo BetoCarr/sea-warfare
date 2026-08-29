@@ -72,7 +72,9 @@ export const GameStage = ({
                 interactive={
                     flow.capabilities.canPlaceFleet 
                 }
-                
+
+                placement={placement}
+
                 onCellHover={
                     supportsHover
                         ? placement.interaction.setTargetCell
@@ -87,7 +89,7 @@ export const GameStage = ({
             />
 
             {/* 3. BOTTOM SLOT: Ship Palette */}
-            {capabilites.canPlaceFleet && (
+            {/* {capabilites.canPlaceFleet && (
                 <PlacementBar 
                     remainingShipTypes={placement.contract.stats.remainingShipTypes}
                     selectedShipType={placement.interaction.selectedShipType}
@@ -95,7 +97,7 @@ export const GameStage = ({
                     onSelectShip={placement.interaction.selectShip}
                     onRotate={placement.interaction.rotate}
                 />
-            )}
+            )} */}
 
             {capabilites.canAttack && (
                 <EnemySection boardVM={enemyBoardVM} />
