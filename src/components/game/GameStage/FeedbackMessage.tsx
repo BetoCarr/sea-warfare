@@ -15,6 +15,7 @@ export const FeedbackMessage = ({
         <div
             className={clsx(
                 "flex items-center gap-2 px-2 py-2 rounded-md border shadow-md",
+                "absolute top-4 left-1/2 -translate-x-1/2 z-50",
                 "text-xs leading-snug max-w-[90vw]",
                 "sm:gap-3 sm:px-4 sm:py-3 sm:text-sm sm:max-w-md",
                 "md:text-base md:max-w-lg",

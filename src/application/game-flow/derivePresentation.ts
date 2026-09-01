@@ -30,7 +30,7 @@ export function derivePresentation(
         return {
             phaseLabel: 'COMBAT',
             description: 'Your fleet has tactical initiative.',
-            instruction: null
+            instruction: 'Choose an enemy target.'
         };
     }
 

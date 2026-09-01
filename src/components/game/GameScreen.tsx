@@ -35,12 +35,12 @@ export function GameScreen() {
     return (
         <div className="min-h-[100dvh] w-full bg-slate-900 text-slate-100 flex flex-col overflow-hidden relative">
             <Header 
-                capabilites={flow.capabilities}
+                capabilities={flow.capabilities}
                 onInitialize={handleInitialize} 
                 onConfirmFleet={handleConfirmFleet}
             />
             <GameStage 
-                capabilites={flow.capabilities}
+                capabilities={flow.capabilities}
                 placement={placement}
                 flow={flow}
                 supportsHover={supportsHover}

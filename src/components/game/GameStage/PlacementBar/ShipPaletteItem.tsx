@@ -14,18 +14,6 @@ export function ShipPaletteItem({
     onSelect,
 }: ShipPaletteItemProps) {
     return (
-        // <button
-        //     onClick={onSelect}
-        //     className={`
-        //         flex flex-col items-start gap-2 p-2 rounded-lg border
-        //         transition-all
-        //         ${
-        //             isSelected
-        //                 ? 'border-blue-400 bg-blue-500/10'
-        //                 : 'border-slate-700/40 hover:border-slate-500'
-        //         }
-        //     `}
-        // >
         <button
             onClick={onSelect}
             className={`

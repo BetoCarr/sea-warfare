@@ -56,7 +56,7 @@ describe('derivePresentation', () => {
         expect(presentation).toEqual({
             phaseLabel: 'COMBAT',
             description: 'Your fleet has tactical initiative.',
-            instruction: null
+            instruction: "Choose an enemy target."
         });
     });
 

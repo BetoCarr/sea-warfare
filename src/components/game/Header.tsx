@@ -3,14 +3,14 @@ import { Button } from "@/components/ui/Button";
 import type { GameInteractionCapabilities } from "@/application/game-flow/game-flow-types";
 
 interface HeaderProps {
-    capabilites : GameInteractionCapabilities;
+    capabilities : GameInteractionCapabilities;
     onInitialize?: () => void;
     onConfirmFleet?: () => void;
 }
 
-export function Header({capabilites, onInitialize, onConfirmFleet }: HeaderProps) {
+export function Header({capabilities, onInitialize, onConfirmFleet }: HeaderProps) {
     const renderAction = () => {
-        if (capabilites.canInitializeGame) {
+        if (capabilities.canInitializeGame) {
             return (
                 <Button 
                     variant="success"
@@ -28,7 +28,7 @@ export function Header({capabilites, onInitialize, onConfirmFleet }: HeaderProps
             );
         }
 
-        if (capabilites.canConfirmFleet) {
+        if (capabilities.canConfirmFleet) {
             return (
                 <Button 
                     variant="success"
@@ -45,7 +45,7 @@ export function Header({capabilites, onInitialize, onConfirmFleet }: HeaderProps
             );
         }
 
-        if (capabilites.canRestartGame) {
+        if (capabilities.canRestartGame) {
             return (
                 <Button 
                 variant="secondary"

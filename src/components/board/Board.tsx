@@ -42,7 +42,6 @@ export default function Board({
         <div
             className={cn(
                 "w-[500px] h-[500px] max-w-full max-h-full",
-                // className
             )}
         >
             <div

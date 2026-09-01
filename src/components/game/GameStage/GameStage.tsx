@@ -3,8 +3,8 @@ import React from 'react';
 
 import { FeedbackMessage } from './FeedbackMessage';
 
-import PlayerSection from '../../game/GameStage/PlayerSection/PlayerSection';
-import EnemySection from './EnemySection/EnemySection';
+import GameArea from './GameArea/GameArea';
+import Board from './../../board/Board';
 import PlacementBar from './PlacementBar/PlacementBar';
 import InformationPanel from './InformationPanel/InformationPanel';
 
@@ -18,19 +18,18 @@ import type { GameFlowController } from "@/application/game-flow/game-flow-types
 import { cn } from '@/lib/utils/utils';
 
 interface GameStageProps {
-    capabilites: GameInteractionCapabilities;
+    capabilities: GameInteractionCapabilities; // Revisar si debemos eliminar este prop y obtener capabilites de
     placement: PlacementController;
     flow: GameFlowController;
     supportsHover: boolean;
 }
 
 export const GameStage = ({
-    capabilites,
+    capabilities,
     placement,
     flow,
     supportsHover,
 }: GameStageProps) => {
-
 
     const boardVM = useBoardViewModel({
         boardVariant: 'player',
@@ -52,7 +51,7 @@ export const GameStage = ({
     });
 
     const instruction =
-        capabilites.canPlaceFleet
+        capabilities.canPlaceFleet
             ? placement.contract.instruction
             : flow.presentation.instruction;
     
@@ -66,42 +65,40 @@ export const GameStage = ({
                 <FeedbackMessage message={placement.contract.feedback} />
             )}
 
-            < PlayerSection
-                boardVM={boardVM}
-
-                interactive={
-                    flow.capabilities.canPlaceFleet 
-                }
-
-                placement={placement}
-
-                onCellHover={
-                    supportsHover
-                        ? placement.interaction.setTargetCell
-                        : undefined
-                }
-                onCellLeave={
-                    supportsHover
-                        ? placement.interaction.onBoardLeave
-                        : undefined
-                }
-                onCellPress={placement.interaction.onBoardInteraction}
-            />
-
-            {/* 3. BOTTOM SLOT: Ship Palette */}
-            {/* {capabilites.canPlaceFleet && (
-                <PlacementBar 
-                    remainingShipTypes={placement.contract.stats.remainingShipTypes}
-                    selectedShipType={placement.interaction.selectedShipType}
-                    orientation={placement.interaction.orientation}
-                    onSelectShip={placement.interaction.selectShip}
-                    onRotate={placement.interaction.rotate}
+            <GameArea>
+                <Board
+                    boardVM={boardVM}
+                    interactive={capabilities.canPlaceFleet}
+                    onCellHover={
+                        supportsHover
+                            ? placement.interaction.setTargetCell
+                            : undefined
+                    }
+                    onCellLeave={
+                        supportsHover
+                            ? placement.interaction.onBoardLeave
+                            : undefined
+                    }
+                    onCellPress={placement.interaction.onBoardInteraction}        
                 />
-            )} */}
 
-            {capabilites.canAttack && (
-                <EnemySection boardVM={enemyBoardVM} />
-            )}
+                {capabilities.canPlaceFleet && (
+                    <PlacementBar
+                        remainingShipTypes={placement.contract.stats.remainingShipTypes}
+                        selectedShipType={placement.interaction.selectedShipType}
+                        orientation={placement.interaction.orientation}
+                        onSelectShip={placement.interaction.selectShip}
+                        onRotate={placement.interaction.rotate}
+                    />
+                )}
+
+                {capabilities.canAttack && (
+                    <Board
+                        boardVM={enemyBoardVM}
+                        interactive={capabilities.canAttack}
+                    />
+                )}
+            </GameArea>
 
             {instruction && (
                 <InformationPanel
@@ -109,7 +106,7 @@ export const GameStage = ({
                     description={flow.presentation.description}
                     instruction={instruction}
                     stats={
-                        flow.capabilities.canPlaceFleet
+                        capabilities.canPlaceFleet
                             ? `Remaining ships: ${placement.contract.stats.remainingShips}`
                             : undefined
                     }

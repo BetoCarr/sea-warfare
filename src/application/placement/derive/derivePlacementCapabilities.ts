@@ -1,5 +1,4 @@
 import type { PlacementStats } from './placement-stats.types';
-
 import type { PlacementCapabilities } from '../derive/placement-capabilites.types';
 
 export function derivePlacementCapabilities(

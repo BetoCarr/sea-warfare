@@ -63,10 +63,12 @@ export function usePlacementDerivations({
             derivePlacementInstruction({
                 selectedShipType: interaction.selectedShipType,
                 targetCell: interaction.targetCell,
+                stats: stats,
             }),
         [
             interaction.selectedShipType,
             interaction.targetCell,
+            stats,
         ],
     );
 

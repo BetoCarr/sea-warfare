@@ -1,14 +1,10 @@
 import { usePlacementInteractionStore } from '../interactions/placement-interaction.store';
-
 import { BoardCellInteraction, PlacementInteractionResult } from '../interactions/placement-interaction.types';
 
-
-import type { PlacementInteractionsContract } from './placement-interactions-contract.types';
-
 import { ShipType } from '@/lib/domain/ships/models/ShipType';
-
 import { STANDARD_FLEET } from '../../../lib/domain/ships/models/StandardFleet';
 
+import type { PlacementInteractionsContract } from './placement-interactions-contract.types';
 
 export function usePlacementInteractions(): PlacementInteractionsContract {
 
