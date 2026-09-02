@@ -124,6 +124,7 @@ describe('usePlacementDerivations', () => {
         expect(derivations.stats.remainingShips).toBe(0);
         expect(derivations.stats.remainingShipTypes).toEqual([]);
         expect(derivations.capabilities.canConfirmFleet).toBe(true);
+        expect(derivations.instruction).toBe('Confirm fleet');
 
         harness.unmount();
     });

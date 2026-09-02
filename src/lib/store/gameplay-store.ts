@@ -49,6 +49,7 @@ export const useGameplayStore =
             set((state) => ({
                 game: confirmFleetDomain({
                     game: state.game,
+                    placements: state.playerPlacements,
                 }),
             })),
     }));

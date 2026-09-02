@@ -6,9 +6,10 @@ import { confirmFleet } from '../confirmFleet';
 
 import { initializeGame } from '../initializeGame';
 
-
+import { STANDARD_FLEET } from '@/lib/domain/ships/models/StandardFleet';
 
 import type { GameState } from '../../models/GameState';
+import type { ShipPlacement } from '../../../placement/models/ShipPlacement';
 
 function createGameState(
     overrides: Partial<GameState> = {},
@@ -16,6 +17,16 @@ function createGameState(
     return {
         phase: GamePhase.SETUP,
         ...overrides,
+    };
+}
+
+function createPlacement(shipType: string, row: number, col: number): ShipPlacement {
+    const ship = STANDARD_FLEET.find(currentShip => currentShip.type === shipType)!;
+
+    return {
+        ship,
+        origin: { row, col },
+        orientation: 'horizontal',
     };
 }
 
@@ -48,15 +59,34 @@ describe('game domain mutations', () => {
     });
 
     describe('confirmFleet', () => {
-        it('transitions from PLACEMENT to BATTLE + PLAYER_TURN', () => {
+        it('transitions from PLACEMENT to BATTLE + PLAYER_TURN when the fleet is complete', () => {
             const game = createGameState({
                 phase: GamePhase.PLACEMENT,
             });
+            const placements: ShipPlacement[] = [
+                createPlacement('carrier', 0, 0),
+                createPlacement('battleship', 1, 0),
+                createPlacement('cruiser', 2, 0),
+                createPlacement('submarine', 3, 0),
+                createPlacement('destroyer', 4, 0),
+            ];
 
-            expect(confirmFleet({ game })).toEqual({
+            expect(confirmFleet({ game, placements })).toEqual({
                 phase: GamePhase.BATTLE,
                 status: GameStatus.PLAYER_TURN,
             });
+        });
+
+        it('does not transition to BATTLE when the fleet is incomplete', () => {
+            const game = createGameState({
+                phase: GamePhase.PLACEMENT,
+            });
+            const placements: ShipPlacement[] = [
+                createPlacement('carrier', 0, 0),
+                createPlacement('destroyer', 1, 0),
+            ];
+
+            expect(confirmFleet({ game, placements })).toEqual(game);
         });
 
         it('does not mutate the original state object', () => {
@@ -65,7 +95,7 @@ describe('game domain mutations', () => {
             });
             const original = { ...game };
 
-            confirmFleet({ game });
+            confirmFleet({ game, placements: [] });
 
             expect(game).toEqual(original);
         });
@@ -74,9 +104,16 @@ describe('game domain mutations', () => {
             const game = createGameState({
                 phase: GamePhase.PLACEMENT,
             });
+            const placements: ShipPlacement[] = [
+                createPlacement('carrier', 0, 0),
+                createPlacement('battleship', 1, 0),
+                createPlacement('cruiser', 2, 0),
+                createPlacement('submarine', 3, 0),
+                createPlacement('destroyer', 4, 0),
+            ];
 
-            expect(confirmFleet({ game })).toEqual(
-                confirmFleet({ game }),
+            expect(confirmFleet({ game, placements })).toEqual(
+                confirmFleet({ game, placements }),
             );
         });
     });

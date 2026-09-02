@@ -35,10 +35,12 @@ export function usePlacementDerivations({
     const capabilities = useMemo(
         () =>
             derivePlacementCapabilities(
-                stats
+                stats,
+                interaction.selectedShipType,
             ),
         [
             stats,
+            interaction.selectedShipType,
         ],
     );
 
@@ -63,12 +65,12 @@ export function usePlacementDerivations({
             derivePlacementInstruction({
                 selectedShipType: interaction.selectedShipType,
                 targetCell: interaction.targetCell,
-                stats: stats,
+                canConfirmFleet: capabilities.canConfirmFleet,
             }),
         [
             interaction.selectedShipType,
             interaction.targetCell,
-            stats,
+            capabilities.canConfirmFleet,
         ],
     );
 

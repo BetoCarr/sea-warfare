@@ -1,22 +1,20 @@
 import type { PlacementInstruction } from './placement-instruction.types';
 import type { Position } from '@/lib/domain/shared/models/Position';
 import type { ShipType } from '@/lib/domain/ships/models/ShipType';
-import type { PlacementStats } from './placement-stats.types';
 
 type DerivePlacementInstructionParams = {
     selectedShipType: ShipType | null;
     targetCell: Position | null;
-    stats: PlacementStats,
-    
+    canConfirmFleet: boolean;    
 };
 
 export function derivePlacementInstruction({
     selectedShipType,
     targetCell,
-    stats,
+    canConfirmFleet,
 }: DerivePlacementInstructionParams): PlacementInstruction {
 
-    if(stats.remainingShips === 0 ) {
+    if(canConfirmFleet) {
         return 'Confirm fleet';
     }
 

@@ -6,6 +6,7 @@ describe('derivePlacementInstruction', () => {
             derivePlacementInstruction({
                 selectedShipType: null,
                 targetCell: null,
+                canConfirmFleet: false,
             }),
         ).toBe('Select ship');
     });
@@ -15,6 +16,7 @@ describe('derivePlacementInstruction', () => {
             derivePlacementInstruction({
                 selectedShipType: 'carrier',
                 targetCell: null,
+                canConfirmFleet: false, 
             }),
         ).toBe('Select position');
     });
@@ -24,8 +26,19 @@ describe('derivePlacementInstruction', () => {
             derivePlacementInstruction({
                 selectedShipType: 'carrier',
                 targetCell: { row: 2, col: 3 },
+                canConfirmFleet: false,
             }),
         ).toBe('Place ship');
+    });
+
+    it('should return confirm fleet when the fleet can be confirmed', () => {
+        expect(
+            derivePlacementInstruction({
+                selectedShipType: null,
+                targetCell: null,
+                canConfirmFleet: true,
+            }),
+        ).toBe('Confirm fleet');
     });
 });
 

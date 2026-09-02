@@ -51,6 +51,7 @@ export function usePlacementMutations({
         const nextGame =
             confirmFleetDomain({
                 game,
+                placements: playerPlacements,
             });
 
         setGame(nextGame);

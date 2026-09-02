@@ -83,6 +83,63 @@ describe('useGameplayStore', () => {
         expect(useGameplayStore.getState().enemyPlacements).toEqual(enemyPlacements);
     });
 
+        it('should confirm the fleet and transition to battle when the player fleet is complete', () => {
+        const store = useGameplayStore.getState();
+
+        store.setPlayerPlacements([
+            {
+                ship: { type: 'carrier', size: 5 },
+                origin: { row: 0, col: 0 },
+                orientation: 'horizontal',
+            },
+            {
+                ship: { type: 'battleship', size: 4 },
+                origin: { row: 2, col: 0 },
+                orientation: 'horizontal',
+            },
+            {
+                ship: { type: 'cruiser', size: 3 },
+                origin: { row: 4, col: 0 },
+                orientation: 'horizontal',
+            },
+            {
+                ship: { type: 'submarine', size: 3 },
+                origin: { row: 6, col: 0 },
+                orientation: 'horizontal',
+            },
+            {
+                ship: { type: 'destroyer', size: 2 },
+                origin: { row: 8, col: 0 },
+                orientation: 'horizontal',
+            },
+        ]);
+
+        store.confirmFleet();
+
+        expect(useGameplayStore.getState().game).toEqual({
+            phase: GamePhase.BATTLE,
+            status: GameStatus.PLAYER_TURN,
+        });
+    });
+
+    it('should not confirm the fleet when the player fleet is incomplete', () => {
+        const store = useGameplayStore.getState();
+
+        store.setPlayerPlacements([
+            {
+                ship: { type: 'carrier', size: 5 },
+                origin: { row: 0, col: 0 },
+                orientation: 'horizontal',
+            },
+        ]);
+
+        store.confirmFleet();
+
+        expect(useGameplayStore.getState().game).toEqual({
+            phase: GamePhase.SETUP,
+        });
+    });
+
     it('should reset gameplay state to initial values', () => {
         const store = useGameplayStore.getState();
 

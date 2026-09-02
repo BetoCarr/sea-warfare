@@ -177,7 +177,37 @@ describe('usePlacementMutations', () => {
     });
 
     it('confirms the fleet by updating the game state through the domain mutation', () => {
-        const harness = createHookHarness([]);
+        const placements: ShipPlacement[] = [
+            {
+                ship: { type: 'carrier', size: 5 },
+                origin: { row: 0, col: 0 },
+                orientation: 'horizontal',
+            },
+            {
+                ship: { type: 'battleship', size: 4 },
+                origin: { row: 1, col: 0 },
+                orientation: 'horizontal',
+            },
+            {
+                ship: { type: 'cruiser', size: 3 },
+                origin: { row: 2, col: 0 },
+                orientation: 'horizontal',
+            },
+            {
+                ship: { type: 'submarine', size: 3 },
+                origin: { row: 3, col: 0 },
+                orientation: 'horizontal',
+            },
+            {
+                ship: { type: 'destroyer', size: 2 },
+                origin: { row: 4, col: 0 },
+                orientation: 'horizontal',
+            },
+        ];
+
+        useGameplayStore.setState({ playerPlacements: placements });
+
+        const harness = createHookHarness(placements);
 
         act(() => {
             harness.getCurrent().confirmFleet();
