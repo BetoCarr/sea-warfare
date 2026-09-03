@@ -8,7 +8,7 @@ export default function PhaseContext({
     description,
 }: PhaseContextProps) {
     return (
-        <section className="w-full max-w-[260px] min-h-[93px] md:h-[93px] border border-slate-700/50 p-2">
+        <section className="w-full max-w-[260px] min-h-[93px] md:h-[93px] flex flex-col items-center justify-center border border-slate-700/50 bg-[var(--color-bg-subpanel)] p-2 text-center font-mono">
             <h2>{phaseLabel}</h2>
             {description && <p>{description}</p>}
         </section>
