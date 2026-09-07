@@ -25,6 +25,9 @@ export default function PlacementBar({
         remainingShipTypes.includes(ship.type),
     );
 
+    // 🟢 219 × 500 en Wide
+    // 🔴 necesita adaptación en Narrow
+
     return (
         <div className="w-[219px] h-[500px] flex flex-col bg-gray-800 p-2">
             <ShipPalette

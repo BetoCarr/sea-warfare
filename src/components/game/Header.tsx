@@ -58,6 +58,19 @@ export function Header({capabilities, onInitialize, onConfirmFleet }: HeaderProp
             return null;
         };
 
+
+        // h-22                  🟢 Mantener
+        // flex-none             🟢 Mantener
+        // flex                  🟢 Mantener
+        // items-center          🟢 Mantener
+        // justify-between       🟢 Mantener
+        // px-3 md:px-6          🟡 Validar contra Figma
+        // border                 🟢 Mantener
+        // background             🟢 Mantener
+        // shadow                 🟢 Mantener
+        // relative               🟢 Mantener
+        // z-index                🟢 Mantener
+
     return (
         <header className="h-22 flex-none flex items-center justify-between px-3 md:px-6 border-b border-slate-700/50 bg-slate-800 shadow-xl relative z-[60]">
             {/* LEFT: Identity */}

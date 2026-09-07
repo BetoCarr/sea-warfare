@@ -9,6 +9,11 @@ interface InformationPanelProps {
     stats?: string;
 }
 
+// flex-row	🔴 probablemente flex-col
+// gap	160px	🔴 adaptar
+// height	min 160px	🟡 validar
+// margin-bottom	48px	🟡 validar
+
 export default function InformationPanel({
     phaseLabel,
     description,

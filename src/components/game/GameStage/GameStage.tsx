@@ -55,32 +55,57 @@ export const GameStage = ({
             ? placement.contract.instruction
             : flow.presentation.instruction;
     
+
+
+    // flex-1                🟢 Mantener
+    // min-h-0               🟢 Mantener
+    // overflow-hidden       🟡 Validar en responsive
+    // flex                  🟢 Mantener
+    // flex-col              🟢 Mantener
+    // items-stretch         🟢 Mantener
+    // relative              🟢 Mantener
+    // px-4 md:px-8          🟡 Validar contra Figma
+    // transition-all        🟡 Revisar
+    // duration-700          🟡 Revisar
+    // ease-in-out           🟡 Revisar
+
     return (
         <main className={cn(
             "flex-1 min-h-0 overflow-hidden flex flex-col items-stretch relative px-4 md:px-8",
             "transition-all duration-700 ease-in-out",
         )}>
-        
             {placement.contract.feedback && (
                 <FeedbackMessage message={placement.contract.feedback} />
             )}
 
             <GameArea>
-                <Board
-                    boardVM={boardVM}
-                    interactive={capabilities.canPlaceFleet}
-                    onCellHover={
-                        supportsHover
-                            ? placement.interaction.setTargetCell
-                            : undefined
-                    }
-                    onCellLeave={
-                        supportsHover
-                            ? placement.interaction.onBoardLeave
-                            : undefined
-                    }
-                    onCellPress={placement.interaction.onBoardInteraction}        
-                />
+                    <div
+                        className={cn(
+                            "w-[500px] h-[500px]",
+                            "max-md:w-[300px] max-md:h-[300px]",
+                            "max-md:[@media_(orientation:landscape)]:w-[328px]",
+                            "max-md:[@media_(orientation:landscape)]:h-[294px]",
+                            "max-w-full max-h-full",
+                            "shrink-0",
+                        )}
+                    >
+                    <Board
+                        boardVM={boardVM}
+                        interactive={capabilities.canPlaceFleet}
+                        onCellHover={
+                            supportsHover
+                                ? placement.interaction.setTargetCell
+                                : undefined
+                        }
+                        onCellLeave={
+                            supportsHover
+                                ? placement.interaction.onBoardLeave
+                                : undefined
+                        }
+                        onCellPress={placement.interaction.onBoardInteraction}        
+                    />
+                </div>
+
 
                 {capabilities.canPlaceFleet && (
                     <PlacementBar

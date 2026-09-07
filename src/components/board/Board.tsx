@@ -38,10 +38,14 @@ export default function Board({
 
     const size = boardVM.size;
 
+    // 🔴 500px fijo → necesita comportamiento fluido
+    // 🟢 max 500px
+    // 🔴 mantener aspect-ratio 1:1
+    
     return (
         <div
             className={cn(
-                "w-[500px] h-[500px] max-w-full max-h-full",
+                "max-w-full max-h-full",
             )}
         >
             <div
@@ -65,7 +69,6 @@ export default function Board({
                 ))}
 
                 {/* --- Rows and cells --- */}
-            
                 {boardVM.cells.map((rowData, row) => (
                     <React.Fragment key={row}>
                         {/* Row number */}
