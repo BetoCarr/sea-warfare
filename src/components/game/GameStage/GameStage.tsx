@@ -55,40 +55,46 @@ export const GameStage = ({
             ? placement.contract.instruction
             : flow.presentation.instruction;
     
-
-
-    // flex-1                🟢 Mantener
-    // min-h-0               🟢 Mantener
-    // overflow-hidden       🟡 Validar en responsive
-    // flex                  🟢 Mantener
-    // flex-col              🟢 Mantener
-    // items-stretch         🟢 Mantener
-    // relative              🟢 Mantener
-    // px-4 md:px-8          🟡 Validar contra Figma
-    // transition-all        🟡 Revisar
-    // duration-700          🟡 Revisar
-    // ease-in-out           🟡 Revisar
-
     return (
-        <main className={cn(
-            "flex-1 min-h-0 overflow-hidden flex flex-col items-stretch relative px-4 md:px-8",
-            "transition-all duration-700 ease-in-out",
-        )}>
+        <main
+            className={cn(
+                // Base — Mobile Portrait
+                "flex-1 min-h-0 overflow-hidden",
+                "flex flex-col items-stretch",
+                "relative px-4",
+
+                // Mobile / Tablet Landscape
+                "max-lg:landscape:flex-row",
+
+                // Transitions
+                "transition-all duration-700 ease-in-out",
+            )}
+        >
             {placement.contract.feedback && (
                 <FeedbackMessage message={placement.contract.feedback} />
             )}
 
             <GameArea>
-                    <div
-                        className={cn(
-                            "w-[500px] h-[500px]",
-                            "max-md:w-[300px] max-md:h-[300px]",
-                            "max-md:[@media_(orientation:landscape)]:w-[328px]",
-                            "max-md:[@media_(orientation:landscape)]:h-[294px]",
-                            "max-w-full max-h-full",
-                            "shrink-0",
-                        )}
-                    >
+                <div
+                    className={cn(
+                        // Base — Mobile Portrait
+                        "w-[300px] h-[300px]",
+
+                        // Tablet Portrait
+                        "[@media_(min-width:768px)_and_(orientation:portrait)]:w-[500px]",
+                        "[@media_(min-width:768px)_and_(orientation:portrait)]:h-[500px]",
+
+                        // Mobile Landscape
+                        // "[@media_(min-width:768px)_and_(max-width:1023px)_and_(orientation:landscape)]:w-[328px]",
+                        // "[@media_(min-width:768px)_and_(max-width:1023px)_and_(orientation:landscape)]:h-[294px]",
+
+                        // Tablet Landscape / Desktop
+                        "lg:w-[500px] lg:h-[500px]",
+
+                        // Available space
+                        "max-w-full max-h-full shrink-0",
+                    )}
+                >
                     <Board
                         boardVM={boardVM}
                         interactive={capabilities.canPlaceFleet}
@@ -118,10 +124,27 @@ export const GameStage = ({
                 )}
 
                 {capabilities.canAttack && (
-                    <Board
-                        boardVM={enemyBoardVM}
-                        interactive={capabilities.canAttack}
-                    />
+                    <div
+                        className={cn(
+                            // Base — Mobile Portrait
+                            "w-[300px] h-[300px]",
+
+                            // Tablet / Desktop
+                            "md:w-[500px] md:h-[500px]",
+
+                            // Mobile Landscape — limited height
+                            "[@media_(orientation:landscape)_and_(max-height:600px)]:w-[328px]",
+                            "[@media_(orientation:landscape)_and_(max-height:600px)]:h-[294px]",
+
+                            // Available space
+                            "max-w-full max-h-full shrink-0",
+                        )}
+                    >
+                        <Board
+                            boardVM={enemyBoardVM}
+                            interactive={capabilities.canAttack}
+                        />
+                    </div>
                 )}
             </GameArea>
 

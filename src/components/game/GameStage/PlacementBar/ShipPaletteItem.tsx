@@ -1,3 +1,4 @@
+import { SHIP_COLORS } from '@/application/board/presentation/ship-colors';
 import type { ShipType } from '@/lib/domain/ships/models/ShipType';
 
 interface ShipPaletteItemProps {
@@ -7,6 +8,12 @@ interface ShipPaletteItemProps {
     onSelect: () => void;
 }
 
+const SHIP_SEGMENT_SIZE = 20;
+const SHIP_SEGMENT_GAP = 4;
+
+const getShipVisualWidth = (size: number) =>
+    size * SHIP_SEGMENT_SIZE + (size - 1) * SHIP_SEGMENT_GAP;
+
 export function ShipPaletteItem({
     type,
     size,
@@ -14,10 +21,12 @@ export function ShipPaletteItem({
     onSelect,
 }: ShipPaletteItemProps) {
     return (
+        
         <button
             onClick={onSelect}
             className={`
                 w-full
+                [@media_(max-width:767px)_and_(orientation:portrait)]:w-auto
                 flex flex-col items-start gap-3
                 p-3
                 rounded-md
@@ -30,14 +39,14 @@ export function ShipPaletteItem({
                 }
             `}
         >
-            <div className="flex flex-row gap-1">
-                {Array.from({ length: size }).map((_, index) => (
-                    <div
-                        key={index}
-                        className="w-5 h-5 rounded-sm bg-slate-400"
-                    />
-                ))}
-            </div>
+            <div
+                className={`
+                    h-5
+                    rounded-sm
+                    ${SHIP_COLORS[type]}
+                `}
+                style={{ width: getShipVisualWidth(size) }}
+            />
 
             <span className="text-[10px] uppercase text-slate-400 font-mono">
                 {type}

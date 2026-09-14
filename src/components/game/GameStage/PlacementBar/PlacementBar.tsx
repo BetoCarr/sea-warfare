@@ -4,6 +4,7 @@ import SecondaryInformation from './SecondaryInformation';
 import { ShipType } from '@/lib/domain/ships/models/ShipType';
 import { STANDARD_FLEET } from '@/lib/domain/ships/models/StandardFleet';
 import { Orientation } from '@/lib/domain/placement/models/Orientation';
+import { cn } from '@/lib/utils/utils';
 
 interface PlacementBarProps {
     remainingShipTypes: ShipType[];
@@ -25,11 +26,14 @@ export default function PlacementBar({
         remainingShipTypes.includes(ship.type),
     );
 
-    // 🟢 219 × 500 en Wide
-    // 🔴 necesita adaptación en Narrow
-
     return (
-        <div className="w-[219px] h-[500px] flex flex-col bg-gray-800 p-2">
+        <div 
+            className={cn(
+                "w-[219px] h-[500px] flex flex-col bg-gray-800 p-2",
+                "[@media_(max-width:767px)_and_(orientation:portrait)]:w-full"
+
+            )}
+        >
             <ShipPalette
                 ships={remainingShips}
                 selectedShipType={selectedShipType}
