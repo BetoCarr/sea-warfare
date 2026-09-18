@@ -22,16 +22,18 @@ export default function InformationPanelItem({
     return (
         <section
             className={cn(
-                "w-full max-w-[260px] h-[93px]",
+                "w-full max-w-none",
+                "flex-1 min-h-0",
                 "flex items-center justify-center",
                 "border bg-[var(--color-bg-subpanel)]",
                 "p-2 text-center font-mono whitespace-pre-line",
-                variant ? variantClasses[variant] : defaultVariantClass,
+                "text-[clamp(0.6875rem,1.67dvh,1rem)]",
 
+                variant ? variantClasses[variant] : defaultVariantClass,
                 // Mobile Portrait
-                "[@media_(max-width:767px)_and_(orientation:portrait)]:max-w-none",
-                "[@media_(max-width:767px)_and_(orientation:portrait)]:min-h-0",
-                "[@media_(max-width:767px)_and_(orientation:portrait)]:flex-1",
+                // "[@media_(max-width:767px)_and_(orientation:portrait)]:max-w-none",
+                // "[@media_(max-width:767px)_and_(orientation:portrait)]:min-h-0",
+                // "[@media_(max-width:767px)_and_(orientation:portrait)]:flex-1",
             )}
         >
             <div className="min-w-0 max-w-full whitespace-pre-line break-words">

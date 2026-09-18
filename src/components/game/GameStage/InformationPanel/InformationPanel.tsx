@@ -17,25 +17,38 @@ export default function InformationPanel({
     return (
         <section
             className={cn(
-                "w-full max-w-[1400px] min-h-[160px]",
-                "mx-auto flex flex-row items-center justify-center",
-                "gap-40 mb-12",
-                "bg-slate-800 border border-slate-700/50 p-2",
+                // Base — Mobile Portrait
+                "w-full h-[clamp(100px,12.5dvh,120px)]",
+                "flex flex-col items-center justify-center",
+                "gap-0 mb-0",
+                "min-h-0",
 
-                // Mobile Portrait
-                "max-md:flex-col",
-                "max-md:h-[155px]",
-                "max-md:min-h-0",
-                "max-md:gap-0",
-                "max-md:mb-0",
+                // // Tablet Portrait
+                // "[@media_(min-width:768px)_and_(max-width:1023px)_and_(orientation:portrait)]:w-full",
+                // "[@media_(min-width:768px)_and_(max-width:1023px)_and_(orientation:portrait)]:h-auto",
+                // "[@media_(min-width:768px)_and_(max-width:1023px)_and_(orientation:portrait)]:min-h-[160px]",
+                // "[@media_(min-width:768px)_and_(max-width:1023px)_and_(orientation:portrait)]:flex-row",
+                // "[@media_(min-width:768px)_and_(max-width:1023px)_and_(orientation:portrait)]:gap-40",
+                // "[@media_(min-width:768px)_and_(max-width:1023px)_and_(orientation:portrait)]:mb-12",
 
                 // Mobile Landscape
-                "[@media_(max-width:1023px)_and_(orientation:landscape)]:w-[165px]",
-                "[@media_(max-width:1023px)_and_(orientation:landscape)]:h-[376px]",
-                "[@media_(max-width:1023px)_and_(orientation:landscape)]:min-h-0",
-                "[@media_(max-width:1023px)_and_(orientation:landscape)]:flex-col",
-                "[@media_(max-width:1023px)_and_(orientation:landscape)]:gap-0",
-                "[@media_(max-width:1023px)_and_(orientation:landscape)]:mb-0",
+                // "[@media_(min-width:768px)_and_(max-width:1023px)_and_(orientation:landscape)]:w-[165px]",
+                // "[@media_(min-width:768px)_and_(max-width:1023px)_and_(orientation:landscape)]:h-[376px]",
+                // "[@media_(min-width:768px)_and_(max-width:1023px)_and_(orientation:landscape)]:min-h-0",
+                // "[@media_(min-width:768px)_and_(max-width:1023px)_and_(orientation:landscape)]:flex-col",
+
+                // Tablet Landscape / Desktop
+                // "lg:w-full",
+                // "lg:max-w-[1400px]",
+                // // "lg:align-self-center",
+                // "lg:h-auto",
+                // "lg:min-h-[160px]",
+                // "lg:flex-row",
+                // "lg:gap-40",
+                // "lg:mb-12",
+
+                // Visual
+                "bg-slate-800 border border-slate-700/50",
             )}
         >
             <InformationPanelItem

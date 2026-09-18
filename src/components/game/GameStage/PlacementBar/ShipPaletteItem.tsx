@@ -25,10 +25,9 @@ export function ShipPaletteItem({
         <button
             onClick={onSelect}
             className={`
-                w-full
-                [@media_(max-width:767px)_and_(orientation:portrait)]:w-auto
-                flex flex-col items-start gap-3
-                p-3
+                w-auto h-[48px]
+                flex flex-col items-start justify-center gap-1
+                p-2 py-1
                 rounded-md
                 border
                 transition-all duration-200

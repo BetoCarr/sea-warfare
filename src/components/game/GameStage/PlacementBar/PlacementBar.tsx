@@ -29,21 +29,44 @@ export default function PlacementBar({
     return (
         <div 
             className={cn(
-                "w-[219px] h-[500px] flex flex-col bg-gray-800 p-2",
-                "[@media_(max-width:767px)_and_(orientation:portrait)]:w-full"
+                "w-full",
+                "h-[clamp(120px,16.7dvh,160px)]",
+                "mb-3",
+                // "flex flex-wrap"
+
+
+                // "w-[219px] h-[500px] flex flex-col bg-gray-800 p-2", desktop
+                // "[@media_(max-width:767px)_and_(orientation:portrait)]:w-full"
 
             )}
         >
-            <ShipPalette
-                ships={remainingShips}
-                selectedShipType={selectedShipType}
-                onSelectShip={onSelectShip}
-            />
-            <OrientationToggle onToggle={onRotate} />
-            <SecondaryInformation
-                selectedShipType={selectedShipType}
-                orientation={orientation}
-            />
+            <div
+                className={cn(
+                    // Layout
+                    "h-full min-h-0",
+                    "flex flex-wrap items-start gap-2",
+                )}
+            >
+                <div
+                    className={cn(
+                        "flex items-center gap-2",
+                        "w-[200px] shrink-0",
+                    )}
+                >
+                    <OrientationToggle onToggle={onRotate} />
+                    <SecondaryInformation
+                        selectedShipType={selectedShipType}
+                        orientation={orientation}
+                    />
+                </div>
+
+                <ShipPalette
+                    ships={remainingShips}
+                    selectedShipType={selectedShipType}
+                    onSelectShip={onSelectShip}
+                />
+
+            </div>
         </div>
     );
 }

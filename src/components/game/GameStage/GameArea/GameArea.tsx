@@ -10,10 +10,11 @@ export default function GameArea({ children }: GameAreaProps) {
         className={cn(
             // Base — Mobile Portrait
             "flex-1 min-h-0 w-full max-w-full",
-            "flex flex-col items-center justify-between gap-30",
+            // "flex flex-col items-center justify-between gap-30",
+            "flex flex-col items-center justify-start",
 
             // Tablet / Desktop
-            "md:flex-row md:justify-center",
+            // "md:flex-row md:justify-center",
 
             // Transitions
             "transition-transform duration-500",

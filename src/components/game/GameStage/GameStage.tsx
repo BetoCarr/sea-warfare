@@ -61,10 +61,13 @@ export const GameStage = ({
                 // Base — Mobile Portrait
                 "flex-1 min-h-0 overflow-hidden",
                 "flex flex-col items-stretch",
-                "relative px-4",
+                "relative",
 
                 // Mobile / Tablet Landscape
-                "max-lg:landscape:flex-row",
+                // "max-lg:landscape:flex-row",
+                // "[@media_(min-width:768px)_and_(max-width:1023px)_and_(orientation:landscape)]:flex-row",
+                
+                // "[@media_(min-width:768px)_and_(max-width:1023px)_and_(orientation:portrait)]: flex-row",
 
                 // Transitions
                 "transition-all duration-700 ease-in-out",
@@ -78,18 +81,19 @@ export const GameStage = ({
                 <div
                     className={cn(
                         // Base — Mobile Portrait
-                        "w-[300px] h-[300px]",
+                        // "w-[300px] h-[300px] mt-8",
+                        "size-[clamp(240px,31.4dvh,300px)] mt-8",
 
                         // Tablet Portrait
-                        "[@media_(min-width:768px)_and_(orientation:portrait)]:w-[500px]",
-                        "[@media_(min-width:768px)_and_(orientation:portrait)]:h-[500px]",
+                        // "[@media_(min-width:768px)_and_(orientation:portrait)]:w-[500px]",
+                        // "[@media_(min-width:768px)_and_(orientation:portrait)]:h-[500px]",
 
                         // Mobile Landscape
                         // "[@media_(min-width:768px)_and_(max-width:1023px)_and_(orientation:landscape)]:w-[328px]",
                         // "[@media_(min-width:768px)_and_(max-width:1023px)_and_(orientation:landscape)]:h-[294px]",
 
                         // Tablet Landscape / Desktop
-                        "lg:w-[500px] lg:h-[500px]",
+                        // "lg:w-[500px] lg:h-[500px]",
 
                         // Available space
                         "max-w-full max-h-full shrink-0",
@@ -126,18 +130,20 @@ export const GameStage = ({
                 {capabilities.canAttack && (
                     <div
                         className={cn(
-                            // Base — Mobile Portrait
-                            "w-[300px] h-[300px]",
+                            "size-[clamp(240px,31.4dvh,300px)] mt-8",
 
-                            // Tablet / Desktop
-                            "md:w-[500px] md:h-[500px]",
+                            // // Base — Mobile Portrait
+                            // "w-[300px] h-[300px]",
 
-                            // Mobile Landscape — limited height
-                            "[@media_(orientation:landscape)_and_(max-height:600px)]:w-[328px]",
-                            "[@media_(orientation:landscape)_and_(max-height:600px)]:h-[294px]",
+                            // // Tablet / Desktop
+                            // "md:w-[500px] md:h-[500px]",
 
-                            // Available space
-                            "max-w-full max-h-full shrink-0",
+                            // // Mobile Landscape — limited height
+                            // "[@media_(orientation:landscape)_and_(max-height:600px)]:w-[328px]",
+                            // "[@media_(orientation:landscape)_and_(max-height:600px)]:h-[294px]",
+
+                            // // Available space
+                            // "max-w-full max-h-full shrink-0",
                         )}
                     >
                         <Board
