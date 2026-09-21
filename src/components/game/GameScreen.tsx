@@ -6,6 +6,7 @@ import { useSupportsHover } from "@/lib/device/useSupportsHover";
 import { useGameplayStore } from "@/lib/store/gameplay-store";
 import { useGameFlowController } from "@/application/game-flow/useGameFlowController";
 import { usePlacementController } from "@/application/placement/hooks/usePlacementController";
+import { FeedbackMessage } from "./GameStage/FeedbackMessage";
 
 export function GameScreen() {
     const supportsHover = useSupportsHover();
@@ -34,6 +35,9 @@ export function GameScreen() {
 
     return (
         <div className="min-h-[100dvh] w-full bg-slate-900 text-slate-100 flex flex-col overflow-hidden relative">
+            {placement.contract.feedback && (
+                <FeedbackMessage message={placement.contract.feedback} />
+            )}  
             <Header 
                 capabilities={flow.capabilities}
                 onInitialize={handleInitialize} 

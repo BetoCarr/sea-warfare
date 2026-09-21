@@ -13,9 +13,7 @@ export function Header({capabilities, onInitialize, onConfirmFleet }: HeaderProp
         if (capabilities.canInitializeGame) {
             return (
                 <Button 
-                    variant="success"
                     onClick={onInitialize}
-                    pulse={true}
                 >
                     <span className="hidden sm:inline">
                         INITIALIZE SYSTEM
@@ -31,9 +29,7 @@ export function Header({capabilities, onInitialize, onConfirmFleet }: HeaderProp
         if (capabilities.canConfirmFleet) {
             return (
                 <Button 
-                    variant="success"
                     onClick={onConfirmFleet}
-                    pulse={true}
                 >
                     <span className="sm:hidden">
                         CONFIRM
@@ -45,16 +41,16 @@ export function Header({capabilities, onInitialize, onConfirmFleet }: HeaderProp
             );
         }
 
-        if (capabilities.canRestartGame) {
-            return (
-                <Button 
-                variant="secondary"
-                onClick={() => window.location.reload()} // TODO:
-                >                                          // Replace full page reload with a proper game reset action
-                    REMATCH
-                </Button>
-            );
-        }
+        // if (capabilities.canRestartGame) {
+        //     return (
+        //         <Button 
+        //         variant="secondary"
+        //         onClick={() => window.location.reload()} // TODO:
+        //         >                                          // Replace full page reload with a proper game reset action
+        //             REMATCH
+        //         </Button>
+        //     );
+        // }
             return null;
         };
 

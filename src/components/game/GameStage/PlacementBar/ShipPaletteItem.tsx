@@ -8,11 +8,8 @@ interface ShipPaletteItemProps {
     onSelect: () => void;
 }
 
-const SHIP_SEGMENT_SIZE = 20;
-const SHIP_SEGMENT_GAP = 4;
-
 const getShipVisualWidth = (size: number) =>
-    size * SHIP_SEGMENT_SIZE + (size - 1) * SHIP_SEGMENT_GAP;
+    `calc(${size} * clamp(0.75rem, 3.5vw, 1.25rem) + ${size - 1} * clamp(0.125rem, 0.7vw, 0.25rem))`;
 
 export function ShipPaletteItem({
     type,
@@ -25,9 +22,9 @@ export function ShipPaletteItem({
         <button
             onClick={onSelect}
             className={`
-                w-auto h-[48px]
+                h-[clamp(2.75rem,7dvh,3rem)] max-w-full min-w-0 w-auto
                 flex flex-col items-start justify-center gap-1
-                p-2 py-1
+                px-[clamp(0.375rem,1.5vw,0.5rem)] py-1
                 rounded-md
                 border
                 transition-all duration-200
@@ -40,7 +37,7 @@ export function ShipPaletteItem({
         >
             <div
                 className={`
-                    h-5
+                    h-[clamp(0.75rem,3.5vw,1.25rem)]
                     rounded-sm
                     ${SHIP_COLORS[type]}
                 `}

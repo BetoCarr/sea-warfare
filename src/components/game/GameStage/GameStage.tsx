@@ -73,16 +73,16 @@ export const GameStage = ({
                 "transition-all duration-700 ease-in-out",
             )}
         >
-            {placement.contract.feedback && (
+            {/* {placement.contract.feedback && (
                 <FeedbackMessage message={placement.contract.feedback} />
-            )}
+            )} */}
 
             <GameArea>
                 <div
                     className={cn(
                         // Base — Mobile Portrait
                         // "w-[300px] h-[300px] mt-8",
-                        "size-[clamp(240px,31.4dvh,300px)] mt-8",
+                        "size-[clamp(210px,31.4dvh,300px)]",
 
                         // Tablet Portrait
                         // "[@media_(min-width:768px)_and_(orientation:portrait)]:w-[500px]",
@@ -130,7 +130,7 @@ export const GameStage = ({
                 {capabilities.canAttack && (
                     <div
                         className={cn(
-                            "size-[clamp(240px,31.4dvh,300px)] mt-8",
+                            "size-[clamp(210px,31.4dvh,300px)]",
 
                             // // Base — Mobile Portrait
                             // "w-[300px] h-[300px]",

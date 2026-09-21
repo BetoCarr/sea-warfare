@@ -14,12 +14,27 @@ export const FeedbackMessage = ({
     return (
         <div
             className={clsx(
-                "flex items-center gap-2 px-2 py-2 rounded-md border shadow-md",
-                "absolute top-4 left-1/2 -translate-x-1/2 z-50",
-                "text-xs leading-snug max-w-[90vw]",
-                "sm:gap-3 sm:px-4 sm:py-3 sm:text-sm sm:max-w-md",
+                // Layout
+                "absolute left-1/2 top-[clamp(3rem,5dvh,4rem)] z-70",
+                "flex items-center justify-center",
+                "w-[clamp(13rem,60vw,22rem)]",
+
+                "-translate-x-1/2",
+
+                // Spacing
+                "gap-[clamp(0.375rem,1vw,0.625rem)]",
+                "px-[clamp(0.5rem,1.5vw,0.75rem)]",
+                "py-[clamp(0.5rem,1.5dvh,0.75rem)]",
+
+                // Typography
+                "text-center text-xs leading-tight",
+                "sm:text-sm",
                 "md:text-base md:max-w-lg",
+
+                // Visual
+                "rounded-md border shadow-md",
                 "bg-slate-800 border-slate-600 text-slate-200",
+
                 className
             )}
             role="alert"

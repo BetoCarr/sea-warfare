@@ -11,7 +11,7 @@ export default function SecondaryInformation({
     orientation,
 }: SecondaryInformationProps) {
     return (
-        <div className="flex-1 min-w-0 pt-4 text-xs font-mono text-slate-400">
+        <div className="min-w-0 flex-1 pt-[clamp(0.25rem,1.5vw,1rem)] text-[clamp(0.5625rem,1.8vw,0.75rem)] font-mono text-slate-400">
             <div>
                 Selected ship: {selectedShipType ?? 'None'}
             </div>

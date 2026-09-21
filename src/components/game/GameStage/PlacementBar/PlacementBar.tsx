@@ -31,26 +31,23 @@ export default function PlacementBar({
             className={cn(
                 "w-full",
                 "h-[clamp(120px,16.7dvh,160px)]",
-                "mb-3",
-                // "flex flex-wrap"
+                // "mb-3",
+                "mt-8"
 
-
-                // "w-[219px] h-[500px] flex flex-col bg-gray-800 p-2", desktop
                 // "[@media_(max-width:767px)_and_(orientation:portrait)]:w-full"
-
             )}
         >
             <div
                 className={cn(
                     // Layout
                     "h-full min-h-0",
-                    "flex flex-wrap items-start gap-2",
+                    "flex flex-wrap items-start gap-[clamp(0.375rem,1.5vw,0.75rem)]",
                 )}
             >
                 <div
                     className={cn(
-                        "flex items-center gap-2",
-                        "w-[200px] shrink-0",
+                        "flex min-w-0 items-center gap-[clamp(0.375rem,1.5vw,0.75rem)]",
+                        "w-[clamp(11rem,30vw,12.5rem)] shrink-0",
                     )}
                 >
                     <OrientationToggle onToggle={onRotate} />

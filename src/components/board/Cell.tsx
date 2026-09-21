@@ -49,8 +49,8 @@ export default function Cell({
     };
 
     const baseStyles =
-        "w-full aspect-square flex items-center justify-center border transition-all duration-150 select-none text-sm font-bold";
-
+        "w-full min-w-0 min-h-0 aspect-square flex items-center justify-center border transition-all duration-150 select-none text-sm font-bold";
+    
     const disabledStyles =
         disabled
             ? "cursor-not-allowed opacity-60"

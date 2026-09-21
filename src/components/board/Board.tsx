@@ -37,21 +37,18 @@ export default function Board({
 }: BoardProps) {
 
     const size = boardVM.size;
-
-    // 🔴 500px fijo → necesita comportamiento fluido
-    // 🟢 max 500px
-    // 🔴 mantener aspect-ratio 1:1
     
     return (
         <div
             className={cn(
-                "max-w-full max-h-full",
+                "w-full h-full min-w-0 min-h-0",
+                
             )}
         >
             <div
                 className={cn(
-                    "grid",
-                    "gap-[3px]"
+                    "w-full h-full min-w-0 min-h-0",
+                    "grid gap-[3px]",
                 )}
                 style={{
                     gridTemplateColumns: `auto repeat(${size}, minmax(0, 1fr))`,
@@ -60,9 +57,18 @@ export default function Board({
                 {/* --- Row 0: empty corner + column labels --- */}
                 <div></div>
                 {Array.from({ length: size }).map((_, i) => (
+                    // <div
+                    //     key={`col-${i}`}
+                    //     className="text-sm text-slate-400 text-center"
+                    // >
                     <div
                         key={`col-${i}`}
-                        className="text-sm text-slate-400 text-center"
+                        className="
+                            min-w-0 min-h-0
+                            flex items-center justify-center
+                            text-xs leading-none
+                            text-slate-400
+                        "
                     >
                         {String.fromCharCode(65 + i)}
                     </div>
@@ -72,7 +78,15 @@ export default function Board({
                 {boardVM.cells.map((rowData, row) => (
                     <React.Fragment key={row}>
                         {/* Row number */}
-                        <div className="text-sm text-slate-400 text-center">
+                        {/* <div className="text-sm text-slate-400 text-center"> */}
+                        <div
+                            className="
+                                min-w-0 min-h-0
+                                flex items-center justify-center
+                                text-xs leading-none
+                                text-slate-400
+                            "
+                        >
                             {row + 1}
                         </div>
                         
