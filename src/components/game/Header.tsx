@@ -55,7 +55,7 @@ export function Header({capabilities, onInitialize, onConfirmFleet }: HeaderProp
         };
 
     return (
-        <header className="h-[clamp(50px,6.5dvh,88px)] flex-none flex items-center justify-between px-3 md:px-6 border-b border-slate-700/50 bg-slate-800 shadow-xl relative z-[60]">
+        <header className="h-[clamp(46px,58px,60px)] flex-none flex items-center justify-between px-3 border-b border-slate-700/50 bg-slate-800 shadow-xl relative z-[60]">
             {/* LEFT: Identity */}
             <div className="flex items-center gap-3">
                 <span className="text-lg filter drop-shadow-sm">⚓</span>

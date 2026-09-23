@@ -15,21 +15,16 @@ export const FeedbackMessage = ({
         <div
             className={clsx(
                 // Layout
-                "absolute left-1/2 top-[clamp(3rem,5dvh,4rem)] z-70",
+                "absolute left-1/2 top-12 z-70",
                 "flex items-center justify-center",
-                "w-[clamp(13rem,60vw,22rem)]",
-
+                "max-w-[22rem] w-max",
                 "-translate-x-1/2",
 
-                // Spacing
-                "gap-[clamp(0.375rem,1vw,0.625rem)]",
-                "px-[clamp(0.5rem,1.5vw,0.75rem)]",
-                "py-[clamp(0.5rem,1.5dvh,0.75rem)]",
-
+                // Spacing,
+                "gap-2 px-3 py-2",
+                
                 // Typography
                 "text-center text-xs leading-tight",
-                "sm:text-sm",
-                "md:text-base md:max-w-lg",
 
                 // Visual
                 "rounded-md border shadow-md",

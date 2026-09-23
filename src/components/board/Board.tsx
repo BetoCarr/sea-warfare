@@ -41,45 +41,32 @@ export default function Board({
     return (
         <div
             className={cn(
-                "w-full h-full min-w-0 min-h-0",
-                
+                // Base — Mobile Portrait
+                "size-[clamp(210px,31.4dvh,300px)]",
+
+                // Available space
+                "max-w-full max-h-full shrink-0",
             )}
         >
             <div
                 className={cn(
                     "w-full h-full min-w-0 min-h-0",
-                    "grid gap-[3px]",
                 )}
-                style={{
-                    gridTemplateColumns: `auto repeat(${size}, minmax(0, 1fr))`,
-                }}
             >
-                {/* --- Row 0: empty corner + column labels --- */}
-                <div></div>
-                {Array.from({ length: size }).map((_, i) => (
-                    // <div
-                    //     key={`col-${i}`}
-                    //     className="text-sm text-slate-400 text-center"
-                    // >
-                    <div
-                        key={`col-${i}`}
-                        className="
-                            min-w-0 min-h-0
-                            flex items-center justify-center
-                            text-xs leading-none
-                            text-slate-400
-                        "
-                    >
-                        {String.fromCharCode(65 + i)}
-                    </div>
-                ))}
-
-                {/* --- Rows and cells --- */}
-                {boardVM.cells.map((rowData, row) => (
-                    <React.Fragment key={row}>
-                        {/* Row number */}
-                        {/* <div className="text-sm text-slate-400 text-center"> */}
+                <div
+                    className={cn(
+                        "w-full h-full min-w-0 min-h-0",
+                        "grid gap-[3px]",
+                    )}
+                    style={{
+                        gridTemplateColumns: `auto repeat(${size}, minmax(0, 1fr))`,
+                    }}
+                >
+                    {/* --- Row 0: empty corner + column labels --- */}
+                    <div></div>
+                    {Array.from({ length: size }).map((_, i) => (
                         <div
+                            key={`col-${i}`}
                             className="
                                 min-w-0 min-h-0
                                 flex items-center justify-center
@@ -87,32 +74,49 @@ export default function Board({
                                 text-slate-400
                             "
                         >
-                            {row + 1}
+                            {String.fromCharCode(65 + i)}
                         </div>
-                        
-                        {/* Cells */}
-                        {rowData.map((vmCell, col) => (
-                            <Cell
-                                key={`${row}-${col}`}
-                                presentation={vmCell.presentation}
-                                position={{ row, col }}
-                                disabled={!interactive}
-                                onHover={onCellHover}
-                                onLeave={onCellLeave}
-                                onPress={() =>
-                                    onCellPress?.({
-                                        position: {
-                                            row,
-                                            col,
-                                        },
-                                        shipType: vmCell.shipType,
-                                    })
-                                }
-                            />
-                        ))}
-                    </React.Fragment>
-                ))}
-            </div>
-        </div>  
+                    ))}
+
+                    {/* --- Rows and cells --- */}
+                    {boardVM.cells.map((rowData, row) => (
+                        <React.Fragment key={row}>
+                            {/* Row number */}
+                            <div
+                                className="
+                                    min-w-0 min-h-0
+                                    flex items-center justify-center
+                                    text-xs leading-none
+                                    text-slate-400
+                                "
+                            >
+                                {row + 1}
+                            </div>
+                            
+                            {/* Cells */}
+                            {rowData.map((vmCell, col) => (
+                                <Cell
+                                    key={`${row}-${col}`}
+                                    presentation={vmCell.presentation}
+                                    position={{ row, col }}
+                                    disabled={!interactive}
+                                    onHover={onCellHover}
+                                    onLeave={onCellLeave}
+                                    onPress={() =>
+                                        onCellPress?.({
+                                            position: {
+                                                row,
+                                                col,
+                                            },
+                                            shipType: vmCell.shipType,
+                                        })
+                                    }
+                                />
+                            ))}
+                        </React.Fragment>
+                    ))}
+                </div>
+            </div>  
+        </div>
     );
 }

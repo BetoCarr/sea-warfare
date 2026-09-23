@@ -1,6 +1,7 @@
 "use client";
 import { Header } from "./Header";
 import { GameStage } from "./GameStage/GameStage";
+import InformationPanel from "../game/GameStage/InformationPanel/InformationPanel";
 
 import { useSupportsHover } from "@/lib/device/useSupportsHover";
 import { useGameplayStore } from "@/lib/store/gameplay-store";
@@ -33,8 +34,13 @@ export function GameScreen() {
         placementCapabilities: placement.contract.capabilities,
     });
 
+    const instruction =
+        flow.capabilities.canPlaceFleet
+            ? placement.contract.instruction
+            : flow.presentation.instruction;
+
     return (
-        <div className="min-h-[100dvh] w-full bg-slate-900 text-slate-100 flex flex-col overflow-hidden relative">
+        <div className="flex-1 min-h-0 bg-slate-900 text-slate-100 flex flex-col overflow-hidden relative">
             {placement.contract.feedback && (
                 <FeedbackMessage message={placement.contract.feedback} />
             )}  
@@ -46,9 +52,20 @@ export function GameScreen() {
             <GameStage 
                 capabilities={flow.capabilities}
                 placement={placement}
-                flow={flow}
                 supportsHover={supportsHover}
             />
+            {instruction && (
+                <InformationPanel
+                    phaseLabel={flow.presentation.phaseLabel}
+                    description={flow.presentation.description}
+                    instruction={instruction}
+                    stats={
+                        flow.capabilities.canPlaceFleet
+                            ? `Remaining ships: ${placement.contract.stats.remainingShips}`
+                            : undefined
+                    }
+                />
+            )}
         </div>
     );
 }
