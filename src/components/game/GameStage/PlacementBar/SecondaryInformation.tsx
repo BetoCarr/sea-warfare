@@ -12,6 +12,7 @@ export default function SecondaryInformation({
 }: SecondaryInformationProps) {
     return (
         <div className="
+            w-[150px]
             text-[0.625rem] sm:text-xs
             font-mono text-slate-400"
         >

@@ -9,7 +9,7 @@ interface ShipPaletteItemProps {
 }
 
 const getShipVisualWidth = (size: number) =>
-    `calc(${size} * clamp(0.75rem, 3.5vw, 1.25rem) + ${size - 1} * clamp(0.125rem, 0.7vw, 0.25rem))`;
+    `calc(${size} * var(--segment) + ${(size - 1) * 3}px)`;
 
 export function ShipPaletteItem({
     type,
@@ -18,13 +18,13 @@ export function ShipPaletteItem({
     onSelect,
 }: ShipPaletteItemProps) {
     return (
-        
         <button
             onClick={onSelect}
             className={`
-                h-[clamp(2.75rem,7dvh,3rem)] max-w-full min-w-0 w-auto
+                h-12
+                min-[400px]:min-w-24
                 flex flex-col items-start justify-center gap-1
-                px-[clamp(0.375rem,1.5vw,0.5rem)] py-1
+                px-2 py-1
                 rounded-md
                 border
                 transition-all duration-200
@@ -37,7 +37,8 @@ export function ShipPaletteItem({
         >
             <div
                 className={`
-                    h-[clamp(0.75rem,3.5vw,1.25rem)]
+                    h-3 min-[400px]:h-4
+                    [--segment:12px] min-[400px]:[--segment:16px]
                     rounded-sm
                     ${SHIP_COLORS[type]}
                 `}

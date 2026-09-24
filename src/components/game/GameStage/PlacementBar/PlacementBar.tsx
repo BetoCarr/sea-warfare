@@ -31,6 +31,7 @@ export default function PlacementBar({
             className={cn(
                 "w-full",
                 "flex flex-wrap items-start gap-2",
+                "mt-15"
             )}
         >
             <div
