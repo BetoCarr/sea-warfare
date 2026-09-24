@@ -30,40 +30,27 @@ export default function PlacementBar({
         <div 
             className={cn(
                 "w-full",
-                "h-[clamp(120px,16.7dvh,160px)]",
-                // "mb-3",
-                "mt-8"
-
-                // "[@media_(max-width:767px)_and_(orientation:portrait)]:w-full"
+                "flex flex-wrap items-start gap-2",
             )}
         >
             <div
                 className={cn(
-                    // Layout
-                    "h-full min-h-0",
-                    "flex flex-wrap items-start gap-[clamp(0.375rem,1.5vw,0.75rem)]",
+                    "flex min-w-0 items-center gap-2",
+                    "shrink-0",
                 )}
             >
-                <div
-                    className={cn(
-                        "flex min-w-0 items-center gap-[clamp(0.375rem,1.5vw,0.75rem)]",
-                        "w-[clamp(11rem,30vw,12.5rem)] shrink-0",
-                    )}
-                >
-                    <OrientationToggle onToggle={onRotate} />
-                    <SecondaryInformation
-                        selectedShipType={selectedShipType}
-                        orientation={orientation}
-                    />
-                </div>
-
-                <ShipPalette
-                    ships={remainingShips}
+                <OrientationToggle onToggle={onRotate} />
+                <SecondaryInformation
                     selectedShipType={selectedShipType}
-                    onSelectShip={onSelectShip}
+                    orientation={orientation}
                 />
-
             </div>
+
+            <ShipPalette
+                ships={remainingShips}
+                selectedShipType={selectedShipType}
+                onSelectShip={onSelectShip}
+            />
         </div>
     );
 }

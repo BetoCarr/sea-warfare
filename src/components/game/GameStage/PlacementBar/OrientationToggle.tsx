@@ -7,13 +7,14 @@ export function OrientationToggle({ onToggle }: OrientationToggleProps) {
         <button
             onClick={onToggle}
             className="
-                w-[clamp(4.5rem,18vw,5rem)] shrink-0
-                h-[clamp(2.75rem,7dvh,3rem)]
-                flex items-center justify-center gap-[clamp(0.375rem,1.5vw,0.75rem)]
+                w-20 shrink-0
+                h-12
+                flex items-center justify-center gap-2
                 rounded-md
                 border border-slate-700
                 bg-slate-800
-                text-[clamp(0.625rem,1.8vw,0.75rem)] font-mono uppercase tracking-wider
+                text-xs                
+                font-mono uppercase tracking-wider
                 text-slate-300
                 transition-all duration-200
                 hover:border-slate-500
