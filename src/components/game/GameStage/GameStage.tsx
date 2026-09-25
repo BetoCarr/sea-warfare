@@ -48,10 +48,12 @@ export const GameStage = ({
             className={cn(
                 "flex-1 min-h-0 overflow-hidden",
                 "flex flex-col items-center justify-start",
-
-                "gap-10",
-                "pt-8",
-                "px-3",    
+                "gap-10 pt-8 px-3",
+                
+                // Mobile Landscape
+                "mobile-landscape:flex-row",
+                "mobile-landscape:justify-center",
+                "mobile-landscape:pt-0",
             )}
         >
             <Board

@@ -23,30 +23,11 @@ export default function InformationPanel({
                 "gap-0 mb-0",
                 "min-h-0",
 
-                // // Tablet Portrait
-                // "[@media_(min-width:768px)_and_(max-width:1023px)_and_(orientation:portrait)]:w-full",
-                // "[@media_(min-width:768px)_and_(max-width:1023px)_and_(orientation:portrait)]:h-auto",
-                // "[@media_(min-width:768px)_and_(max-width:1023px)_and_(orientation:portrait)]:min-h-[160px]",
-                // "[@media_(min-width:768px)_and_(max-width:1023px)_and_(orientation:portrait)]:flex-row",
-                // "[@media_(min-width:768px)_and_(max-width:1023px)_and_(orientation:portrait)]:gap-40",
-                // "[@media_(min-width:768px)_and_(max-width:1023px)_and_(orientation:portrait)]:mb-12",
-
                 // Mobile Landscape
-                // "[@media_(min-width:768px)_and_(max-width:1023px)_and_(orientation:landscape)]:w-[165px]",
-                // "[@media_(min-width:768px)_and_(max-width:1023px)_and_(orientation:landscape)]:h-[376px]",
-                // "[@media_(min-width:768px)_and_(max-width:1023px)_and_(orientation:landscape)]:min-h-0",
-                // "[@media_(min-width:768px)_and_(max-width:1023px)_and_(orientation:landscape)]:flex-col",
-
-                // Tablet Landscape / Desktop
-                // "lg:w-full",
-                // "lg:max-w-[1400px]",
-                // // "lg:align-self-center",
-                // "lg:h-auto",
-                // "lg:min-h-[160px]",
-                // "lg:flex-row",
-                // "lg:gap-40",
-                // "lg:mb-12",
-
+                "mobile-landscape:w-[145px]",
+                "mobile-landscape:h-full",
+                "mobile-landscape:shrink-0",
+                
                 // Visual
                 "bg-slate-800 border border-slate-700/50",
             )}

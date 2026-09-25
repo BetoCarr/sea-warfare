@@ -50,3 +50,9 @@ body {
     scrollbar-width: none;  /* Firefox */
   }
 }
+
+@custom-variant mobile-landscape {
+  @media (max-width: 1023px) and (max-height: 440px) and (orientation: landscape) {
+    @slot;
+  }
+}

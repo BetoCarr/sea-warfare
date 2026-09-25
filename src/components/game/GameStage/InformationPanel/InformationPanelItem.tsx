@@ -30,10 +30,6 @@ export default function InformationPanelItem({
                 "text-[clamp(0.6875rem,1.67dvh,1rem)]",
 
                 variant ? variantClasses[variant] : defaultVariantClass,
-                // Mobile Portrait
-                // "[@media_(max-width:767px)_and_(orientation:portrait)]:max-w-none",
-                // "[@media_(max-width:767px)_and_(orientation:portrait)]:min-h-0",
-                // "[@media_(max-width:767px)_and_(orientation:portrait)]:flex-1",
             )}
         >
             <div className="min-w-0 max-w-full whitespace-pre-line break-words">

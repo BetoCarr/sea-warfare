@@ -9,6 +9,8 @@ import { useGameFlowController } from "@/application/game-flow/useGameFlowContro
 import { usePlacementController } from "@/application/placement/hooks/usePlacementController";
 import { FeedbackMessage } from "./GameStage/FeedbackMessage";
 
+import { cn } from '@/lib/utils/utils';
+
 export function GameScreen() {
     const supportsHover = useSupportsHover();
 
@@ -40,7 +42,13 @@ export function GameScreen() {
             : flow.presentation.instruction;
 
     return (
-        <div className="flex-1 min-h-0 bg-slate-900 text-slate-100 flex flex-col overflow-hidden relative">
+        <div
+            className={cn(
+                "flex-1 min-h-0",
+                "flex flex-col justify-between overflow-hidden relative",
+                "bg-slate-900 text-slate-100",
+            )}
+        >
             {placement.contract.feedback && (
                 <FeedbackMessage message={placement.contract.feedback} />
             )}  
@@ -49,23 +57,34 @@ export function GameScreen() {
                 onInitialize={handleInitialize} 
                 onConfirmFleet={handleConfirmFleet}
             />
-            <GameStage 
-                capabilities={flow.capabilities}
-                placement={placement}
-                supportsHover={supportsHover}
-            />
-            {instruction && (
-                <InformationPanel
-                    phaseLabel={flow.presentation.phaseLabel}
-                    description={flow.presentation.description}
-                    instruction={instruction}
-                    stats={
-                        flow.capabilities.canPlaceFleet
-                            ? `Remaining ships: ${placement.contract.stats.remainingShips}`
-                            : undefined
-                    }
+            <div
+                className={cn(
+                    "flex-1 min-h-0 min-w-0",
+                    "flex flex-col",
+                    // Mobile Landscape
+                    "mobile-landscape:flex-row",
+                    "mobile-landscape:py-3",
+
+                )}
+            >
+                <GameStage 
+                    capabilities={flow.capabilities}
+                    placement={placement}
+                    supportsHover={supportsHover}
                 />
-            )}
+                {instruction && (
+                    <InformationPanel
+                        phaseLabel={flow.presentation.phaseLabel}
+                        description={flow.presentation.description}
+                        instruction={instruction}
+                        stats={
+                            flow.capabilities.canPlaceFleet
+                                ? `Remaining ships: ${placement.contract.stats.remainingShips}`
+                                : undefined
+                        }
+                    />
+                )}
+            </div>
         </div>
     );
 }
