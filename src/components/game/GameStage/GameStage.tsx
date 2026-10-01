@@ -52,7 +52,7 @@ export const GameStage = ({
                 
                 // Mobile Landscape
                 "mobile-landscape:flex-row",
-                "mobile-landscape:justify-center",
+                "mobile-landscape:gap-0",
                 "mobile-landscape:pt-0",
             )}
         >
@@ -71,23 +71,37 @@ export const GameStage = ({
                 }
                 onCellPress={placement.interaction.onBoardInteraction}        
             />
+                <div
+                    className={cn(
+                        "w-full",
+                        "flex justify-center",
 
-            {capabilities.canPlaceFleet && (
-                <PlacementBar
-                    remainingShipTypes={placement.contract.stats.remainingShipTypes}
-                    selectedShipType={placement.interaction.selectedShipType}
-                    orientation={placement.interaction.orientation}
-                    onSelectShip={placement.interaction.selectShip}
-                    onRotate={placement.interaction.rotate}
-                />
-            )}
+                        // Mobile Landscape
+                        "mobile-landscape:flex-1",
+                        "mobile-landscape:min-w-0",
+                        "mobile-landscape:flex",
+                        "mobile-landscape:pt-0",
+                        "mobile-landscape:justify-center",
+                    )}
+                >
+                    {capabilities.canPlaceFleet && (
+                        <PlacementBar
+                            remainingShipTypes={placement.contract.stats.remainingShipTypes}
+                            selectedShipType={placement.interaction.selectedShipType}
+                            orientation={placement.interaction.orientation}
+                            onSelectShip={placement.interaction.selectShip}
+                            onRotate={placement.interaction.rotate}
+                        />
+                    )}
 
-            {capabilities.canAttack && (
-                <Board
-                    boardVM={enemyBoardVM}
-                    interactive={capabilities.canAttack}
-                />
-            )}
+                    {capabilities.canAttack && (
+                        <Board
+                            boardVM={enemyBoardVM}
+                            interactive={capabilities.canAttack}
+                        />
+                    )}
+                </div>
+
         </main>
     );
 };

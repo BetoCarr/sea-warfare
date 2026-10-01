@@ -25,9 +25,10 @@ export default function InformationPanel({
 
                 // Mobile Landscape
                 "mobile-landscape:w-[145px]",
-                "mobile-landscape:h-full",
+                "mobile-landscape:h-[clamp(210px,calc(138.46dvh_-_309px),300px)]",
                 "mobile-landscape:shrink-0",
-                
+                "mobile-landscape:mr-3",
+
                 // Visual
                 "bg-slate-800 border border-slate-700/50",
             )}

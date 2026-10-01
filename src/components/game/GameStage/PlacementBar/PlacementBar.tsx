@@ -31,13 +31,18 @@ export default function PlacementBar({
             className={cn(
                 "w-full",
                 "flex flex-wrap items-start gap-2",
-                "mt-15"
+                "shrink-0",
+
+                // Mobile Landscape
+                "mobile-landscape:w-[200px]",
+                "mobile-landscape:h-[clamp(210px,calc(138.46dvh_-_309px),300px)]",
+
+                "mobile-landscape:gap-0",
             )}
         >
             <div
                 className={cn(
-                    "flex min-w-0 items-center gap-2",
-                    "shrink-0",
+                    "flex min-w-0 max-w-full items-center gap-2",
                 )}
             >
                 <OrientationToggle onToggle={onRotate} />

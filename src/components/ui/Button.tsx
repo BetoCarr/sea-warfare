@@ -12,9 +12,10 @@ export const Button: React.FC<ButtonProps> = ({
     <button
       className={cn(
         "w-full h-full",
+        "px-2",
         "inline-flex items-center justify-center",
         "rounded-md",
-        "font-semibold",
+        "font-semibold text-sm",
         "transition-all duration-200",
         "focus-visible:outline-none",
         "focus-visible:ring-2 focus-visible:ring-offset-2",

@@ -9,19 +9,27 @@ interface HeaderProps {
 }
 
 export function Header({capabilities, onInitialize, onConfirmFleet }: HeaderProps) {
+
     const renderAction = () => {
         if (capabilities.canInitializeGame) {
             return (
                 <Button 
                     onClick={onInitialize}
                 >
-                    <span className="hidden sm:inline">
+                    <span className="hidden mobile-landscape:inline">
+                        INITIALIZE SYSTEM
+                    </span>
+
+                    <span className="mobile-landscape:hidden">
+                        START
+                    </span>
+                    {/* <span className="hidden sm:inline">
                         INITIALIZE SYSTEM
                     </span>
 
                     <span className="sm:hidden">
                         START
-                    </span>
+                    </span> */}
                 </Button>
             );
         }
@@ -31,31 +39,39 @@ export function Header({capabilities, onInitialize, onConfirmFleet }: HeaderProp
                 <Button 
                     onClick={onConfirmFleet}
                 >
-                    <span className="sm:hidden">
+                    <span className="mobile-landscape:hidden">
+                        CONFIRM
+                    </span>
+
+                    <span className="hidden mobile-landscape:inline">
+                        CONFIRM FLEET
+                    </span>
+                    {/* <span className="sm:hidden">
                         CONFIRM
                     </span>
                     <span className="hidden sm:inline">
                         CONFIRM FLEET
-                    </span>
+                    </span> */}
                 </Button>
             );
         }
 
-        // if (capabilities.canRestartGame) {
-        //     return (
-        //         <Button 
-        //         variant="secondary"
-        //         onClick={() => window.location.reload()} // TODO:
-        //         >                                          // Replace full page reload with a proper game reset action
-        //             REMATCH
-        //         </Button>
-        //     );
-        // }
-            return null;
-        };
+        return null;
+    };
 
     return (
-        <header className="h-[clamp(46px,58px,60px)] flex-none flex items-center justify-between px-3 border-b border-slate-700/50 bg-slate-800 shadow-xl relative z-[60]">
+        <header
+            className="
+                h-[58px]
+                flex-none
+                flex items-center justify-between
+                px-3
+                border-b border-slate-700/50
+                bg-slate-800
+                shadow-xl
+                relative z-[60]
+            "
+        >
             {/* LEFT: Identity */}
             <div className="flex items-center gap-3">
                 <span className="text-lg filter drop-shadow-sm">⚓</span>
@@ -66,7 +82,7 @@ export function Header({capabilities, onInitialize, onConfirmFleet }: HeaderProp
             </div>
 
             {/* RIGHT: Primary Action */}
-            <div className="min-w-[80px] flex justify-end">
+            <div className="w-fit min-w-20 h-9">
                 {renderAction()}
             </div>
         </header>

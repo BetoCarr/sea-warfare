@@ -61,10 +61,11 @@ export function GameScreen() {
                 className={cn(
                     "flex-1 min-h-0 min-w-0",
                     "flex flex-col",
+                    
                     // Mobile Landscape
                     "mobile-landscape:flex-row",
+                    "mobile-landscape:items-center",
                     "mobile-landscape:py-3",
-
                 )}
             >
                 <GameStage 
