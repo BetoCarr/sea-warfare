@@ -47,6 +47,8 @@ export default function Board({
                 // Mobile Landscape
                 "mobile-landscape:size-[clamp(210px,calc(138.46dvh_-_309px),300px)]",
                 
+                "tablet-portrait:size-[430px]",
+
                 // Available space
                 "max-w-full max-h-full shrink-0",
             )}

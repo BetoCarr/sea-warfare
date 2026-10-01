@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/Button";
 
+import { cn } from "@/lib/utils/utils";
+
 import type { GameInteractionCapabilities } from "@/application/game-flow/game-flow-types";
 
 interface HeaderProps {
@@ -61,16 +63,18 @@ export function Header({capabilities, onInitialize, onConfirmFleet }: HeaderProp
 
     return (
         <header
-            className="
-                h-[58px]
-                flex-none
-                flex items-center justify-between
-                px-3
-                border-b border-slate-700/50
-                bg-slate-800
-                shadow-xl
-                relative z-[60]
-            "
+            className={cn(
+                "flex-none flex items-center justify-between",
+                "h-[58px]",
+                "px-3",
+                "border-b border-slate-700/50",
+                "bg-slate-800",
+                "shadow-xl",
+                "relative z-[60]",
+
+                // Tablet portrait
+                "tablet-portrait:h-[70px]"
+            )}
         >
             {/* LEFT: Identity */}
             <div className="flex items-center gap-3">

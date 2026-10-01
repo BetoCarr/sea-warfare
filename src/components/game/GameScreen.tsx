@@ -66,6 +66,9 @@ export function GameScreen() {
                     "mobile-landscape:flex-row",
                     "mobile-landscape:items-center",
                     "mobile-landscape:py-3",
+
+                    // Tablet
+                    "tablet-portrait:flex-row",
                 )}
             >
                 <GameStage 

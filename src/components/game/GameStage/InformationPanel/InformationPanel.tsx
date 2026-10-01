@@ -29,6 +29,12 @@ export default function InformationPanel({
                 "mobile-landscape:shrink-0",
                 "mobile-landscape:mr-3",
 
+                // Tablet Portrait
+                "tablet-portrait:h-[430px]",
+                "tablet-portrait:w-[200px]",
+                "tablet-portrait:mt-9",
+                "tablet-portrait:mr-4",
+
                 // Visual
                 "bg-slate-800 border border-slate-700/50",
             )}

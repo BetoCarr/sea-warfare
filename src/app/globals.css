@@ -56,3 +56,15 @@ body {
     @slot;
   }
 }
+
+@custom-variant tablet-portrait {
+  @media (min-width: 768px) and (orientation: portrait) {
+    @slot;
+  }
+}
+
+@custom-variant desktop {
+  @media (min-width: 1024px) {
+    @slot;
+  }
+}
