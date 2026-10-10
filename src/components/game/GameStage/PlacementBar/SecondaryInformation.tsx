@@ -12,15 +12,15 @@ export default function SecondaryInformation({
 }: SecondaryInformationProps) {
     return (
         <div className="
-            basis-[150px] min-w-0 flex-1
+            min-w-0 flex-1
             text-[0.625rem] sm:text-xs
             font-mono text-slate-400"
         >
-            <div>
+            <div className="whitespace-nowrap">
                 Selected ship: {selectedShipType ?? 'None'}
             </div>
 
-            <div>
+            <div className="whitespace-nowrap">
                 Orientation: {orientation}
             </div>
         </div>

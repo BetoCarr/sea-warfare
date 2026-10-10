@@ -34,15 +34,19 @@ export default function PlacementBar({
                 "shrink-0",
 
                 // Mobile Landscape
-                "mobile-landscape:w-[200px]",
+                "mobile-landscape:w-[260px]",
                 "mobile-landscape:h-[clamp(210px,calc(138.46dvh_-_309px),300px)]",
-
-                "mobile-landscape:gap-0",
+            
+                // Tablet Portrait
+                "tablet-portrait:w-[420px]",
+                "tablet-portrait:h-[220px]",
+                "tablet-portrait:flex-col",
+                "tablet-portrait:gap-2",
             )}
         >
             <div
                 className={cn(
-                    "flex min-w-0 max-w-full items-center gap-2",
+                    "flex w-full items-center gap-2",
                 )}
             >
                 <OrientationToggle onToggle={onRotate} />

@@ -16,7 +16,19 @@ export default function ShipPalette({
     onSelectShip,
 }: ShipPaletteProps) {
     return (
-        <>
+    <div
+        className={cn(
+            "min-w-0 max-w-full",
+            "grid grid-cols-3 gap-2",
+
+            // Mobile Landscape
+            "mobile-landscape:grid-cols-2",
+
+            // Tablet Portrait
+            "tablet-portrait:flex-1 tablet-portrait:min-h-0",
+            "tablet-portrait:h-full tablet-portrait:grid-rows-2",
+        )}
+    >
             {ships.map(({ type, size }) => (
                 <ShipPaletteItem
                     key={type}
@@ -26,6 +38,6 @@ export default function ShipPalette({
                     onSelect={() => onSelectShip(type)}
                 />
             ))}
-        </>
+        </div>
     );
 }

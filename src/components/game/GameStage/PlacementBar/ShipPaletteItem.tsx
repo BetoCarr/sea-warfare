@@ -21,8 +21,7 @@ export function ShipPaletteItem({
         <button
             onClick={onSelect}
             className={`
-                h-12
-                min-[400px]:min-w-24
+                w-full h-full min-w-0 min-h-0
                 flex flex-col items-start justify-center gap-1
                 px-2 py-1
                 rounded-md

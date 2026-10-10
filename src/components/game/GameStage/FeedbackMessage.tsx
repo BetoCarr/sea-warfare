@@ -1,4 +1,4 @@
-import { clsx } from 'clsx';
+import { cn } from '@/lib/utils/utils';
 
 export type FeedbackType = string;
 
@@ -13,7 +13,7 @@ export const FeedbackMessage = ({
 }: FeedbackMessageProps) => {
     return (
         <div
-            className={clsx(
+            className={cn(
                 // Layout
                 "absolute left-1/2 top-12 z-70",
                 "flex items-center justify-center",
@@ -25,6 +25,8 @@ export const FeedbackMessage = ({
                 
                 // Typography
                 "text-center text-xs leading-tight",
+                "tablet-portrait:text-sm",
+                "tablet-portrait:px-4 tablet-portrait:py-3",
 
                 // Visual
                 "rounded-md border shadow-md",
