@@ -30,8 +30,8 @@ export default function InformationPanel({
                 "mobile-landscape:mr-3",
 
                 // Tablet Portrait
-                "tablet-portrait:h-[430px]",
-                "tablet-portrait:w-[200px]",
+                "tablet-portrait:h-[clamp(430px,calc(19.89dvh_+_226px),500px)]",
+                "tablet-portrait:w-[clamp(200px,calc(19.89dvh_-_3.71px),270px)]",
                 "tablet-portrait:mt-9",
                 "tablet-portrait:mr-4",
 

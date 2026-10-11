@@ -38,8 +38,8 @@ export default function PlacementBar({
                 "mobile-landscape:h-[clamp(210px,calc(138.46dvh_-_309px),300px)]",
             
                 // Tablet Portrait
-                "tablet-portrait:w-[420px]",
-                "tablet-portrait:h-[220px]",
+                "tablet-portrait:w-[clamp(420px,calc(22.73dvh_+_187.27px),500px)]",
+                "tablet-portrait:h-[clamp(220px,calc(22.73dvh_-_12.73px),300px)]",
                 "tablet-portrait:flex-col",
                 "tablet-portrait:gap-2",
             )}

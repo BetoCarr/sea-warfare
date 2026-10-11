@@ -101,7 +101,6 @@ export const GameStage = ({
                         />
                     )}
                 </div>
-
         </main>
     );
 };

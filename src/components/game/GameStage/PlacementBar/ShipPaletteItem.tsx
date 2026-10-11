@@ -1,3 +1,5 @@
+import { cn } from '@/lib/utils/utils';
+
 import { SHIP_COLORS } from '@/application/board/presentation/ship-colors';
 import type { ShipType } from '@/lib/domain/ships/models/ShipType';
 
@@ -8,8 +10,8 @@ interface ShipPaletteItemProps {
     onSelect: () => void;
 }
 
-const getShipVisualWidth = (size: number) =>
-    `calc(${size} * var(--segment) + ${(size - 1) * 3}px)`;
+// const getShipVisualWidth = (size: number) =>
+//     `calc(${size} * var(--segment) + ${(size - 1) * 3}px)`;
 
 export function ShipPaletteItem({
     type,
@@ -18,31 +20,54 @@ export function ShipPaletteItem({
     onSelect,
 }: ShipPaletteItemProps) {
     return (
+        // <button
+        //     onClick={onSelect}
+        //     className={`
+        //         w-full h-full min-w-0 min-h-0
+        //         flex flex-col items-start justify-center gap-1
+        //         px-2 py-1
+        //         rounded-md
+        //         border
+        //         transition-all duration-200
+        //         ${
+        //             isSelected
+        //                 ? 'border-blue-400 bg-blue-500/10 shadow-sm'
+        //                 : 'border-slate-700/60 bg-slate-800/40 hover:border-slate-500 hover:bg-slate-800'
+        //         }
+        //     `}
+        // >
         <button
             onClick={onSelect}
-            className={`
-                w-full h-full min-w-0 min-h-0
-                flex flex-col items-start justify-center gap-1
-                px-2 py-1
-                rounded-md
-                border
-                transition-all duration-200
-                ${
-                    isSelected
-                        ? 'border-blue-400 bg-blue-500/10 shadow-sm'
-                        : 'border-slate-700/60 bg-slate-800/40 hover:border-slate-500 hover:bg-slate-800'
-                }
-            `}
+            className={cn(
+                "@container",
+                "w-full h-full min-w-0 min-h-0",
+                "flex flex-col items-start justify-center gap-1",
+                "px-2 py-1",
+                "rounded-md border transition-all duration-200",
+                isSelected
+                    ? "border-blue-400 bg-blue-500/10 shadow-sm"
+                    : "border-slate-700/60 bg-slate-800/40 hover:border-slate-500 hover:bg-slate-800",
+            )}
         >
             <div
-                className={`
-                    h-3 min-[400px]:h-4
-                    [--segment:12px] min-[400px]:[--segment:16px]
-                    rounded-sm
-                    ${SHIP_COLORS[type]}
-                `}
-                style={{ width: getShipVisualWidth(size) }}
-            />
+                className={cn(
+                    "flex w-full min-w-0 items-center gap-[3px]",
+                    // "[--segment:clamp(12px,calc((100cqw_-_32px)/5),30px)]",
+                    "[--segment:clamp(12px,calc((100cqw_-_16px)/5),25px)]"
+
+                )}
+            >
+                {Array.from({ length: size }, (_, index) => (
+                    <div
+                        key={index}
+                        className={cn(
+                            "size-[var(--segment)] shrink-0",
+                            "rounded-sm",
+                            SHIP_COLORS[type],
+                        )}
+                    />
+                ))}
+            </div>
 
             <span className="text-[10px] uppercase text-slate-400 font-mono">
                 {type}
