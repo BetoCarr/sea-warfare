@@ -18,7 +18,6 @@ export default function ShipPalette({
     return (
         <div
             className={cn(
-                // "min-w-0 max-w-full",
                 "w-full",
                 "grid grid-cols-3 gap-2",
 

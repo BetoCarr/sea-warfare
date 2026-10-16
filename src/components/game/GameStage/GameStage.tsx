@@ -54,6 +54,10 @@ export const GameStage = ({
                 "mobile-landscape:flex-row",
                 "mobile-landscape:gap-0",
                 "mobile-landscape:pt-0",
+
+                // Desktop
+                "desktop:flex-row",
+                "desktop:justify-center",
             )}
         >
             <Board
@@ -73,7 +77,6 @@ export const GameStage = ({
             />
                 <div
                     className={cn(
-                        "w-full",
                         "flex justify-center",
 
                         // Mobile Landscape
