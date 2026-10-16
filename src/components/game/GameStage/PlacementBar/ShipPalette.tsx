@@ -27,6 +27,10 @@ export default function ShipPalette({
                 // Tablet Portrait
                 "tablet-portrait:flex-1 tablet-portrait:min-h-0",
                 "tablet-portrait:h-full tablet-portrait:grid-rows-2",
+
+                // Desktop
+                "desktop:flex-1 desktop:min-h-0",
+                "desktop:grid-cols-1 desktop:grid-rows-5",
             )}
         >
             {ships.map(({ type, size }) => (

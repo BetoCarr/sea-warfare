@@ -42,6 +42,11 @@ export default function PlacementBar({
                 "tablet-portrait:h-[clamp(220px,calc(22.73dvh_-_12.73px),300px)]",
                 "tablet-portrait:flex-col",
                 "tablet-portrait:gap-2",
+
+                // Desktop
+                "desktop:h-[clamp(400px,calc(50vw_-_112px),500px)]",
+                "desktop:flex-col",
+                "desktop:flex-nowrap",
             )}
         >
             <div

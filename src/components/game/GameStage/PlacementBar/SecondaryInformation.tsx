@@ -13,7 +13,7 @@ export default function SecondaryInformation({
     return (
         <div className="
             min-w-0 flex-1
-            text-[0.625rem] sm:text-xs
+            text-[0.625rem] sm:text-xs desktop:text-sm
             font-mono text-slate-400"
         >
             <div className="whitespace-nowrap">
