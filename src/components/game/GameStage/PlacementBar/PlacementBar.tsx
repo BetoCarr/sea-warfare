@@ -44,7 +44,8 @@ export default function PlacementBar({
                 "tablet-portrait:gap-2",
 
                 // Desktop
-                "desktop:h-[clamp(400px,calc(50vw_-_112px),500px)]",
+                "desktop:w-[240px]",
+                "desktop:h-[clamp(300px,min(50vw_-_112px,55dvh),500px)]",
                 "desktop:flex-col",
                 "desktop:flex-nowrap",
             )}

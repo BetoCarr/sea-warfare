@@ -35,6 +35,17 @@ export default function InformationPanel({
                 "tablet-portrait:mt-9",
                 "tablet-portrait:mr-4",
 
+                // Desktop
+                "desktop:w-[clamp(800px,80vw,1200px)]",
+                // "desktop:h-[140px]",
+                "desktop:h-[clamp(100px,14dvh,140px)]",
+                "desktop:flex-row",
+                "desktop:items-center",
+                "desktop:justify-center",
+                "desktop:gap-8",
+                "desktop:mx-auto",
+                "desktop:mb-6",
+
                 // Visual
                 "bg-slate-800 border border-slate-700/50",
             )}

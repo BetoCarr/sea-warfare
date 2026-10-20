@@ -7,7 +7,7 @@ export function OrientationToggle({ onToggle }: OrientationToggleProps) {
         <button
             onClick={onToggle}
             className="
-                basis-auto min-w-0
+                flex-none
                 h-8 desktop:h-10
                 flex items-center justify-center gap-2
                 rounded-md
@@ -21,8 +21,7 @@ export function OrientationToggle({ onToggle }: OrientationToggleProps) {
                 hover:bg-slate-700
                 hover:text-slate-100
                 active:scale-[0.98]
-                tablet-portrait:flex-1
-                desktop:flex-1
+            
             "
             aria-label="Rotate"
         >
@@ -34,3 +33,5 @@ export function OrientationToggle({ onToggle }: OrientationToggleProps) {
         </button>
     );
 }
+    // tablet-portrait:flex-1
+    // desktop:flex-none

@@ -51,7 +51,8 @@ export default function Board({
                 "tablet-portrait:size-[clamp(430px,calc(19.89dvh_+_226px),500px)]",
                 
                 // Desktop
-                "desktop:size-[clamp(400px,calc(50vw_-_112px),500px)]",
+                // "desktop:size-[clamp(400px,calc(50vw_-_112px),500px)]",
+                "desktop:size-[clamp(300px,min(50vw_-_112px,55dvh),500px)]",
 
                 // Available space
                 "max-w-full max-h-full shrink-0",
