@@ -28,6 +28,12 @@ export const FeedbackMessage = ({
                 "tablet-portrait:text-sm",
                 "tablet-portrait:px-4 tablet-portrait:py-3",
 
+                // Desktop
+                "desktop:top-6",
+                "desktop:max-w-[36rem]",
+                "desktop:px-5 desktop:py-3",
+                "desktop:text-base",
+
                 // Visual
                 "rounded-md border shadow-md",
                 "bg-slate-800 border-slate-600 text-slate-200",

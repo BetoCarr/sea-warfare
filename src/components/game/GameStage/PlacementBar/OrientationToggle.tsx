@@ -33,5 +33,3 @@ export function OrientationToggle({ onToggle }: OrientationToggleProps) {
         </button>
     );
 }
-    // tablet-portrait:flex-1
-    // desktop:flex-none

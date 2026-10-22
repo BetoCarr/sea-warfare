@@ -29,11 +29,6 @@ export default function Cell({
     // Local state used to trigger temporary animations (e.g., pulse on click)
     const [isAnimating, setIsAnimating] = useState(false);
 
-    /**
-     * Handles click interactions.
-     * - Prevents interaction if disabled.
-     * - Triggers temporary animation for hits/misses before calling parent handler.
-     */
     const handleClick = () => {
         if (disabled) return;
 

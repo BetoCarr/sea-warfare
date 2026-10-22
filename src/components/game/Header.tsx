@@ -25,13 +25,6 @@ export function Header({capabilities, onInitialize, onConfirmFleet }: HeaderProp
                     <span className="mobile-landscape:hidden">
                         START
                     </span>
-                    {/* <span className="hidden sm:inline">
-                        INITIALIZE SYSTEM
-                    </span>
-
-                    <span className="sm:hidden">
-                        START
-                    </span> */}
                 </Button>
             );
         }
@@ -48,16 +41,9 @@ export function Header({capabilities, onInitialize, onConfirmFleet }: HeaderProp
                     <span className="hidden mobile-landscape:inline">
                         CONFIRM FLEET
                     </span>
-                    {/* <span className="sm:hidden">
-                        CONFIRM
-                    </span>
-                    <span className="hidden sm:inline">
-                        CONFIRM FLEET
-                    </span> */}
                 </Button>
             );
         }
-
         return null;
     };
 
@@ -73,7 +59,10 @@ export function Header({capabilities, onInitialize, onConfirmFleet }: HeaderProp
                 "relative z-[60]",
 
                 // Tablet portrait
-                "tablet-portrait:h-[70px]"
+                "tablet-portrait:h-[70px]",
+
+                // Desktop
+                "desktop:h-[80px]",
             )}
         >
             {/* LEFT: Identity */}

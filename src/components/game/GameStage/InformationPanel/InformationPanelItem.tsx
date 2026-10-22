@@ -13,12 +13,6 @@ const variantClasses: Record<InformationPanelItemVariant, string> = {
     stats: 'flex-[1_1_0%] border-emerald-500/30',
 };
 
-// const variantClasses: Record<InformationPanelItemVariant, string> = {
-//     phase: 'flex-[1.7_1_0%] desktop:flex-1 border-amber-500/30',
-//     instruction: 'flex-[1_1_0%] desktop:flex-1 border-sky-500/30',
-//     stats: 'flex-[1_1_0%] desktop:flex-1 border-emerald-500/30',
-// };
-
 const defaultVariantClass = 'border-slate-700/50';
 
 export default function InformationPanelItem({
@@ -34,8 +28,8 @@ export default function InformationPanelItem({
                 "border bg-[var(--color-bg-subpanel)]",
                 "p-2 text-center font-mono whitespace-pre-line",
                 "text-[clamp(0.6875rem,1.67dvh,1rem)]",
-
-                // Dentro del className de InformationPanelItem
+                
+                // Desktop
                 "desktop:flex-none",
                 "desktop:w-[clamp(220px,22vw,280px)]",
                 "desktop:h-[88px]",

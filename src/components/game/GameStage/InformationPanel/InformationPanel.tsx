@@ -37,7 +37,6 @@ export default function InformationPanel({
 
                 // Desktop
                 "desktop:w-[clamp(800px,80vw,1200px)]",
-                // "desktop:h-[140px]",
                 "desktop:h-[clamp(100px,14dvh,140px)]",
                 "desktop:flex-row",
                 "desktop:items-center",
