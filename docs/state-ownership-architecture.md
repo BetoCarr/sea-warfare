@@ -16,24 +16,27 @@ Define explicit ownership boundaries, state lifecycles, and derivation responsib
 
 ---
 
-## Ownership Hierarchy
+## Semantic Ownership and Consumption
 
-- Domain: authoritative gameplay truth.
+- Domain: owns authoritative gameplay truth and domain rules.
 - Feature Modules: derive the semantics they own and expose public contracts.
-- Game Flow: derives global semantics and consumes feature-module contracts.
-- Presentation: renders declarative projections only.
+- Game Flow: derives global semantics and consumes public contracts from feature modules.
+- Presentation: renders declarative projections from Game Flow and feature-module contracts.
 
-Authority must not be derived; semantics must be.
+Semantic ownership defines responsibility, not an exclusive consumption path.
 
 ```txt
-Domain
-    ↓
-Feature Modules
-    ↓
-Game Flow
-    ↓
-Presentation
+Domain State → Feature Semantics → Feature Contracts
+Domain State + Feature Contracts → Global Game Flow Semantics
+
+Contract consumption:
+
+Feature Contracts ──→ Feature-specific UI
+Feature Contracts ──→ Game Flow
+Game Flow Contracts ─→ Global UI
 ```
+
+Presentation may consume feature-module contracts directly or consume global semantics through Game Flow, depending on the responsibility of each UI component.
 
 ---
 
@@ -46,13 +49,7 @@ Keep state aligned to its semantic role. Prefer concise rules over prose.
 - Derived Semantics: recomputed semantic models exposed by the application layer. Some become part of module contracts while others remain internal. Examples:
 `Preview`, `PlacementState`, `PlacementCapabilites`, `PlacementInstruction`.
 
-```txt
-authoritative state
-    ↓
-semantic derivation
-    ↓
-capabilities + presentation
-```
+State ownership is determined by semantic responsibility and lifecycle, not by the state-management mechanism or file location. Interaction state may live in a feature-scoped Zustand store without becoming authoritative gameplay state or global application state. Values computed from existing state remain derived and should not be duplicated as independent sources of truth.
 
 ---
 
@@ -85,24 +82,19 @@ Depending on their responsibility:
 
 Game Flow never recreates feature semantics. It consumes only the public contracts exposed by feature modules.
 
+Public contracts define what a module makes available to consumers; they do not require all consumers to access those semantics through Game Flow. Feature-specific UI may consume a feature module's public contract directly, while Game Flow consumes the same contract when deriving global gameplay semantics. Internal derivations remain private unless explicitly included in the module's public contract.
+
 ## Persistence Boundaries
 
 - Persist only authoritative gameplay truth that must survive beyond interactions.
 - Do not persist interaction or derived semantics.
 - Resets should clear interaction and derived state cheaply and deterministically.
 
+Feature-scoped interaction state follows the lifecycle of its owning flow. For example, Placement interaction state (`selectedShipType`, `orientation`, and `targetCell`) is held in the Placement Interaction Store, separate from the authoritative Gameplay Store. It is not persisted as authoritative gameplay data. The store exposes an explicit reset operation that restores its initial state; flow transitions and resets must invoke the appropriate lifecycle cleanup when required.
+
 Examples of persistent state: `GameState`, `Ships`, optional `GameStatus` during `BATTLE`.
 Examples of non-persistent state: `Preview`, `BoardState`, `OccupiedCells`, `selectedShipType`.
 
-```txt
-authoritative persistence
-    ↓
-ephemeral interaction
-    ↓
-disposable derivation
-    ↓
-presentation lifecycle
-```
 
 ## Zustand Ownership Boundaries
 

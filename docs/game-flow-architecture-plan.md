@@ -12,9 +12,9 @@ Priorities: declarative rendering, domain purity, low coupling, derivation-first
 
 ## Game Flow — Canonical Architecture
 
-The Game Flow module provides the unified declarative interface consumed by the Presentation layer.
+The Game Flow module exposes a unified declarative interface for global gameplay semantics consumed by the Presentation layer.
 
-Its responsibility is intentionally narrow. It does not own gameplay rules or feature-specific semantics. Instead, it derives the semantics it owns from the authoritative gameplay state and consumes the public contracts exposed by feature modules, exposing a single presentation-oriented API for the Presentation layer.
+Its responsibility is intentionally narrow. It does not own gameplay rules or feature-specific semantics. Instead, it derives the global semantics it owns from the authoritative gameplay state and consumes the public contracts exposed by feature modules. Presentation may consume Game Flow's interface or feature-module contracts directly, depending on the responsibility of each UI component.
 
 This follows a simple architectural rule:
 
@@ -59,27 +59,14 @@ Design principles:
 
 ---
 
+
 ## State Boundaries
 
-The Gameplay Store owns the authoritative gameplay state. Feature modules own their feature-specific derivations and public contracts. Game Flow derives the semantics it owns and consumes the public contracts it does not own, exposing a unified interface for the Presentation layer.
+Game Flow consumes the authoritative gameplay state and public contracts exposed by feature modules. It derives global gameplay semantics, while feature modules remain responsible for their own feature-specific derivations.
 
-**Authoritative state**
+Game Flow exposes its capabilities and presentation through the `GameFlowController` contract. Feature-specific contracts may also be consumed directly by Presentation when needed.
 
-Examples:
-
-- `GameState`
-- `Ships`
-
-**Derived semantics**
-
-Examples:
-
-- Game Flow presentation
-- aggregated capabilities
-- aggregated instructions
-- aggregated feedback
-
-For the complete ownership model, derivation philosophy, and persistence boundaries, see the **State Ownership Architecture** document.
+For authoritative state ownership, derivation principles, interaction state, and persistence boundaries, see **State Ownership Architecture**.
 
 ---
 
@@ -89,7 +76,7 @@ The capability model defines the declarative permission surface exposed by Game 
 
 Its purpose is to expose a single, unified interface describing what the UI is allowed to do at any given moment, regardless of which module owns the underlying capability.
 
-Some capabilities are derived directly from the global gameplay lifecycle, while others are consumed from feature modules such as Placement. Presentation remains completely unaware of where each capability originates and interacts exclusively with the aggregated `flow.capabilities` contract.
+Some capabilities are derived directly from the global gameplay lifecycle, while others are consumed from feature modules such as Placement and exposed through `flow.capabilities`. Feature-specific contracts remain owned by their modules and may also be consumed directly by the UI when appropriate.
 
 This approach provides:
 
@@ -103,19 +90,17 @@ This approach provides:
 ### Public Contract
 
 ```ts
-type GameFlowCapabilities = {
+export type GameInteractionCapabilities = {
     // Gameplay lifecycle
     canInitializeGame: boolean;
     canRestartGame: boolean;
 
     // Placement
-    canPlaceShip: boolean;
+    canPlaceFleet: boolean;
     canConfirmFleet: boolean;
-    canInteractWithPlacementBoard: boolean;
 
     // Battle
     canAttack: boolean;
-    canInteractWithEnemyBoard: boolean;
 };
 ```
 
@@ -144,22 +129,9 @@ This preserves explicit ownership while allowing the UI to remain completely una
 
 ---
 
-## Feedback Model
+## Feedback Ownership
 
-Feedback represents temporary information produced as the result of a user interaction or gameplay event.
-
-Unlike instructions, feedback does not describe the current state of the game. Instead, it communicates something that has just occurred and is intended to disappear after a short period of time.
-
-Examples include:
-
-- Invalid placement
-- Fleet completed
-- Attack missed
-- Ship sunk
-
-Following the ownership model established throughout this document, each feature module owns and derives its own feedback contract. Game Flow consumes those contracts and exposes a single unified feedback interface to the Presentation layer.
-
-Presentation consumes `flow.feedback` without needing to know which feature module produced the current feedback.
+Feedback belongs to its feature module. Placement exposes feedback through its own contract, which the UI consumes directly. Game Flow does not derive, aggregate, or expose Placement feedback.
 
 ---
 
@@ -224,26 +196,6 @@ The implementation should:
 
 ---
 
-## Feedback Aggregation
-
-`aggregateFeedback()` constructs the feedback contract exposed by Game Flow.
-
-Following the ownership model, Game Flow does not derive feedback itself. Instead, it consumes the feedback contracts exposed by feature modules and resolves the feedback that should be presented to the player.
-
-The result is a single transient feedback contract consumed by the Presentation layer.
-
-### Aggregation Strategy
-
-The implementation should:
-
-- consume feedback contracts exposed by feature modules
-- resolve the feedback corresponding to the current interaction or gameplay event
-- expose a single unified feedback contract
-- remain pure, synchronous, and side-effect free
-- never derive feature-specific feedback or mutate authoritative state
-
----
-
 ## Presentation Derivation
 
 `derivePresentation()` constructs the presentation contract owned by Game Flow.
@@ -277,7 +229,7 @@ The implementation should:
 
 - read authoritative gameplay state from the Gameplay Store
 - consume public contracts exposed by feature modules
-- compose capabilities, instructions, feedback and presentation into a single interface
+- compose capabilities and presentation into a single interface
 - expose a stable, presentation-oriented API
 - remain lightweight and free of business logic
 
@@ -293,7 +245,6 @@ export function useGameFlowController() {
     return {
         capabilities: deriveCapabilities(game, placement.capabilities),
         instruction: aggregateInstruction(placement.instruction),
-        feedback: aggregateFeedback(placement.feedback),
         presentation: derivePresentation(game),
     };
 }

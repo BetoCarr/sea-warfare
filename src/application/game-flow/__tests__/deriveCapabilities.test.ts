@@ -32,12 +32,10 @@ describe('deriveCapabilities', () => {
 
         expect(capabilities).toEqual({
             canInitializeGame: true,
+            canRestartGame: false,
             canPlaceFleet: false,
             canConfirmFleet: false,
-            canInteractWithBoard: false,
             canAttack: false,
-            canRestartGame: false,
-            canInteractWithEnemyBoard: false,
         });
     });
 
@@ -51,12 +49,10 @@ describe('deriveCapabilities', () => {
 
         expect(capabilities).toEqual({
             canInitializeGame: false,
+            canRestartGame: false,
             canPlaceFleet: true,
             canConfirmFleet: false,
-            canInteractWithBoard: false,
             canAttack: false,
-            canRestartGame: false,
-            canInteractWithEnemyBoard: false,
         });
     });
 
@@ -70,16 +66,14 @@ describe('deriveCapabilities', () => {
 
         expect(capabilities).toEqual({
             canInitializeGame: false,
+            canRestartGame: false,
             canPlaceFleet: true,
             canConfirmFleet: true,
-            canInteractWithBoard: false,
             canAttack: false,
-            canRestartGame: false,
-            canInteractWithEnemyBoard: false,
         });
     });
 
-    it('enables attack and enemy board interaction during PLAYER_TURN', () => {
+    it('enables attack during PLAYER_TURN', () => {
         const capabilities = deriveCapabilities(
             createGameState({
                 phase: GamePhase.BATTLE,
@@ -90,12 +84,10 @@ describe('deriveCapabilities', () => {
 
         expect(capabilities).toEqual({
             canInitializeGame: false,
+            canRestartGame: false,
             canPlaceFleet: false,
             canConfirmFleet: false,
-            canInteractWithBoard: false,
             canAttack: true,
-            canRestartGame: false,
-            canInteractWithEnemyBoard: true,
         });
     });
 
@@ -110,12 +102,10 @@ describe('deriveCapabilities', () => {
 
         expect(capabilities).toEqual({
             canInitializeGame: false,
+            canRestartGame: false,
             canPlaceFleet: false,
             canConfirmFleet: false,
-            canInteractWithBoard: false,
             canAttack: false,
-            canRestartGame: false,
-            canInteractWithEnemyBoard: false,
         });
     });
 
@@ -129,12 +119,10 @@ describe('deriveCapabilities', () => {
 
         expect(capabilities).toEqual({
             canInitializeGame: false,
+            canRestartGame: true,
             canPlaceFleet: false,
             canConfirmFleet: false,
-            canInteractWithBoard: false,
             canAttack: false,
-            canRestartGame: true,
-            canInteractWithEnemyBoard: false,
         });
     });
 });

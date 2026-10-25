@@ -8,12 +8,10 @@ import type { PlacementCapabilities } from '@/application/placement/derive/place
 
 const DEFAULT_CAPABILITIES: GameInteractionCapabilities = {
     canInitializeGame: false,
+    canRestartGame: false,
     canPlaceFleet: false,
     canConfirmFleet: false,
-    canInteractWithBoard: false,
     canAttack: false,
-    canRestartGame: false,
-    canInteractWithEnemyBoard: false,
 };
 
 export function deriveCapabilities(
@@ -43,7 +41,6 @@ export function deriveCapabilities(
         return {
             ...DEFAULT_CAPABILITIES,
             canAttack: true,
-            canInteractWithEnemyBoard: true,
         };
     }
 
@@ -60,5 +57,4 @@ export function deriveCapabilities(
 
     return DEFAULT_CAPABILITIES;
 }
-
 

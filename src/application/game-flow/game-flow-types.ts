@@ -5,13 +5,16 @@ export type GamePresentation = {
 };
 
 export type GameInteractionCapabilities = {
+    // Gameplay lifecycle
     canInitializeGame: boolean;
+    canRestartGame: boolean;
+
+    // Placement
     canPlaceFleet: boolean;
     canConfirmFleet: boolean;
-    canInteractWithBoard: boolean;
+
+    // Battle
     canAttack: boolean;
-    canRestartGame: boolean;
-    canInteractWithEnemyBoard: boolean;
 };
 
 export type GameFlowController = {
