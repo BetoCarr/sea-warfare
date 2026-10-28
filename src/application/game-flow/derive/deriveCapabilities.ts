@@ -1,7 +1,7 @@
 import { GamePhase } from '@/lib/domain/game/models/GamePhase';
 import { GameStatus } from '@/lib/domain/game/models/GameStatus';
 
-import { GameInteractionCapabilities } from './game-flow-types';
+import { GameInteractionCapabilities } from '../game-flow-types';
 
 import type { GameState } from '@/lib/domain/game/models/GameState';
 import type { PlacementCapabilities } from '@/application/placement/derive/placement-capabilites.types';

@@ -5,7 +5,7 @@ import InformationPanel from "../game/GameStage/InformationPanel/InformationPane
 
 import { useSupportsHover } from "@/lib/device/useSupportsHover";
 import { useGameplayStore } from "@/lib/store/gameplay-store";
-import { useGameFlowController } from "@/application/game-flow/useGameFlowController";
+import { useGameFlowController } from "@/application/game-flow/hooks/useGameFlowController";
 import { usePlacementController } from "@/application/placement/hooks/usePlacementController";
 import { FeedbackMessage } from "./GameStage/FeedbackMessage";
 
@@ -33,13 +33,13 @@ export function GameScreen() {
     const placement = usePlacementController();
 
     const flow = useGameFlowController({
-        placementCapabilities: placement.contract.capabilities,
+        placement: {
+            capabilities: placement.contract.capabilities,
+            instruction: placement.contract.instruction,
+            feedback: placement.contract.feedback,
+            stats: placement.contract.stats,
+        },
     });
-
-    const instruction =
-        flow.capabilities.canPlaceFleet
-            ? placement.contract.instruction
-            : flow.presentation.instruction;
 
     return (
         <div
@@ -49,9 +49,10 @@ export function GameScreen() {
                 "bg-slate-900 text-slate-100",
             )}
         >
-            {placement.contract.feedback && (
-                <FeedbackMessage message={placement.contract.feedback} />
+            {flow.feedback && (
+                <FeedbackMessage message={flow.feedback} />
             )}  
+
             <Header 
                 capabilities={flow.capabilities}
                 onInitialize={handleInitialize} 
@@ -76,16 +77,12 @@ export function GameScreen() {
                     placement={placement}
                     supportsHover={supportsHover}
                 />
-                {instruction && (
+                {flow.instruction && (
                     <InformationPanel
                         phaseLabel={flow.presentation.phaseLabel}
                         description={flow.presentation.description}
-                        instruction={instruction}
-                        stats={
-                            flow.capabilities.canPlaceFleet
-                                ? `Remaining ships: ${placement.contract.stats.remainingShips}`
-                                : undefined
-                        }
+                        instruction={flow.instruction}
+                        stats={flow.stats}
                     />
                 )}
             </div>

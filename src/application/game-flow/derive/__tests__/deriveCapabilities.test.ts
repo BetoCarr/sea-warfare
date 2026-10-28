@@ -1,4 +1,4 @@
-import { deriveCapabilities } from '@/application/game-flow/deriveCapabilities';
+import { deriveCapabilities } from '@/application/game-flow/derive/deriveCapabilities';
 
 import { GamePhase } from '@/lib/domain/game/models/GamePhase';
 import { GameStatus } from '@/lib/domain/game/models/GameStatus';

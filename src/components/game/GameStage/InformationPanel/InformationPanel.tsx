@@ -5,7 +5,7 @@ interface InformationPanelProps {
     phaseLabel: string;
     description: string | null;
     instruction: string;
-    stats?: string;
+    stats?: string | null;
 }
 
 export default function InformationPanel({

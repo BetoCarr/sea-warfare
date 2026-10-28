@@ -63,20 +63,25 @@ function triggerPlacementAt(harness: HookHarness, shipType: 'carrier' | 'destroy
 describe('usePlacement', () => {
     beforeEach(() => {
         globalThis.IS_REACT_ACT_ENVIRONMENT = true;
-        jest.useFakeTimers();
 
         act(() => {
             resetPlacementStores();
         });
     });
 
-    afterEach(() => {
-        jest.runOnlyPendingTimers();
-        jest.useRealTimers();
-    });
-
     it('does not place a ship when the interaction does not resolve to place-ship', () => {
         const harness = createHookHarness();
+
+        expect(harness.getCurrent().contract).toMatchObject({
+            capabilities: {
+                canConfirmFleet: false,
+            },
+            instruction: 'Select ship',
+            feedback: null,
+            stats: {
+                remainingShips: 5,
+            },
+        });
 
         act(() => {
             harness.getCurrent().interaction.onBoardInteraction({
@@ -103,7 +108,7 @@ describe('usePlacement', () => {
                 orientation: 'horizontal',
             },
         ]);
-        expect(harness.getCurrent().contract.feedback).toBe('Ship placed successfully.');
+        expect(harness.getCurrent().contract.feedback?.message).toBe('Ship placed successfully.');
         expect(harness.getCurrent().interaction.selectedShipType).toBeNull();
         expect(harness.getCurrent().interaction.targetCell).toBeNull();
 
@@ -135,7 +140,7 @@ describe('usePlacement', () => {
                 orientation: 'horizontal',
             },
         ]);
-        expect(harness.getCurrent().contract.feedback).toBe('Ship repositioned successfully.');
+        expect(harness.getCurrent().contract.feedback?.message).toBe('Ship repositioned successfully.');
         expect(harness.getCurrent().interaction.selectedShipType).toBeNull();
 
         harness.unmount();
@@ -159,7 +164,7 @@ describe('usePlacement', () => {
         triggerPlacementAt(harness, 'carrier', { row: 0, col: 0 });
 
         expect(useGameplayStore.getState().playerPlacements).toEqual([existingDestroyer]);
-        expect(harness.getCurrent().contract.feedback).toBe('The ship overlaps another ship.');
+        expect(harness.getCurrent().contract.feedback?.message).toBe('The ship overlaps another ship.');
         expect(harness.getCurrent().interaction.selectedShipType).toBe('carrier');
 
         harness.unmount();
@@ -183,80 +188,36 @@ describe('usePlacement', () => {
         triggerPlacementAt(harness, 'carrier', { row: 0, col: 6 });
 
         expect(useGameplayStore.getState().playerPlacements).toEqual([existingCarrier]);
-        expect(harness.getCurrent().contract.feedback).toBe('The ship does not fit on the board.');
+        expect(harness.getCurrent().contract.feedback?.message).toBe('The ship does not fit on the board.');
         expect(harness.getCurrent().interaction.selectedShipType).toBe('carrier');
 
         harness.unmount();
     });
 
-    it('expires feedback after the configured duration', () => {
+    it('assigns a new event identity when the same feedback message occurs again', () => {
         const harness = createHookHarness();
+        const existingDestroyer: ShipPlacement = {
+            ship: { type: 'destroyer', size: 2 },
+            origin: { row: 0, col: 0 },
+            orientation: 'horizontal',
+        };
+
+        act(() => {
+            useGameplayStore.setState({
+                playerPlacements: [existingDestroyer],
+            });
+        });
 
         triggerPlacementAt(harness, 'carrier', { row: 0, col: 0 });
-
-        expect(harness.getCurrent().contract.feedback).toBe('Ship placed successfully.');
-
-        act(() => {
-            jest.advanceTimersByTime(4000);
-        });
-
-        expect(harness.getCurrent().contract.feedback).toBeNull();
-
-        harness.unmount();
-    });
-
-    it('replaces the previous feedback when a second mutation happens before the first timer expires', () => {
-        const harness = createHookHarness();
+        const firstEvent = harness.getCurrent().contract.feedback;
 
         triggerPlacementAt(harness, 'carrier', { row: 0, col: 0 });
-        expect(harness.getCurrent().contract.feedback).toBe('Ship placed successfully.');
+        const secondEvent = harness.getCurrent().contract.feedback;
 
-        act(() => {
-            jest.advanceTimersByTime(1000);
-        });
-
-        triggerPlacementAt(harness, 'carrier', { row: 5, col: 2 });
-
-        expect(harness.getCurrent().contract.feedback).toBe('Ship repositioned successfully.');
+        expect(firstEvent?.message).toBe('The ship overlaps another ship.');
+        expect(secondEvent?.message).toBe(firstEvent?.message);
+        expect(secondEvent?.id).not.toBe(firstEvent?.id);
 
         harness.unmount();
-    });
-
-    it('resets the feedback timer when a second mutation occurs before the first timer finishes', () => {
-        const harness = createHookHarness();
-
-        triggerPlacementAt(harness, 'carrier', { row: 0, col: 0 });
-
-        act(() => {
-            jest.advanceTimersByTime(1000);
-        });
-
-        triggerPlacementAt(harness, 'carrier', { row: 5, col: 2 });
-
-        act(() => {
-            jest.advanceTimersByTime(3000);
-        });
-
-        expect(harness.getCurrent().contract.feedback).toBe('Ship repositioned successfully.');
-
-        act(() => {
-            jest.advanceTimersByTime(1000);
-        });
-
-        expect(harness.getCurrent().contract.feedback).toBeNull();
-
-        harness.unmount();
-    });
-
-    it('cleans up the feedback timer when the hook unmounts', () => {
-        const harness = createHookHarness();
-
-        triggerPlacementAt(harness, 'carrier', { row: 0, col: 0 });
-
-        expect(jest.getTimerCount()).toBe(1);
-
-        harness.unmount();
-
-        expect(jest.getTimerCount()).toBe(0);
     });
 });

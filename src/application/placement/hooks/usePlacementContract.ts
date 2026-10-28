@@ -4,10 +4,11 @@ import { createPlacementContract } from '../contract/createPlacementContract';
 
 import type { PlacementContract } from '../contract/placement-contract.types';
 import type { PlacementDerivations } from './placement-derivations.types';
+import type { GameFlowFeedbackEvent } from '@/application/game-flow/game-flow-types';
 
 export function usePlacementContract(
     derivations: PlacementDerivations,
-    feedback: string | null
+    feedback: GameFlowFeedbackEvent | null
 ): PlacementContract {
     return useMemo(
         () => createPlacementContract({

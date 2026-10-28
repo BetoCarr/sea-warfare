@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { usePlacementInteractions } from './usePlacementInteractions';
 import { usePlacementDerivations } from './usePlacementDerivations';
@@ -9,12 +9,10 @@ import { derivePlacementFeedback } from '../derive/derivePlacementFeedback';
 
 import type { BoardCellInteraction, PlacementInteractionResult } from '../interactions/placement-interaction.types';
 
-import type { UpsertShipPlacementResult } from '@/lib/domain/placement/models/UpsertShipPlacementResult';
 import type { PlacementController } from '@/application/placement/hooks/placement-controller.types';
+import type { GameFlowFeedbackEvent } from '@/application/game-flow/game-flow-types';
 
 import { useGameplayStore } from '@/lib/store/gameplay-store';
-
-const FEEDBACK_DURATION = 4000;
 
 export function usePlacementController(): PlacementController {
 
@@ -22,11 +20,10 @@ export function usePlacementController(): PlacementController {
         state => state.playerPlacements,
     );
 
-    const [mutationResult, setMutationResult] =
-        useState<UpsertShipPlacementResult | null>(null);
+    const [feedbackEvent, setFeedbackEvent] =
+        useState<GameFlowFeedbackEvent | null>(null);
 
-    const feedbackTimeoutRef =
-        useRef<ReturnType<typeof setTimeout> | null>(null)
+    const feedbackEventIdRef = useRef(0);
 
     const interaction = usePlacementInteractions();
 
@@ -39,17 +36,9 @@ export function usePlacementController(): PlacementController {
         playerPlacements,
     });
 
-    const feedback = useMemo(
-        () =>
-            derivePlacementFeedback({
-                mutationResult,
-            }),
-        [mutationResult],
-    );
-
     const contract = usePlacementContract(
         derivations,
-        feedback,
+        feedbackEvent,
     );
 
     const coordinatedInteraction = {
@@ -80,17 +69,19 @@ export function usePlacementController(): PlacementController {
 
             const mutationResult = mutations.placeShip(placement);
 
-            if (feedbackTimeoutRef.current) {
-                clearTimeout(feedbackTimeoutRef.current);
-            }
-
-            setMutationResult(mutationResult);
-
-            feedbackTimeoutRef.current = setTimeout(() => {
-                setMutationResult(null);
-                feedbackTimeoutRef.current = null;
-            }, FEEDBACK_DURATION);
-
+            const feedbackMessage = derivePlacementFeedback({
+                mutationResult,
+            });
+            
+            setFeedbackEvent(
+                feedbackMessage
+                    ? {
+                        id: ++feedbackEventIdRef.current,
+                        source: 'placement',
+                        message: feedbackMessage,
+                    }
+                    : null,
+            );
 
             if (mutationResult.success) {
                 interaction.selectShip(null);
@@ -100,14 +91,6 @@ export function usePlacementController(): PlacementController {
         },
     };
 
-
-    useEffect(() => {
-        return () => {
-            if (feedbackTimeoutRef.current) {
-                clearTimeout(feedbackTimeoutRef.current);
-            }
-        };
-    }, []);
 
     return {
         playerPlacements,

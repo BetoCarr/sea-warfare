@@ -2,7 +2,7 @@ import { GamePhase } from '@/lib/domain/game/models/GamePhase';
 import { GameStatus } from '@/lib/domain/game/models/GameStatus';
 
 import type { GameState } from '@/lib/domain/game/models/GameState';
-import type { GamePresentation } from './game-flow-types';
+import type { GamePresentation } from '../game-flow-types';
 
 export function derivePresentation(
     game: GameState,
@@ -14,7 +14,6 @@ export function derivePresentation(
         return {
             phaseLabel: 'BOOT',
             description: 'Combat systems are offline and awaiting initialization.',
-            instruction: 'Initialize the game.',
         };
     }
 
@@ -22,7 +21,6 @@ export function derivePresentation(
         return {
             phaseLabel: 'DEPLOY',
             description: 'Fleet deployment in progress.',
-            instruction: null
         };
     }
 
@@ -30,7 +28,6 @@ export function derivePresentation(
         return {
             phaseLabel: 'COMBAT',
             description: 'Your fleet has tactical initiative.',
-            instruction: 'Choose an enemy target.'
         };
     }
 
@@ -38,7 +35,6 @@ export function derivePresentation(
         return {
             phaseLabel: 'COMBAT',
             description: 'Enemy forces are executing their turn.',
-            instruction: null
         };
     }
 
@@ -46,13 +42,11 @@ export function derivePresentation(
         return {
             phaseLabel: 'END',
             description: 'The mission has concluded.',
-            instruction: null
         };
     }
 
     return {
         phaseLabel: '',
         description: null,
-        instruction: null
     };
 }
