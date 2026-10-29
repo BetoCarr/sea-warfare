@@ -1,149 +1,128 @@
-# Sea Warfare — Game Flow Architecture Plan
+# Sea Warfare — Game Flow Architecture
 
 ## Project Context
 
-Stack: React, TypeScript, Zustand, Next.js
+Stack: React, TypeScript, Zustand, Next.js.
 
-Layers: domain → application → presentation
+Layers: domain → application → presentation.
 
-Priorities: declarative rendering, domain purity, low coupling, derivation-first architecture, lightweight orchestration.
+Game Flow establishes the application-level boundary between authoritative gameplay state, feature modules, and shared presentation. It favors declarative rendering, domain purity, low-coupling contracts, and lightweight orchestration.
 
 ---
 
 ## Game Flow — Canonical Architecture
+Game Flow exposes a unified declarative interface for global gameplay semantics consumed by shared gameplay UI. It does not own gameplay rules or feature-specific semantics.
 
-The Game Flow module exposes a unified declarative interface for global gameplay semantics consumed by the Presentation layer.
-
-Its responsibility is intentionally narrow. It does not own gameplay rules or feature-specific semantics. Instead, it derives the global semantics it owns from the authoritative gameplay state and consumes the public contracts exposed by feature modules. Presentation may consume Game Flow's interface or feature-module contracts directly, depending on the responsibility of each UI component.
-
-This follows a simple architectural rule:
+Game Flow derives the semantics it owns from the authoritative gameplay state and consumes public feature contracts. Presentation renders the resulting declarations rather than reproducing gameplay semantics.
 
 > **Game Flow derives what it owns and consumes what it does not own.**
 
-Ownership remains explicit:
+Ownership is explicit:
 
-- **Domain** owns gameplay truth and rules.
-- **Feature modules** derive their own feature-specific semantics and expose public contracts.
-- **Game Flow** derives global gameplay semantics, consumes feature-module contracts, and exposes a unified API.
-- **Presentation** renders the resulting projections.
+- **Domain** owns authoritative gameplay truth and rules.
+- **Feature modules** own and derive their feature-specific semantics and expose public contracts.
+- **Game Flow** derives global semantics, consumes public feature contracts, and composes the unified interface for shared gameplay UI.
+- **Presentation** renders the public contracts appropriate to each component's responsibility.
 
-The canonical flow is:
+Game Flow is not the owner of every semantic associated with a gameplay phase. In particular, Battle owns its combat-specific semantics, just as Placement owns its placement-specific semantics. Game Flow may currently derive some Battle-related values, but this reflects the current implementation rather than the intended ownership boundary.
+
+Shared gameplay UI consumes the unified Game Flow interface. Feature-specific UI may consume other values from its feature's public contract when appropriate, without bypassing Game Flow for the unified interaction capabilities.
 
 ```txt
 Gameplay Store
 (authoritative state)
-        │
-        │
-        ├──────────────┐
-        │              │
-        ▼              ▼
- Game Flow       Feature Modules
- derives         derive
- owned           owned
- semantics       semantics
-        ▲              │
-        │              │
-        └──── consumes ┘
-               contracts
-                    │
-                    ▼
-             Presentation
+       |
+       v
+    Game Flow <------- Public contracts ------- Feature modules
+(global semantics     (capability, instruction,  (feature-specific
+ + composition)        feedback, etc.)             semantics)
+       |
+       v
+Shared gameplay UI
+
+Feature modules ------ Public contracts ------> Feature-specific UI
 ```
 
-Design principles:
-
-- capabilities are declarative
-- presentation contracts are lightweight
-- components remain presentation-only
-- gameplay semantics stay outside the UI layer
+Game Flow and feature contracts communicate only through public values. Feature-specific UI may consume a feature contract directly; shared gameplay UI consumes the unified Game Flow interface.
 
 ---
 
-
 ## State Boundaries
 
-Game Flow consumes authoritative gameplay state and the public contract values it needs. It derives global semantics and composes the shared interface, while feature modules remain responsible for their own derivations.
+The Gameplay Store supplies `game` and authoritative gameplay values to Game Flow. Feature modules derive their own semantic values and expose them through public contracts.
 
-`GameFlowController` exposes global capabilities, global presentation context, and the instruction, feedback, and statistics content selected for the active phase. Placement continues to own and derive Placement capabilities, instructions, feedback messages, and structured statistics. Game Flow formats Placement statistics for Presentation and owns the duration of displayed feedback.
+Game Flow's current controller exposes:
 
-For authoritative state ownership, derivation principles, interaction state, and persistence boundaries, see **State Ownership Architecture**. Keep those broader boundaries documented there rather than duplicating them here.
+- the aggregated interaction capabilities;
+- global presentation context;
+- the selected instruction;
+- a visible feedback string, where applicable; and
+- phase-specific formatted content such as Placement statistics.
+
+Placement owns its capabilities, instruction, feedback events, and statistics derivation. Game Flow consumes those public values and composes them only for the active phase.
+
+For authoritative state, interaction state, persistence, and general derivation rules, see the State Ownership Architecture document. This document does not duplicate those broader boundaries.
 
 ---
 
 ## Capability Model
 
-The capability model defines the declarative permission surface exposed by Game Flow to the Presentation layer.
-
-Its purpose is to expose a single, unified interface describing what the UI is allowed to do at any given moment, regardless of which module owns the underlying capability.
-
-Some capabilities are derived directly from the global gameplay lifecycle, while others are consumed from feature modules such as Placement and exposed through `flow.capabilities`. Feature-specific contracts remain owned by their modules and may also be consumed directly by the UI when appropriate.
-
-This approach provides:
-
-- a single capability surface for the UI
-- explicit ownership of feature-specific capabilities
-- low coupling between Presentation and feature modules
-- independent evolution of each feature module
-
-`GameStatus` currently complements `GamePhase` during the `BATTLE` phase, allowing battle-specific permissions to be expressed without increasing the complexity of the global lifecycle. Its long-term ownership may eventually move into the Battle module.
-
-### Public Contract
+Game Flow exposes one declarative capability contract to shared gameplay UI:
 
 ```ts
 export type GameInteractionCapabilities = {
-    // Gameplay lifecycle
     canInitializeGame: boolean;
     canRestartGame: boolean;
-
-    // Placement
     canPlaceFleet: boolean;
     canConfirmFleet: boolean;
-
-    // Battle
     canAttack: boolean;
 };
 ```
+The current implementation of `deriveCapabilities(game, placementCapabilities)` derives some capabilities directly from gameplay state, including Battle-related capabilities, and incorporates Placement's public confirmation capability.
 
-Only the aggregated capability contract is exposed to Presentation.
+This is an implementation-stage arrangement, not the intended ownership model. Battle will derive its own combat capabilities and expose them through its public contract. Game Flow will consume those capabilities and aggregate them with global lifecycle and other feature capabilities into `GameInteractionCapabilities`.
 
-Feature modules remain responsible for deriving their own capability contracts, while Game Flow is responsible for exposing the unified interface consumed by the UI.
+Shared gameplay UI consumes `flow.capabilities` as its unified source of interaction capabilities. UI components must not independently combine feature capability contracts or recreate capability rules. Feature-specific UI may consume other public contract values when appropriate, but capability decisions exposed through the shared interface remain centralized in Game Flow.
 
 ---
 
 ## Instruction Model
 
-The instruction model defines the contextual guidance presented to the player at any given moment.
+An instruction is contextual guidance selected for the active gameplay phase. Each module owns the instructions derived from its semantics.
 
-Each feature module owns and derives its own instruction from its public contract. Game Flow also preserves global instructions for phases without feature-specific presentation, such as setup and the player's battle turn. It selects which instruction to expose using the gameplay phase, not a capability used as a phase proxy.
+- `deriveGlobalInstruction()` currently derives setup and player-turn battle instructions from gameplay state.
+- Placement derives its placement-specific instruction and exposes it through `PlacementContract.instruction`.
+- `composeGameFlowContent()` selects the instruction appropriate to the active phase. It does not use capabilities as a proxy for phase.
 
-For example:
+The current implementation derives the player-turn battle instruction within Game Flow. In the intended architecture, Battle will own and derive its combat-specific instructions through its public contract. Game Flow will compose the appropriate instruction without taking ownership of Battle's semantics.
 
-- Placement owns `PlacementInstruction`.
-- Battle may eventually own `BattleInstruction`.
-
-Game Flow does not derive Placement instructions. It consumes Placement's instruction and exposes it during `PLACEMENT`; otherwise it exposes the appropriate global instruction.
-
-Presentation consumes the composed value through `flow.instruction` without choosing its source.
-
-This preserves explicit ownership while keeping the shared interface selection out of Presentation.
+Consumers render `flow.instruction`; they do not select an instruction source or independently derive the active instruction.
 
 ---
 
 ## Feedback Ownership
 
-Features derive their own feedback messages. Placement exposes each message as a feedback event with an identity, allowing Game Flow to detect a repeated event even when its text is unchanged. Game Flow owns the presentation lifecycle: it shows the selected event for four seconds, restarts that duration for each new event, and clears it on phase changes or unmount. Expired or inactive events are not exposed again. Placement does not own a display timer. Presentation renders `flow.feedback`.
+Feedback has two distinct representations:
+
+- **Placement feedback event:** the feature contract value, with `id`, `source`, and `message` fields.
+- **Visible feedback message:** the string exposed by Game Flow after lifecycle management.
+
+```ts
+export type GameFlowFeedbackEvent = {
+    id: number;
+    source: 'gameplay' | 'placement';
+    message: string;
+};
+```
+
+Currently, Placement increments an event ID after a `place-ship` interaction result produces a feedback message and sets `source: 'placement'`. 
+The current Game Flow lifecycle hook displays a selected event until it is cleared or its current timeout expires. A repeated message can therefore be treated as a new event because identity comes from `source` plus `id`, not message text alone. This duration is an implementation detail, not a broader architectural requirement.
 
 ---
 
 ## Presentation Model
 
-The presentation model defines the global presentation context exposed by Game Flow to the Presentation layer.
-
-This context is owned entirely by Game Flow and derived directly from the authoritative gameplay lifecycle. It provides lightweight global information describing the current state of the game.
-
-The selected instruction and feedback are separate top-level `GameFlowController` values, not fields of `GamePresentation`.
-
-### Public Contract
+The Presentation model is the lightweight global context owned by Game Flow:
 
 ```ts
 export type GamePresentation = {
@@ -152,226 +131,171 @@ export type GamePresentation = {
 };
 ```
 
-Presentation consumes this global context through `flow.presentation`. The controller also exposes `capabilities`, `instruction`, `feedback`, and `stats`. Game Flow selects the instruction and statistics from global values or Placement's public contract according to the current phase; feedback is the active message managed by the Game Flow lifecycle.
+`derivePresentation(game)` maps the authoritative gameplay phase/status to global `phaseLabel` and `description` values. It does not derive feature-specific presentation.
+
+The current phase presentation is:
+
+- Setup: `BOOT` with an awaiting-initialization description.
+- Placement: `DEPLOY` with a fleet-deployment description.
+- Player battle turn: `COMBAT` with a tactical-initiative description.
+- AI battle turn: `COMBAT` with an enemy-turn description.
+- Game over: `END` with a mission-concluded description.
+- Other/fallback states: an empty label and no description.
+
+Instruction and feedback remain separate `GameFlowController` values, not fields of `GamePresentation`.
+
+---
+
+## Derivation and Composition
+
+### Capability derivation
+
+`deriveCapabilities(game, placementCapabilities)` is currently pure. It derives global lifecycle capabilities, includes the Battle-related capabilities currently implemented in Game Flow, and incorporates Placement's public confirmation capability. This function does not mutate authoritative state or execute gameplay logic.
+
+When Battle is implemented, it will own the derivation of its combat capabilities and expose them through its public contract. Game Flow will consume and aggregate those values rather than own the combat-specific derivation.
+
+### Instruction derivation
+
+`deriveGlobalInstruction(game)` is pure. It currently returns `Initialize the game.` during setup and `Choose an enemy target.` during the player's battle turn; otherwise, it returns `null`. The setup instruction belongs to Game Flow. The player-turn instruction is currently implemented here, but combat-specific instructions will belong to Battle when that module is introduced.
+
+### Content composition
+
+`composeGameFlowContent({ game, globalInstruction, placement })` is pure. Its `placement` parameter accepts only `instruction`, `feedback`, and `stats` from `PlacementContract`.
+
+During Placement, it returns:
+
+- `placement.instruction`;
+- the Placement feedback event selected by its public contract;
+- formatted statistics such as `Remaining ships: N`.
+
+Outside Placement, it returns the derived global instruction and `null` feedback and statistics. The function does not manage timers, state, or display lifecycle.
 
 ```ts
 export type GameFlowContent = {
     instruction: string | null;
-    feedback: string | null;
+    feedback: GameFlowFeedbackEvent | null;
     stats: string | null;
 };
-
-export type GameFlowController = {
-    capabilities: GameInteractionCapabilities;
-    presentation: GamePresentation;
-} & GameFlowContent;
 ```
 
----
+The event here is the composition input. The controller replaces it with the visible `string | null` returned by the feedback hook in its public output.
 
-## Capability Derivation
+Composition selects and exposes semantics owned by the relevant modules; it does not transfer ownership of those semantics to Game Flow. The current implementation still derives some Battle-related values within Game Flow, but this is expected to change when Battle's public contract is introduced.
 
-`deriveCapabilities()` constructs the capability contract exposed by Game Flow.
+### Feedback lifecycle
 
-Following the ownership model, it derives the capabilities owned by Game Flow from the authoritative gameplay state and composes them with the capability contracts exposed by feature modules.
+`useGameFlowFeedback(feedbackEvent)` is effectful. It tracks event identity by `${source}:${id}`, maps the event to its message, and exposes the currently visible message. It owns no feedback derivation and does not belong in the pure composition function.
 
-The result is a single declarative capability surface consumed by the Presentation layer.
+### Presentation derivation
 
-### Derivation Strategy
+`derivePresentation(game)` is pure and derives `GamePresentation` directly from the gameplay phase/status.
 
-The implementation should:
-
-- derive only the capabilities owned by Game Flow
-- consume capability contracts exposed by feature modules
-- compose those capabilities into a single public contract
-- remain pure, synchronous, and side-effect free
-- never execute gameplay logic or mutate authoritative state
-
----
-
-## Instruction and Feedback Composition
-
-`deriveGlobalInstruction()` derives instructions owned by Game Flow, while `composeGameFlowContent()` selects the instruction, active feedback message, and statistics content exposed by Game Flow.
-
-During `PLACEMENT`, composition uses the instruction and structured statistics already supplied by Placement, and the feedback event currently active in Game Flow. It formats the remaining ship count for `InformationPanel`. In other phases, it uses the global instruction and exposes neither Placement feedback nor Placement statistics.
-
-### Composition Strategy
-
-The implementation should:
-
-- derive only global instructions owned by Game Flow
-- consume Placement instruction and statistics from its public contract and the current feedback message from the Game Flow lifecycle hook
-- select the values based on the explicit gameplay phase
-- format Placement statistics for Presentation
-- expose instruction, feedback, and statistics content to Presentation
-- remain pure, synchronous, and side-effect free
-- never derive feature-specific instructions, feedback, or statistics, or mutate authoritative state
-
-Feedback timer effects live in the Game Flow controller hook, not in this pure composition function.
-
----
-
-## Presentation Derivation
-
-`derivePresentation()` constructs the presentation contract owned by Game Flow.
-
-Following the ownership model, presentation is derived directly from the authoritative gameplay lifecycle because it represents global presentation context rather than feature-specific semantics.
-
-The result is a lightweight presentation contract consumed by the Presentation layer.
-
-### Derivation Strategy
-
-The implementation should:
-
-- derive global gameplay context from the authoritative gameplay state
-- expose lightweight presentation information such as the current phase and its description
-- remain pure, synchronous, and side-effect free
-- never derive feature-specific semantics or mutate authoritative state
+These functions have separate purposes and lifecycles: derivation and composition are synchronous and side-effect free; feedback lifecycle management is effectful and hook-owned.
 
 ---
 
 ## Application Layer (`useGameFlowController`)
 
-`useGameFlowController()` is the application-layer composition point of the Game Flow module. Its input is the subset of Placement's public contract that it uses: `capabilities`, `instruction`, `feedback`, and `stats`. The feedback value is an event containing an ID and message. It does not import Placement hooks or UI components.
+`useGameFlowController()` is the lightweight application-layer composition point for Game Flow. It reads authoritative gameplay state, consumes a selected subset of Placement's public contract, runs pure derivation/composition functions, and applies feedback lifecycle management.
 
-It bridges the authoritative gameplay state with the public contracts exposed by feature modules, assembling them into a single declarative interface consumed by the Presentation layer.
-
-Rather than implementing feature logic itself, the controller composes the outputs of the Game Flow derivation functions into a unified API for the UI.
-
-### Composition Strategy
-
-The implementation should:
-
-- read authoritative gameplay state from the Gameplay Store
-- consume the relevant public values supplied by feature modules
-- manage the display lifetime of feedback events and compose global capabilities, presentation context, instruction, feedback, and formatted statistics into a single interface
-- expose a stable, presentation-oriented API
-- remain lightweight and free of business logic
+Its Placement input is typed as:
 
 ```ts
 type UseGameFlowControllerProps = {
-    placement: Pick<PlacementContract, 'capabilities' | 'instruction' | 'feedback' | 'stats'>;
+    placement: Pick<
+        PlacementContract,
+        'capabilities' | 'instruction' | 'feedback' | 'stats'
+    >;
 };
+```
 
-export function useGameFlowController({ placement }: UseGameFlowControllerProps) {
+```ts
+export function useGameFlowController({
+    placement,
+}: UseGameFlowControllerProps): GameFlowController {
     const game = useGameplayStore(state => state.game);
-    const feedback = useGameFlowFeedback(game.phase, placement.feedback);
+
+    const capabilities = deriveCapabilities(
+        game,
+        placement.capabilities,
+    );
+    const presentation = derivePresentation(game);
+
+    const content = composeGameFlowContent({
+        game,
+        globalInstruction: deriveGlobalInstruction(game),
+        placement,
+    });
+
+    const feedback = useGameFlowFeedback(content.feedback);
 
     return {
-        capabilities: deriveCapabilities(game, placement.capabilities),
-        presentation: derivePresentation(game),
-        ...composeGameFlowContent({
-            game,
-            globalInstruction: deriveGlobalInstruction(game),
-            placement,
-            feedback,
-        }),
+        capabilities,
+        presentation,
+        ...content,
+        feedback,
     };
 }
 ```
 
----
+The spread of `content` supplies instruction and stats, then the final `feedback` property replaces the composition event with the visible string owned by the feedback hook.
 
-## Domain vs Application vs Presentation
+`GameFlowController` is therefore:
 
-### Domain Layer
-
-The Domain layer owns the authoritative game state and the rules that govern it.
-
-It is responsible for validating gameplay, executing mutations, and preserving the integrity of the game. Every state transition originates here.
-
-Examples include:
-
-- `initializeGame()`
-- `confirmFleet()`
-- `startBattle()`
-- `endGame()`
-
-The Domain never derives UI semantics or presentation information. It only exposes authoritative state.
-
-### Feature Modules
-
-Feature modules own the semantics of their own feature.
-
-Each module derives the contracts that belong exclusively to that feature, exposing them through a small public contract.
-
-For example, the Placement module owns concepts such as:
-
-- PlacementCapabilities
-- PlacementInstruction
-- PlacementFeedback
-- PlacementAvailability
-- PlacementPreview
-
-These contracts represent the public interface of the feature. Game Flow consumes Placement capabilities, instruction, feedback events, and statistics for the shared gameplay interface; Placement-specific UI may also consume contract values such as `remainingShipTypes` directly.
-
-### Game Flow Layer
-
-Game Flow acts as the orchestration boundary between gameplay and presentation.
-
-It derives the semantics that belong to the global game lifecycle and composes the public contract values exposed by feature modules into a single declarative interface for the UI.
-
-Following the ownership principle established throughout this document:
-
-Game Flow derives what it owns and consumes what it does not own.
-
-This keeps feature ownership explicit while allowing the shared presentation to depend on a single application-facing API.
-
-### Presentation Layer
-
-The Presentation layer is responsible only for rendering and forwarding user intent.
-
-It consumes the unified declarative interface exposed by Game Flow for shared gameplay content without interpreting authoritative gameplay state, choosing between global and feature instructions, or selecting feedback sources. Feature-specific UI may still consume its feature contract directly when it owns that local presentation.
-
-Typical usage:
-```tsx
-const placement = usePlacementController();
-const flow = useGameFlowController({
-    placement: {
-        capabilities: placement.contract.capabilities,
-        instruction: placement.contract.instruction,
-        feedback: placement.contract.feedback,
-        stats: placement.contract.stats,
-    },
-});
-
-return (
-    <>
-        <InformationPanel
-            phaseLabel={flow.presentation.phaseLabel}
-            description={flow.presentation.description}
-            instruction={flow.instruction}
-            stats={flow.stats}
-        />
-        {flow.feedback && <FeedbackMessage message={flow.feedback} />}
-
-        <Board
-            interactive={flow.capabilities.canAttack}
-        />
-    </>
-);
+```ts
+export type GameFlowController = {
+    capabilities: GameInteractionCapabilities;
+    presentation: GamePresentation;
+    instruction: string | null;
+    feedback: string | null;
+    stats: string | null;
+};
 ```
 
-Presentation should render exclusively from the declarative interface exposed by Game Flow.
+The controller currently consumes Placement's public contract. As additional feature modules are introduced, Game Flow will consume the public contract values needed for its unified interface. This integration must preserve feature ownership: Game Flow composes feature semantics but does not become their source of derivation.
 
-It must never:
+---
 
-- inspect GamePhase or GameStatus
-- derive gameplay semantics
-- derive UI capabilities
-- depend on feature-module internals
-- mutate authoritative gameplay state
+## Architectural Responsibilities and Boundaries
+
+### Domain
+
+The Domain owns authoritative gameplay state and rules. It validates gameplay and executes state transitions. It does not derive UI semantics or presentation data.
+
+### Feature modules
+
+Each feature module owns its feature-specific semantics, derives the values within its responsibility, and exposes them through a public contract.
+
+Placement owns its placement interaction state, preview, capabilities, instruction, statistics derivation, and feedback derivation.
+
+Battle will own its combat-specific semantics, including combat capabilities and instructions, and expose the values required by consumers through its public contract.
+
+Feature-specific UI may consume appropriate public contract values directly. Shared interaction capabilities remain exposed through the unified Game Flow interface.
+
+### Game Flow
+
+Game Flow derives global gameplay semantics and composes the public contract values needed by shared gameplay UI. It is an orchestration and composition boundary, not a second gameplay-rule layer or the owner of feature-specific semantics.
+
+The current implementation still derives some Battle-related capabilities and instructions within Game Flow. These responsibilities are transitional and should move to Battle as that module is implemented.
+
+### Presentation
+
+Shared gameplay UI consumes the unified Game Flow controller interface. For example, InformationPanel receives presentation, instruction, and stats, while FeedbackMessage receives the visible flow.feedback string.
+
+Feature-specific UI may consume other appropriate values from its feature's public contract. Consumers must not access feature internals, recreate semantics owned by another module, or independently combine capability contracts.
+
+Presentation must not inspect gameplay phase or status to derive capabilities, select instruction sources, derive feedback, or mutate authoritative state.
 
 ---
 
 ## Architectural Principles
 
-The following principles should guide future changes to the Game Flow module:
-
 - Game Flow derives what it owns and consumes what it does not own.
-- Feature modules own their own semantics and public contracts.
-- Presentation consumes only the unified Game Flow interface.
-- Domain remains the single source of gameplay truth.
-- Public contracts are the only communication boundary between feature modules and Game Flow.
-
----
+- Feature modules own and derive their feature-specific semantics and public contracts.
+- Battle and Placement remain independent owners of their respective feature semantics.
+- Shared gameplay UI consumes the unified Game Flow interface.
+- Feature-specific UI may consume appropriate feature public contract values directly.
+- Modules exchange semantic values through public contracts rather than depending on one another's internals.
+- Consumers do not recreate semantics owned by another module.
+- Derivation functions are pure; lifecycle effects belong in hooks.
+- Domain state is the authoritative source of gameplay truth. General state ownership, persistence, and derivation rules follow State Ownership Architecture.
