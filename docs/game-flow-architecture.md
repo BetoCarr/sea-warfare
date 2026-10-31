@@ -11,6 +11,7 @@ Game Flow establishes the application-level boundary between authoritative gamep
 ---
 
 ## Game Flow — Canonical Architecture
+
 Game Flow exposes a unified declarative interface for global gameplay semantics consumed by shared gameplay UI. It does not own gameplay rules or feature-specific semantics.
 
 Game Flow derives the semantics it owns from the authoritative gameplay state and consumes public feature contracts. Presentation renders the resulting declarations rather than reproducing gameplay semantics.
