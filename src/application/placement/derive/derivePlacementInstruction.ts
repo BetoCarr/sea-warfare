@@ -5,7 +5,7 @@ import type { ShipType } from '@/lib/domain/ships/models/ShipType';
 type DerivePlacementInstructionParams = {
     selectedShipType: ShipType | null;
     targetCell: Position | null;
-    canConfirmFleet: boolean;    
+    canConfirmFleet: boolean;
 };
 
 export function derivePlacementInstruction({

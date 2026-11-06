@@ -15,7 +15,7 @@ export function Header({capabilities, onInitialize, onConfirmFleet }: HeaderProp
     const renderAction = () => {
         if (capabilities.canInitializeGame) {
             return (
-                <Button 
+                <Button
                     onClick={onInitialize}
                 >
                     <span className="hidden mobile-landscape:inline">
@@ -31,7 +31,7 @@ export function Header({capabilities, onInitialize, onConfirmFleet }: HeaderProp
 
         if (capabilities.canConfirmFleet) {
             return (
-                <Button 
+                <Button
                     onClick={onConfirmFleet}
                 >
                     <span className="mobile-landscape:hidden">
@@ -81,4 +81,3 @@ export function Header({capabilities, onInitialize, onConfirmFleet }: HeaderProp
         </header>
     );
 }
-

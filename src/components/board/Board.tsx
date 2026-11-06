@@ -33,7 +33,7 @@ export default function Board({
 }: BoardProps) {
 
     const size = boardVM.size;
-    
+
     return (
         <div
             className={cn(
@@ -45,7 +45,7 @@ export default function Board({
 
                 // Tablet Portrait
                 "tablet-portrait:size-[clamp(430px,calc(19.89dvh_+_226px),500px)]",
-                
+
                 // Desktop
                 "desktop:size-[clamp(300px,min(50vw_-_112px,55dvh),500px)]",
 
@@ -97,7 +97,7 @@ export default function Board({
                             >
                                 {row + 1}
                             </div>
-                            
+
                             {/* Cells */}
                             {rowData.map((vmCell, col) => (
                                 <Cell
@@ -121,7 +121,7 @@ export default function Board({
                         </React.Fragment>
                     ))}
                 </div>
-            </div>  
+            </div>
         </div>
     );
 }

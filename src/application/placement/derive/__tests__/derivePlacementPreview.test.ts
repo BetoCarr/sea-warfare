@@ -28,7 +28,7 @@ describe('derivePlacementPreview', () => {
         expect(preview).toBeNull();
     });
 
-    it('returns null when no hovered cell exists', () => { 
+    it('returns null when no hovered cell exists', () => {
         const preview = derivePlacementPreview({
             selectedShip: mockSubmarine,
             targetCell: null,
@@ -65,7 +65,7 @@ describe('derivePlacementPreview', () => {
         });
 
         expect(preview).not.toBeNull();
-    
+
         if (preview?.isValid === false) {
             expect(preview.validationError).toBe('OUT_OF_BOUNDS');
         }
@@ -86,7 +86,7 @@ describe('derivePlacementPreview', () => {
         });
 
         expect(preview).not.toBeNull();
-    
+
         if (preview?.isValid === false) {
             expect(preview.validationError).toBe('OVERLAP');
         }
@@ -102,7 +102,7 @@ describe('derivePlacementPreview', () => {
 
         const firstPreview = derivePlacementPreview(params);
         const secondPreview = derivePlacementPreview(params);
-        
+
         expect(firstPreview).toEqual(secondPreview);
     });
 

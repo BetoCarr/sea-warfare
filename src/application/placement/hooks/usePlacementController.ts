@@ -72,7 +72,7 @@ export function usePlacementController(): PlacementController {
             const feedbackMessage = derivePlacementFeedback({
                 mutationResult,
             });
-            
+
             setFeedbackEvent(
                 feedbackMessage
                     ? {

@@ -45,7 +45,7 @@ export function derivePlacementPreview({
             placement =>
                 placement.ship.type !== selectedShip.type,
         );
-    
+
     const validation = canPlaceShip({
         boardSize,
         ship: selectedShip,

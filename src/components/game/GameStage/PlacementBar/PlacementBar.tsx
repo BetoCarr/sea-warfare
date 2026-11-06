@@ -27,7 +27,7 @@ export default function PlacementBar({
     );
 
     return (
-        <div 
+        <div
             className={cn(
                 "w-full",
                 "flex flex-wrap items-start gap-2",
@@ -36,7 +36,7 @@ export default function PlacementBar({
                 // Mobile Landscape
                 "mobile-landscape:w-[260px]",
                 "mobile-landscape:h-[clamp(210px,calc(138.46dvh_-_309px),300px)]",
-            
+
                 // Tablet Portrait
                 "tablet-portrait:w-[clamp(420px,calc(22.73dvh_+_187.27px),500px)]",
                 "tablet-portrait:h-[clamp(220px,calc(22.73dvh_-_12.73px),300px)]",

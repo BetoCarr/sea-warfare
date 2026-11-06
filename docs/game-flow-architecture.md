@@ -116,7 +116,7 @@ export type GameFlowFeedbackEvent = {
 };
 ```
 
-Currently, Placement increments an event ID after a `place-ship` interaction result produces a feedback message and sets `source: 'placement'`. 
+Currently, Placement increments an event ID after a `place-ship` interaction result produces a feedback message and sets `source: 'placement'`.
 The current Game Flow lifecycle hook displays a selected event until it is cleared or its current timeout expires. A repeated message can therefore be treated as a new event because identity comes from `source` plus `id`, not message text alone. This duration is an implementation detail, not a broader architectural requirement.
 
 ---

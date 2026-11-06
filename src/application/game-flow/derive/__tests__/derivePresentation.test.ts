@@ -47,7 +47,7 @@ describe('derivePresentation', () => {
             createGameState({
                 phase: GamePhase.BATTLE,
                 status: GameStatus.PLAYER_TURN,
-                
+
             }),
         );
 

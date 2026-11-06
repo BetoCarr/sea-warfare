@@ -38,18 +38,18 @@ export const GameStage = ({
         size: 10,
         showShips: false,
     });
-    
+
     usePlacementKeyboardShortcuts({
         rotate: placement.interaction.rotate,
     });
-    
+
     return (
         <main
             className={cn(
                 "flex-1 min-h-0 overflow-hidden",
                 "flex flex-col items-center justify-start",
                 "gap-10 pt-8 px-3",
-                
+
                 // Mobile Landscape
                 "mobile-landscape:flex-row",
                 "mobile-landscape:gap-0",
@@ -73,7 +73,7 @@ export const GameStage = ({
                         ? placement.interaction.onBoardLeave
                         : undefined
                 }
-                onCellPress={placement.interaction.onBoardInteraction}        
+                onCellPress={placement.interaction.onBoardInteraction}
             />
                 <div
                     className={cn(

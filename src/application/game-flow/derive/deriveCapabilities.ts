@@ -57,4 +57,3 @@ export function deriveCapabilities(
 
     return DEFAULT_CAPABILITIES;
 }
-

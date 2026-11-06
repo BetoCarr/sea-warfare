@@ -13,7 +13,7 @@ export function OrientationToggle({ onToggle }: OrientationToggleProps) {
                 rounded-md
                 border border-slate-700
                 bg-slate-800
-                text-xs                
+                text-xs
                 font-mono uppercase tracking-wider
                 text-slate-300
                 transition-all duration-200
@@ -21,7 +21,7 @@ export function OrientationToggle({ onToggle }: OrientationToggleProps) {
                 hover:bg-slate-700
                 hover:text-slate-100
                 active:scale-[0.98]
-            
+
             "
             aria-label="Rotate"
         >

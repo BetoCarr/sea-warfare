@@ -28,7 +28,7 @@ export default function InformationPanelItem({
                 "border bg-[var(--color-bg-subpanel)]",
                 "p-2 text-center font-mono whitespace-pre-line",
                 "text-[clamp(0.6875rem,1.67dvh,1rem)]",
-                
+
                 // Desktop
                 "desktop:flex-none",
                 "desktop:w-[clamp(220px,22vw,280px)]",

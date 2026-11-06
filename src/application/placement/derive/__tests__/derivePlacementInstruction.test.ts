@@ -16,7 +16,7 @@ describe('derivePlacementInstruction', () => {
             derivePlacementInstruction({
                 selectedShipType: 'carrier',
                 targetCell: null,
-                canConfirmFleet: false, 
+                canConfirmFleet: false,
             }),
         ).toBe('Select position');
     });
@@ -41,4 +41,3 @@ describe('derivePlacementInstruction', () => {
         ).toBe('Confirm fleet');
     });
 });
-

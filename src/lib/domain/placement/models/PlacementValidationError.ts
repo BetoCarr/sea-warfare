@@ -7,4 +7,4 @@ export type PlacementValidationResult =
     | {
         valid: false;
         error: PlacementValidationError;
-    };  
+    };

@@ -12,7 +12,7 @@ export function usePlacementInteractions(): PlacementInteractionsContract {
         usePlacementInteractionStore(
             state => state.selectedShipType,
         );
-    
+
     const selectedShip =
         selectedShipType == null
             ? null

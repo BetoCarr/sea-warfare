@@ -22,7 +22,7 @@ export const FeedbackMessage = ({
 
                 // Spacing,
                 "gap-2 px-3 py-2",
-                
+
                 // Typography
                 "text-center text-xs leading-tight",
                 "tablet-portrait:text-sm",

@@ -51,18 +51,18 @@ export function GameScreen() {
         >
             {flow.feedback && (
                 <FeedbackMessage message={flow.feedback} />
-            )}  
+            )}
 
-            <Header 
+            <Header
                 capabilities={flow.capabilities}
-                onInitialize={handleInitialize} 
+                onInitialize={handleInitialize}
                 onConfirmFleet={handleConfirmFleet}
             />
             <div
                 className={cn(
                     "flex-1 min-h-0 min-w-0",
                     "flex flex-col",
-                    
+
                     // Mobile Landscape
                     "mobile-landscape:flex-row",
                     "mobile-landscape:items-center",
@@ -72,7 +72,7 @@ export function GameScreen() {
                     "tablet-portrait:flex-row",
                 )}
             >
-                <GameStage 
+                <GameStage
                     capabilities={flow.capabilities}
                     placement={placement}
                     supportsHover={supportsHover}

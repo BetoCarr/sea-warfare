@@ -49,14 +49,14 @@ export function useBoardViewModel({
                 const isPreview = preview?.cells?.some(
                     p => p.row === row && p.col === col,
                 ) ?? false;
-                
+
                 const previewResult =
                     preview == null
                         ? undefined
                         : preview.isValid
                             ? 'valid'
                             : 'invalid';
-                            
+
                 const isActiveShip =
                     selectedShipType != null &&
                     logicalCell.shipType === selectedShipType &&
