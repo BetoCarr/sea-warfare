@@ -13,10 +13,10 @@ Rather than focusing exclusively on gameplay features, Sea Warfare explores how 
 ## Screenshots
 
 ### Fleet Placement
-![Sea Warfare fleet placement on desktop](docs/images/placement-desktop.png)
+<img src="docs/images/placement-desktop.png" alt="Sea Warfare fleet placement on desktop" width="720" />
 
 ### Mobile Experience
-![Sea Warfare mobile gameplay](docs/images/mobile-gameplay.png)
+<img src="docs/images/mobile-gameplay.png" alt="Sea Warfare mobile gameplay" width="320" />
 
 ## Features
 
